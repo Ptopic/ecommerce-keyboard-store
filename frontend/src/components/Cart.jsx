@@ -25,6 +25,7 @@ function Cart() {
 				amount: cart.totalPrice * 100,
 			});
 			console.log(res);
+			dispatch(closeCart());
 			window.location.assign(res.data.url);
 		} catch (err) {
 			console.log(err);
