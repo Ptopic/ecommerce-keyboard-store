@@ -71,13 +71,18 @@ const Product = () => {
 			// Open cart when product is added
 			dispatch(openCart());
 			setError('');
-		} else if (color && productAlreadyInCart) {
+		} else if (productAlreadyInCart) {
 			dispatch(
 				incrementProductQuantity({
 					id: product._id,
 					product,
 				})
 			);
+			// Open cart when product is added
+			dispatch(openCart());
+			setError('');
+		} else if (!productAlreadyInCart) {
+			dispatch(addProduct({ ...product, quantity, color, size }));
 			// Open cart when product is added
 			dispatch(openCart());
 			setError('');
