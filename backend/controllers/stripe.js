@@ -49,8 +49,8 @@ exports.pay = async (req, res) => {
 		// ],
 		line_items: lineItems,
 		mode: 'payment',
-		success_url: 'https://dapper-gelato-12b398.netlify.app/',
-		cancel_url: 'https://dapper-gelato-12b398.netlify.app/',
+		success_url: 'https://ecommerce-keyboard-store.vercel.app/success',
+		cancel_url: 'https://ecommerce-keyboard-store.vercel.app/',
 	});
 
 	return res.status(200).send({ url: session.url });
