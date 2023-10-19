@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.1.200:3001/api/';
+const BASE_URL = import.meta.env.VITE_URL;
 // const TOKEN = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user)
 // 	.currentUser.token;
 const TOKEN = 'DAWDAWD';
