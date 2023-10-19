@@ -49,8 +49,8 @@ exports.pay = async (req, res) => {
 		// ],
 		line_items: lineItems,
 		mode: 'payment',
-		success_url: 'http://localhost:3000/success',
-		cancel_url: 'http://localhost:3000/',
+		success_url: 'https://dapper-gelato-12b398.netlify.app/',
+		cancel_url: 'https://dapper-gelato-12b398.netlify.app/',
 	});
 
 	return res.status(200).send({ url: session.url });
