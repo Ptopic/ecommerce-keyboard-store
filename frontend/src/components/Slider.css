@@ -1,0 +1,105 @@
+.carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-collection {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+    flex-shrink: 0;
+    width: 100%;
+    height: 90dvh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.carousel-item-left {
+    width: 100%;
+}
+
+.carousel-item-left img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+
+.carousel-item-right {
+    background-color: var(--white600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.carousel-item-right h1 {
+    font-size: 5rem;
+}
+
+.carousel-item-right p {
+    margin: 5rem 0rem;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.carousel-item-right a {
+    text-decoration: none;
+    font-size: 2rem;
+}
+
+.carousel-indicators {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 0;
+    background-color: var(--white);
+}
+
+.dots-container div {
+    display: flex;
+    flex-direction: row;
+    margin: 0 1rem;
+}
+
+.dots-container div .dot:not(:last-child) {
+    margin-right: 1rem;
+}
+
+.dot {
+    border: 1px solid var(--primary-color);
+    border-radius: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: transparent;
+}
+
+.dot.fill {
+    background-color: var(--primary-color);
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .carousel-item {
+        grid-template-columns: 1fr;
+    }
+
+    .carousel-item-right {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    .carousel-item-right h1 {
+        font-size: 2.4rem;
+    }
+
+    .carousel-item-right a {
+        color: var(--white);
+    }
+}

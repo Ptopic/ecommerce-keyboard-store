@@ -1,0 +1,35 @@
+.product-link-container {}
+
+.product-link-container a {
+    color: var(--black);
+    text-decoration: none;
+}
+
+.product-link-container a:hover {
+    text-decoration: underline;
+}
+
+.product-link-container img {
+    width: 100%;
+    height: 100px;
+}
+
+.product-link-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-link-name {
+    font-size: 1.2rem;
+    padding-bottom: .4rem;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .product-link-container {
+        padding: 1rem 0;
+    }
+}

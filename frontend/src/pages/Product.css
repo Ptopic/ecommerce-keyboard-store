@@ -1,0 +1,135 @@
+.product-page-container {}
+
+.product-page-wrapper {
+    padding: 4rem 20rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+}
+
+.product-page-image-container {}
+
+.product-page-image-container img {
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 16 / 10;
+}
+
+.product-page-image-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.product-item-header-img {
+    grid-column: 1 / 3;
+}
+
+.product-page-info-container {}
+
+.product-page-info-container h1 {
+    font-weight: 200;
+    margin-bottom: 2rem;
+}
+
+.product-page-info-container p {
+    margin: 1rem 0 2rem 0;
+    opacity: 0.7;
+}
+
+.product-page-info-container .quantity {
+    margin: 0;
+}
+
+.product-page-info-container span {
+    font-weight: 100;
+    font-size: 1.8rem;
+}
+
+.amount-container {
+    display: flex;
+    margin-top: 1rem;
+    border: 1px solid black;
+    align-items: center;
+    padding: 0 1rem;
+    width: 50%;
+    justify-content: space-between;
+}
+
+.amount-container p {
+    margin: 0;
+}
+
+.amount-container button {
+    border: none;
+    background: white;
+    margin: 1rem;
+}
+
+.product-page-filters-container {
+    width: 100%;
+    margin: 3rem 0;
+}
+
+.product-page-filters-container span {
+    font-size: 1.6rem;
+    font-weight: 100;
+}
+
+.product-page-filters-container span>star {
+    color: red;
+}
+
+.product-page-filter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.product-page-filter-color-btn {
+    width: 100%;
+    border: 1px solid black;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-page-filter-color-btn p {
+    margin: 0;
+}
+
+.btn {
+    text-decoration: none;
+    color: var(--white);
+    background-color: var(--black);
+    padding: 1rem 2rem;
+    margin: 2rem 0;
+    width: 100%;
+}
+
+.product-page-filter-color-container {
+    border: 1px solid black;
+    width: 100%;
+}
+
+.product-page-filter-color-option {
+    padding: 1rem;
+}
+
+.product-page-filter-color-option:hover {
+    background: var(--gray);
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .product-page-wrapper {
+        padding: 2rem 1rem;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+    }
+}

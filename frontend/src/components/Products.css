@@ -1,0 +1,19 @@
+.products-list-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 2rem;
+    gap: 1rem;
+    grid-row-gap: 4rem;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .products-list-container {
+        grid-template-columns: 1fr 1fr;
+        padding: 4rem 0 4rem 0;
+        gap: .6rem;
+    }
+}
