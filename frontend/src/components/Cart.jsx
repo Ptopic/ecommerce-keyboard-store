@@ -13,8 +13,6 @@ import {
 } from '../redux/cartRedux';
 import { BsTrash3 } from 'react-icons/bs';
 
-const KEY = import.meta.env.VITE_STRIPE_KEY;
-
 function Cart() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -44,7 +42,6 @@ function Cart() {
 				incrementProductQuantity({
 					id: product._id,
 					product,
-					type,
 				})
 			);
 		} else {
@@ -52,7 +49,6 @@ function Cart() {
 				decrementProductQuantity({
 					id: product._id,
 					product,
-					type,
 				})
 			);
 		}
@@ -115,6 +111,7 @@ function Cart() {
 																	id: product._id,
 																	price: product.price,
 																	quantity: product.quantity,
+																	color: product.color,
 																})
 															)
 														}

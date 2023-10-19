@@ -113,17 +113,17 @@ const Navbar = () => {
 								},
 							}}
 						>
-							<a href="/products?new=new&name=New+Arrivals">New Arrivals</a>
-							<a href="/products/best?name=Best+Sellers">Best Sellers</a>
-							<a href="/products/keyboard?name=Keyboards">Keyboards</a>
-							<a href="/products/macropad?name=Macropads">MacroPads</a>
-							<a href="/products/pcb?name=PCBs+And+Plates">PCB & Plates</a>
-							<a href="/products/keycaps?name=Keycaps">Keycaps</a>
-							<a href="/products/switches?name=Switches">Switches</a>
-							<a href="/products/cables?name=Cables">Cables</a>
-							<a href="/products/deskmats?name=Deskmats">Deskmats</a>
-							<a href="/products/tools?name=Tools">Tools</a>
-							<a href="/about">About Us</a>
+							<Link to="/products?new=new&name=New+Arrivals">New Arrivals</Link>
+							<Link to="/products/best?name=Best+Sellers">Best Sellers</Link>
+							<Link to="/products/keyboard?name=Keyboards">Keyboards</Link>
+							<Link to="/products/macropad?name=Macropads">MacroPads</Link>
+							<Link to="/products/pcb?name=PCBs+And+Plates">PCB & Plates</Link>
+							<Link to="/products/keycaps?name=Keycaps">Keycaps</Link>
+							<Link to="/products/switches?name=Switches">Switches</Link>
+							<Link to="/products/cables?name=Cables">Cables</Link>
+							<Link to="/products/deskmats?name=Deskmats">Deskmats</Link>
+							<Link to="/products/tools?name=Tools">Tools</Link>
+							<Link to="/about">About Us</Link>
 						</m.div>
 					</m.div>
 				)}

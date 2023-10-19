@@ -22,9 +22,14 @@ const cartSlice = createSlice({
 		},
 		removeProduct: (state, action) => {
 			state.quantity -= action.payload.quantity;
-			state.products = state.products.filter(
-				(product) => product._id !== action.payload.id
-			);
+			for (let i = 0; i < state.products.length; i++) {
+				if (
+					state.products[i]._id === action.payload.id &&
+					state.products[i].color === action.payload.color
+				) {
+					state.products.splice(i, 1);
+				}
+			}
 			state.totalPrice -= action.payload.price * action.payload.quantity;
 		},
 		incrementProductQuantity: (state, action) => {

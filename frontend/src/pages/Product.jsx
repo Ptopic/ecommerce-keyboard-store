@@ -7,10 +7,14 @@ import { useLocation } from 'react-router-dom';
 import { request } from '../api';
 import { addProduct } from '../redux/cartRedux';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { openCart, incrementProductQuantity } from '../redux/cartRedux';
+
 import './Product.css';
 
 import { AiOutlineDown } from 'react-icons/ai';
+import { BiSearchAlt } from 'react-icons/bi';
+import { AiOutlineClose } from 'react-icons/ai';
 
 const Product = () => {
 	const location = useLocation();
@@ -20,6 +24,10 @@ const Product = () => {
 	const [color, setColor] = useState('');
 	const [colorOpen, setColorOpen] = useState(false);
 	const [size, setSize] = useState('');
+	const [error, setError] = useState('');
+	const [imageZoom, setImageZoom] = useState({});
+	const [imageZoomModalOpen, setImageZoomModalOpen] = useState(false);
+	const cartProducts = useSelector((state) => state.cart.products);
 
 	const dispatch = useDispatch();
 
@@ -47,14 +55,38 @@ const Product = () => {
 	};
 
 	const handleAddToCart = () => {
-		dispatch(addProduct({ ...product, quantity, color, size }));
+		// Check if product is already in cart if it is just increment its quantity
+		var productAlreadyInCart = false;
+		for (var i = 0; i < cartProducts.length; i++) {
+			if (
+				cartProducts[i]._id == product._id &&
+				cartProducts[i].color == color
+			) {
+				productAlreadyInCart = true;
+			}
+		}
+		// Check if color is selected if not display error
+		if (color && !productAlreadyInCart) {
+			dispatch(addProduct({ ...product, quantity, color, size }));
+			// Open cart when product is added
+			dispatch(openCart());
+			setError('');
+		} else if (color && productAlreadyInCart) {
+			dispatch(
+				incrementProductQuantity({
+					id: product._id,
+					product,
+				})
+			);
+			// Open cart when product is added
+			dispatch(openCart());
+			setError('');
+		} else {
+			setError('Please select a color');
+		}
 	};
 
 	const handleFilters = (e) => {};
-
-	useEffect(() => {
-		console.log(product);
-	}, []);
 
 	const toggleColorOpen = () => {
 		if (colorOpen) {
@@ -64,14 +96,45 @@ const Product = () => {
 		}
 	};
 
+	const zoomInImage = (img) => {
+		setImageZoom(img);
+		setImageZoomModalOpen(true);
+	};
+
 	return (
 		<div className="product-page-container">
 			<Navbar />
+			{imageZoomModalOpen && (
+				<div className="image-zoom-modal">
+					<div className="image-zoom-modal-container">
+						<img src={imageZoom} alt="" />
+						<div
+							className="image-zoom-close-overlay"
+							onClick={() => setImageZoomModalOpen(false)}
+						>
+							<AiOutlineClose size={36} />
+						</div>
+					</div>
+				</div>
+			)}
 			<div className="product-page-wrapper">
 				<div className="product-page-image-container">
-					<img src={product.image?.[0]} className="product-item-header-img" />
+					<div
+						className="product-image header"
+						onClick={() => zoomInImage(product.image?.[0])}
+					>
+						<img src={product.image?.[0]} />
+						<div className="image-overlay">
+							<BiSearchAlt size={36} />
+						</div>
+					</div>
 					{product.image?.slice(1).map((image) => (
-						<img src={image} />
+						<div className="product-image" onClick={() => zoomInImage(image)}>
+							<img src={image} />
+							<div className="image-overlay">
+								<BiSearchAlt size={36} />
+							</div>
+						</div>
 					))}
 				</div>
 				<div className="product-page-info-container">
@@ -86,7 +149,7 @@ const Product = () => {
 					</div>
 					<div className="product-page-add-container">
 						<div className="product-page-filters-container">
-							{product.color?.length && (
+							{product.color && product.color.length > 0 && (
 								<div className="product-page-filter">
 									<span>
 										Color <star>*</star>
@@ -98,6 +161,7 @@ const Product = () => {
 										{color ? color : <p>Please select an option*</p>}
 										<AiOutlineDown />
 									</div>
+									<div className="error">{error}</div>
 									{colorOpen && (
 										<div className="product-page-filter-color-container">
 											{product.color?.map((color) => (
@@ -115,16 +179,6 @@ const Product = () => {
 									)}
 								</div>
 							)}
-							{/* <div>
-							<span>Size</span>
-							<select name="size" onChange={handleFilters}>
-							<option disabled>SIZE</option>
-							<option key="all">All</option>
-							{product.color?.map((color) => (
-								<option>{color}</option>
-								))}
-								</select>
-							</div> */}
 						</div>
 						<button className="btn" onClick={() => handleAddToCart()}>
 							ADD TO CART
