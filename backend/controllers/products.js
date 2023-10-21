@@ -49,18 +49,26 @@ exports.getProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
 	const qNew = req.query.new;
 	const qCategory = req.query.category;
+	const page = req.query.page;
 	try {
 		let products;
 		if (qNew) {
-			products = await Product.find().sort({ createAt: -1 }).limit(1);
+			products = await Product.find()
+				.limit(10)
+				.skip(10 * page)
+				.sort({ createAt: -1 });
 		} else if (qCategory) {
 			products = await Product.find({
 				categories: {
 					$in: [qCategory],
 				},
-			});
+			})
+				.limit(10)
+				.skip(10 * page);
 		} else {
-			products = await Product.find();
+			products = await Product.find()
+				.limit(10)
+				.skip(10 * page);
 		}
 		return res.status(200).send({ success: true, data: products });
 	} catch (err) {

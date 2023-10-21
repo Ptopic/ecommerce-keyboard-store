@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 import Products from '../components/Products';
 import Footer from '../components/Footer/Footer';
@@ -15,7 +15,11 @@ let minPrice = 0;
 let maxPrice = 0;
 
 const ProductList = () => {
+	const [page, setPage] = useState(0);
+	const [hasMore, setHasMore] = useState(true);
 	const [loading, setLoading] = useState(true);
+
+	const loadRef = useRef(null);
 
 	const [products, setProducts] = useState([]);
 	const [filteredProducts, setFilteredProducts] = useState([]);
@@ -42,56 +46,100 @@ const ProductList = () => {
 		setFilters({});
 	};
 
+	const onIntersection = (entries) => {
+		const firstEntry = entries[0];
+		if (firstEntry.isIntersecting && hasMore) {
+			fetchMoreData();
+		}
+	};
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(onIntersection);
+		if (observer && loadRef.current) {
+			observer.observe(loadRef.current);
+		}
+
+		return () => {
+			if (observer) {
+				observer.disconnect();
+			}
+		};
+	}, [products]);
+
+	const fetchMoreData = async () => {
+		try {
+			const res = await request.get(
+				category
+					? `/products?category=${category}&page=${page}`
+					: `/products?page=${page}`
+			);
+			const data = res.data;
+			if (data.data == 0) {
+				setHasMore(false);
+			} else {
+				setProducts((prev) => [...prev, ...data.data]);
+				setPage((prevPage) => prevPage + 1);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const generateFilters = (data) => {
+		// Check if product has material, color ect...
+		var products = data.data;
+		var product = products[0];
+
+		// Get min and max price of products
+		var allPrices = [];
+		products.map((product) => {
+			allPrices.push(product.price);
+		});
+		minPrice = Math.min(...allPrices);
+		setMin(minPrice);
+		maxPrice = Math.max(...allPrices);
+		setMax(maxPrice);
+
+		// Create sets of unique materials and colors if available for products
+		if (product['material'].length > 0) {
+			// Loop thru and add all materials to array
+			var allMaterials = [];
+			products.map((product) => {
+				product.material.map((material) => {
+					allMaterials.push(material);
+				});
+			});
+			// Create set of materials
+			var materialsSet = Array.from(new Set(allMaterials));
+			setMaterial(materialsSet);
+		}
+		if (product['color'].length > 0 && product['color'] != '') {
+			// Loop thru and add all colors to array
+			var allColors = [];
+			products.map((product) => {
+				product['color'].map((color) => {
+					allColors.push(color);
+				});
+			});
+			// Create set of materials
+			var colorSet = Array.from(new Set(allColors));
+			setColor(colorSet);
+		}
+	};
+
 	useEffect(() => {
 		const getProducts = async () => {
 			try {
 				setLoading(true);
 				const res = await request.get(
-					category ? `/products?category=${category}` : '/products'
+					category
+						? `/products?category=${category}&page=${page}`
+						: `/products?page=${page}`
 				);
 				setLoading(false);
 				const data = res.data;
 				setProducts(data.data);
-
-				// Check if product has material, color ect...
-				var products = data.data;
-				var product = products[0];
-
-				// Get min and max price of products
-				var allPrices = [];
-				products.map((product) => {
-					allPrices.push(product.price);
-				});
-				minPrice = Math.min(...allPrices);
-				setMin(minPrice);
-				maxPrice = Math.max(...allPrices);
-				setMax(maxPrice);
-
-				// Create sets of unique materials and colors if available for products
-				if (product['material'].length > 0) {
-					// Loop thru and add all materials to array
-					var allMaterials = [];
-					products.map((product) => {
-						product.material.map((material) => {
-							allMaterials.push(material);
-						});
-					});
-					// Create set of materials
-					var materialsSet = Array.from(new Set(allMaterials));
-					setMaterial(materialsSet);
-				}
-				if (product['color'].length > 0 && product['color'] != '') {
-					// Loop thru and add all colors to array
-					var allColors = [];
-					products.map((product) => {
-						product['color'].map((color) => {
-							allColors.push(color);
-						});
-					});
-					// Create set of materials
-					var colorSet = Array.from(new Set(allColors));
-					setColor(colorSet);
-				}
+				generateFilters(data);
 			} catch (err) {
 				console.log(err);
 			}
@@ -374,6 +422,12 @@ const ProductList = () => {
 							</div>
 						) : (
 							<Products products={category ? filteredProducts : products} />
+						)}
+
+						{hasMore && (
+							<div className="spinner-container" ref={loadRef}>
+								<Spinner />
+							</div>
 						)}
 					</div>
 				</div>
