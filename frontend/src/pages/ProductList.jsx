@@ -424,11 +424,11 @@ const ProductList = () => {
 							<Products products={category ? filteredProducts : products} />
 						)}
 
-						{hasMore && (
+						{!loading && hasMore ? (
 							<div className="spinner-container" ref={loadRef}>
 								<Spinner />
 							</div>
-						)}
+						) : null}
 					</div>
 				</div>
 			</div>
