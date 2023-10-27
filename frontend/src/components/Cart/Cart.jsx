@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../Navbar/navbar.css';
+import '../Navbar/Navbar.css';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { request } from '../../api';
