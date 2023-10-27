@@ -1,7 +1,6 @@
 const router = require('express').Router();
 
 const {
-	verifyToken,
 	verifyTokenAndAuthorization,
 	verifyTokenAndAdmin,
 } = require('../controllers/verifyToken');

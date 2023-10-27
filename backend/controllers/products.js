@@ -47,24 +47,179 @@ exports.getProduct = async (req, res) => {
 };
 
 exports.getAllProducts = async (req, res) => {
-	const qNew = req.query.new;
+	const qsort = req.query.sort;
 	const qCategory = req.query.category;
 	const page = req.query.page;
+
+	const minPrice = req.query.min;
+	const maxPrice = req.query.max;
+	const color = req.query.color;
+	const material = req.query.material;
 	try {
 		let products;
-		if (qNew) {
-			products = await Product.find()
-				.limit(10)
-				.skip(10 * page)
-				.sort({ createAt: -1 });
-		} else if (qCategory) {
-			products = await Product.find({
-				categories: {
-					$in: [qCategory],
-				},
-			})
-				.limit(10)
-				.skip(10 * page);
+		if (qCategory && qsort && (color || material) && minPrice && maxPrice) {
+			if (color) {
+				if (qsort === 'newest') {
+					products = await Product.find({
+						color: color,
+						categories: qCategory,
+						price: { $gte: minPrice, $lte: maxPrice },
+					})
+						.sort({ createdAt: -1 })
+						.limit(10)
+						.skip(10 * page);
+				} else if (qsort === 'asc') {
+					products = await Product.find({
+						color: color,
+						categories: qCategory,
+						price: { $gte: minPrice, $lte: maxPrice },
+					})
+						.sort({ price: 1 })
+						.limit(10)
+						.skip(10 * page);
+				} else {
+					products = await Product.find({
+						color: color,
+						categories: qCategory,
+						price: { $gte: minPrice, $lte: maxPrice },
+					})
+						.sort({ price: -1 })
+						.limit(10)
+						.skip(10 * page);
+				}
+			} else {
+				if (qsort === 'newest') {
+					products = await Product.find({
+						material: material,
+						categories: qCategory,
+						price: { $gte: minPrice, $lte: maxPrice },
+					})
+						.sort({ createdAt: -1 })
+						.limit(10)
+						.skip(10 * page);
+				} else if (qsort === 'asc') {
+					products = await Product.find({
+						material: material,
+						categories: qCategory,
+						price: { $gte: minPrice, $lte: maxPrice },
+					})
+						.sort({ price: 1 })
+						.limit(10)
+						.skip(10 * page);
+				} else {
+					products = await Product.find({
+						material: material,
+						categories: qCategory,
+						price: { $gte: minPrice, $lte: maxPrice },
+					})
+						.sort({ price: -1 })
+						.limit(10)
+						.skip(10 * page);
+				}
+			}
+		} else if (qCategory && qsort && minPrice && maxPrice) {
+			if (qsort === 'newest') {
+				products = await Product.find({
+					categories: qCategory,
+					price: { $gte: minPrice, $lte: maxPrice },
+				})
+					.sort({ createdAt: -1 })
+					.limit(10)
+					.skip(10 * page);
+			} else if (qsort === 'asc') {
+				products = await Product.find({
+					categories: qCategory,
+					price: { $gte: minPrice, $lte: maxPrice },
+				})
+					.sort({ price: 1 })
+					.limit(10)
+					.skip(10 * page);
+			} else {
+				products = await Product.find({
+					categories: qCategory,
+					price: { $gte: minPrice, $lte: maxPrice },
+				})
+					.sort({ price: -1 })
+					.limit(10)
+					.skip(10 * page);
+			}
+		} else if (qCategory && qsort && (color || material)) {
+			if (color) {
+				if (qsort === 'newest') {
+					products = await Product.find({
+						color: color,
+						categories: qCategory,
+					})
+						.sort({ createdAt: -1 })
+						.limit(10)
+						.skip(10 * page);
+				} else if (qsort === 'asc') {
+					products = await Product.find({
+						color: color,
+						categories: qCategory,
+					})
+						.sort({ price: 1 })
+						.limit(10)
+						.skip(10 * page);
+				} else {
+					products = await Product.find({
+						color: color,
+						categories: qCategory,
+					})
+						.sort({ price: -1 })
+						.limit(10)
+						.skip(10 * page);
+				}
+			} else {
+				if (qsort === 'newest') {
+					products = await Product.find({
+						material: material,
+						categories: qCategory,
+					})
+						.sort({ createdAt: -1 })
+						.limit(10)
+						.skip(10 * page);
+				} else if (qsort === 'asc') {
+					products = await Product.find({
+						material: material,
+						categories: qCategory,
+					})
+						.sort({ price: 1 })
+						.limit(10)
+						.skip(10 * page);
+				} else {
+					products = await Product.find({
+						material: material,
+						categories: qCategory,
+					})
+						.sort({ price: -1 })
+						.limit(10)
+						.skip(10 * page);
+				}
+			}
+		} else if (qsort && qCategory) {
+			if (qsort === 'newest') {
+				products = await Product.find({
+					categories: qCategory,
+				})
+					.sort({ createdAt: -1 })
+					.limit(10)
+					.skip(10 * page);
+			} else if (qsort === 'asc') {
+				products = await Product.find({
+					categories: qCategory,
+				})
+					.sort({ price: 1 })
+					.limit(10)
+					.skip(10 * page);
+			} else {
+				products = await Product.find({
+					categories: qCategory,
+				})
+					.sort({ price: -1 })
+					.limit(10)
+					.skip(10 * page);
+			}
 		} else {
 			products = await Product.find()
 				.limit(10)
@@ -72,6 +227,7 @@ exports.getAllProducts = async (req, res) => {
 		}
 		return res.status(200).send({ success: true, data: products });
 	} catch (err) {
+		console.log(err);
 		return res.status(500).send({ success: false, error: err });
 	}
 };

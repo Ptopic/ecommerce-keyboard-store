@@ -41,6 +41,9 @@
 
 .navbar-right a {
     margin-right: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .navbar-content {
@@ -69,6 +72,26 @@
     color: var(--black);
     text-decoration: none;
     padding-bottom: 3rem;
+}
+
+.navbar-user-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-user-data p {
+    font-size: 1.8rem;
+    margin-right: 2rem;
+}
+
+.navbar-user-data button {
+    font-size: 1.8rem;
+    margin-right: 2rem;
+    background: none;
+    border: none;
+    outline: none;
+    text-decoration: underline;
 }
 
 /* Cart */
@@ -270,5 +293,9 @@
 
     .navbar-content-text {
         overflow: scroll;
+    }
+
+    .navbar-user-data {
+        flex-direction: column;
     }
 }

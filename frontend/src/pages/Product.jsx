@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer/Footer';
 import Navbar from '../components/Navbar/Navbar';
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { request } from '../api';
 import { addProduct } from '../redux/cartRedux';
@@ -12,22 +12,26 @@ import { openCart, incrementProductQuantity } from '../redux/cartRedux';
 
 import './Product.css';
 
-import { AiOutlineDown } from 'react-icons/ai';
+import { toast, Toaster } from 'react-hot-toast';
+
+import { AiOutlineDown, AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { AiOutlineClose } from 'react-icons/ai';
 
 const Product = () => {
+	const navigate = useNavigate();
 	const location = useLocation();
 	const id = location.pathname.split('/')[2];
 	const [product, setProduct] = useState({});
+	const [isProductInWishlist, setIsProductInWishlist] = useState(false);
 	const [quantity, setQuantity] = useState(1);
 	const [color, setColor] = useState('');
 	const [colorOpen, setColorOpen] = useState(false);
 	const [size, setSize] = useState('');
-	const [error, setError] = useState('');
 	const [imageZoom, setImageZoom] = useState({});
 	const [imageZoomModalOpen, setImageZoomModalOpen] = useState(false);
 	const cartProducts = useSelector((state) => state.cart.products);
+	const currentUser = useSelector((state) => state.user.currentUser);
 
 	const dispatch = useDispatch();
 
@@ -37,20 +41,101 @@ const Product = () => {
 				const res = await request.get('/products/find/' + id);
 				const data = res.data;
 				setProduct(data.data);
-				console.log(data.data.image);
 			} catch (err) {
 				console.log(err);
 			}
 		};
 
+		const getWishlist = async () => {
+			try {
+				// Check if product is in users wishlist
+				const wishlist = await request.get(
+					`/wishlist?userId=${currentUser.data._id}`
+				);
+
+				const products = wishlist.data.data.products;
+				console.log(products);
+				// Loop thru products to find id of current product
+				for (let i = 0; i < products.length; i++) {
+					if (products[i]._id == id) {
+						setIsProductInWishlist(true);
+					}
+				}
+			} catch (error) {
+				console.log(error.response.data);
+			}
+		};
 		getProductById();
-	}, [id]);
+		getWishlist();
+	}, []);
 
 	const handleQuantity = (type) => {
 		if (type == 'increase') {
 			setQuantity(quantity + 1);
 		} else {
 			quantity > 1 && setQuantity(quantity - 1);
+		}
+	};
+
+	const handleAddToWishlist = async () => {
+		if (currentUser.length == 0) {
+			navigate('/login');
+		}
+
+		// Add product to users wishlist (token might be needed)
+		const productId = product._id;
+		const userId = currentUser.data._id;
+
+		try {
+			console.log(currentUser.token);
+			const res = await request.post(
+				`/wishlist?id=${userId}`,
+				{
+					userId: userId,
+					productId: productId,
+				},
+				{
+					headers: {
+						token: currentUser.token,
+					},
+				}
+			);
+			console.log(res);
+			setIsProductInWishlist(true);
+			toast.success(res.data.data);
+		} catch (error) {
+			console.log(error);
+			toast.error(error.response.data);
+		}
+	};
+
+	const handleRemoveFromWishlist = async () => {
+		console.log('remove');
+		const productId = product._id;
+		const userId = currentUser.data._id;
+		console.log(productId);
+		console.log(userId);
+		console.log(currentUser.token);
+
+		try {
+			const config = {
+				headers: {
+					token: currentUser.token,
+				},
+				data: {
+					userId: userId,
+					productId: productId,
+				},
+			};
+			const res = await request.delete(`/wishlist?id=${userId}`, config);
+			setIsProductInWishlist(false);
+			console.log(res);
+			toast.success(res.data.data);
+			// setSuccess(res.data.data);
+		} catch (error) {
+			console.log(error.response.data);
+			toast.error(error.response.data);
+			// setError(error.response.data);
 		}
 	};
 
@@ -65,8 +150,17 @@ const Product = () => {
 				productAlreadyInCart = true;
 			}
 		}
+		console.log(color);
+		// Check if quantity is greater than stock if it is display message
+		if (quantity > product.stock) {
+			toast.error('Quantity cannot be greater than stock');
+			return;
+		}
+		if (!color && product.color.length > 0) {
+			toast.error('Please select a color');
+		}
 		// Check if color is selected if not display error
-		if (color && !productAlreadyInCart) {
+		else if (color && !productAlreadyInCart) {
 			dispatch(addProduct({ ...product, quantity, color, size }));
 			// Open cart when product is added
 			dispatch(openCart());
@@ -81,17 +175,12 @@ const Product = () => {
 			// Open cart when product is added
 			dispatch(openCart());
 			setError('');
-		} else if (!productAlreadyInCart) {
+		} else {
 			dispatch(addProduct({ ...product, quantity, color, size }));
 			// Open cart when product is added
 			dispatch(openCart());
-			setError('');
-		} else {
-			setError('Please select a color');
 		}
 	};
-
-	const handleFilters = (e) => {};
 
 	const toggleColorOpen = () => {
 		if (colorOpen) {
@@ -108,6 +197,7 @@ const Product = () => {
 
 	return (
 		<div className="product-page-container">
+			<Toaster />
 			<Navbar />
 			{imageZoomModalOpen && (
 				<div className="image-zoom-modal">
@@ -145,6 +235,10 @@ const Product = () => {
 				<div className="product-page-info-container">
 					<h1>{product.title}</h1>
 					<span>€{product.price} EUR</span>
+					{product.stock == 0 ? (
+						<h2 className="out-of-stock">Out of stock</h2>
+					) : null}
+					<p>Stock: {product.stock}</p>
 					<p>Shipping calculated at checkout.</p>
 					<p className="quantity">Quantity:</p>
 					<div className="amount-container">
@@ -166,7 +260,6 @@ const Product = () => {
 										{color ? color : <p>Please select an option*</p>}
 										<AiOutlineDown />
 									</div>
-									<div className="error">{error}</div>
 									{colorOpen && (
 										<div className="product-page-filter-color-container">
 											{product.color?.map((color) => (
@@ -185,9 +278,29 @@ const Product = () => {
 								</div>
 							)}
 						</div>
-						<button className="btn" onClick={() => handleAddToCart()}>
-							ADD TO CART
-						</button>
+						<div className="product-buttons">
+							<button
+								className="btn wishlist"
+								onClick={() =>
+									isProductInWishlist
+										? handleRemoveFromWishlist()
+										: handleAddToWishlist()
+								}
+							>
+								{isProductInWishlist ? <AiFillHeart /> : <AiOutlineHeart />}
+								Add to wishlsit
+							</button>
+							<button
+								className="btn"
+								disabled={product.stock == 0 ? 'disabled' : ''}
+								style={{
+									backgroundColor: product.stock == 0 ? 'grey' : 'black',
+								}}
+								onClick={() => handleAddToCart()}
+							>
+								ADD TO CART
+							</button>
+						</div>
 					</div>
 					<p>{product.description}</p>
 				</div>

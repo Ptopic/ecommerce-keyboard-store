@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Product from './ProductLink';
-import { request } from '../api';
+import Product from '../ProductLink/ProductLink';
+import { request } from '../../api';
 import './Products.css';
 
 const Products = ({ products }) => {

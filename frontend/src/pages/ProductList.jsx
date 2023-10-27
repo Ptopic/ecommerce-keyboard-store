@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar/Navbar';
-import Products from '../components/Products';
+import Products from '../components/Products/Products';
 import Footer from '../components/Footer/Footer';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -15,41 +15,215 @@ let minPrice = 0;
 let maxPrice = 0;
 
 const ProductList = () => {
-	const [page, setPage] = useState(0);
+	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 	const [loading, setLoading] = useState(true);
 
 	const loadRef = useRef(null);
 
 	const [products, setProducts] = useState([]);
-	const [filteredProducts, setFilteredProducts] = useState([]);
 	const [searchParams] = useSearchParams();
 	const location = useLocation();
 	const category = location.pathname.split('/')[2];
 	const name = searchParams.get('name');
-	const [filters, setFilters] = useState({});
 	const [sort, setSort] = useState('newest');
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
 	// Filters for products
 	const [material, setMaterial] = useState([]);
-	const [defaultMaterial, setDefaultMaterial] = useState('All');
+	const [defaultMaterial, setDefaultMaterial] = useState(null);
 	const [color, setColor] = useState([]);
-	const [defaultColor, setDefaultColor] = useState('All');
+	const [defaultColor, setDefaultColor] = useState(null);
 	const [defaultStock, setDefaultStock] = useState('In Stock');
 
 	// Price filters
 	const [min, setMin] = useState(0);
 	const [max, setMax] = useState(0);
 
+	const generateFilters = (data) => {
+		setLoading(true);
+		// Check if product has material, color ect...
+		var products = data.data;
+		var product = products[0];
+
+		// Get min and max price of products
+		var allPrices = [];
+		products.map((product) => {
+			allPrices.push(product.price);
+		});
+		minPrice = Math.min(...allPrices);
+		setMin(minPrice);
+		maxPrice = Math.max(...allPrices);
+		setMax(maxPrice);
+
+		// Create sets of unique materials and colors if available for products
+
+		// Loop thru and add all materials to array
+		var allMaterials = [];
+		products.map((product) => {
+			product.material.map((material) => {
+				allMaterials.push(material);
+			});
+		});
+		// Create set of materials
+		var materialsSet = Array.from(new Set(allMaterials));
+		setMaterial(materialsSet);
+
+		// Loop thru and add all colors to array
+		var allColors = [];
+		products.map((product) => {
+			product['color'].map((color) => {
+				allColors.push(color);
+			});
+		});
+		// Create set of materials
+		var colorSet = Array.from(new Set(allColors));
+		setColor(colorSet);
+
+		setMin(minPrice);
+		setMax(maxPrice);
+		setLoading(false);
+	};
+
+	const getInitialProducts = async () => {
+		try {
+			let data;
+			setLoading(true);
+			if ((defaultColor || defaultMaterial) && min && max) {
+				if (defaultColor != 'All' && defaultColor != null) {
+					const res = await request.get(
+						`/products?category=${category}&sort=${sort}&color=${defaultColor}&min=${min}&max=${max}`
+					);
+					data = res.data;
+				} else if (defaultMaterial != 'All' && defaultMaterial != null) {
+					const res = await request.get(
+						`/products?category=${category}&sort=${sort}&material=${defaultMaterial}&min=${min}&max=${max}`
+					);
+					data = res.data;
+				} else {
+					console.log('all');
+					const res = await request.get(
+						`/products?category=${category}&sort=${sort}&min=${min}&max=${max}`
+					);
+					data = res.data;
+				}
+			} else if (defaultColor || defaultMaterial) {
+				if (defaultColor != 'All' && defaultColor != null) {
+					const res = await request.get(
+						`/products?category=${category}&sort=${sort}&color=${defaultColor}`
+					);
+					data = res.data;
+				} else if (defaultMaterial != 'All' && defaultMaterial != null) {
+					const res = await request.get(
+						`/products?category=${category}&sort=${sort}&material=${defaultMaterial}`
+					);
+					data = res.data;
+				} else {
+					const res = await request.get(
+						`/products?category=${category}&sort=${sort}`
+					);
+					data = res.data;
+				}
+			} else if (min && max) {
+				const res = await request.get(
+					`/products?category=${category}&sort=${sort}`
+				);
+				data = res.data;
+			} else {
+				const res = await request.get(
+					`/products?category=${category}&sort=${sort}`
+				);
+				data = res.data;
+			}
+			setLoading(false);
+			if (products.length == 0) {
+				generateFilters(data);
+			}
+			setProducts(data.data);
+			setPage((prevPage) => prevPage + 1);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const fetchMoreData = async () => {
+		try {
+			let data;
+			if (sort && defaultColor != null && defaultMaterial != null) {
+				if (defaultColor) {
+					if (sort == 'newest') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
+						);
+						data = res.data;
+					} else if (sort === 'asc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
+						);
+						data = res.data;
+					} else if (sort === 'desc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
+						);
+						data = res.data;
+					}
+				} else {
+					if (sort == 'newest') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
+						);
+						data = res.data;
+					} else if (sort === 'asc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
+						);
+						data = res.data;
+					} else if (sort === 'desc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
+						);
+						data = res.data;
+					}
+				}
+			} else if (sort) {
+				if (sort == 'newest') {
+					const res = await request.get(
+						`/products?category=${category}&page=${page}&sort=${sort}`
+					);
+					data = res.data;
+				} else if (sort === 'asc') {
+					const res = await request.get(
+						`/products?category=${category}&page=${page}&sort=${sort}`
+					);
+					data = res.data;
+				} else if (sort === 'desc') {
+					const res = await request.get(
+						`/products?category=${category}&page=${page}&sort=${sort}`
+					);
+					data = res.data;
+				}
+			}
+			if (data.data.length == 0) {
+				setHasMore(false);
+			} else {
+				setProducts((prev) => [...prev, ...data.data]);
+				setPage((prevPage) => prevPage + 1);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	const resetFilters = () => {
-		setFilters({});
+		setPage(1);
+		setHasMore(true);
 	};
 
 	const onIntersection = (entries) => {
 		const firstEntry = entries[0];
 		if (firstEntry.isIntersecting && hasMore) {
 			fetchMoreData();
+			console.log('intersecting');
 		}
 	};
 
@@ -66,161 +240,22 @@ const ProductList = () => {
 		};
 	}, [products]);
 
-	const fetchMoreData = async () => {
-		try {
-			const res = await request.get(
-				category
-					? `/products?category=${category}&page=${page}`
-					: `/products?page=${page}`
-			);
-			const data = res.data;
-			if (data.data == 0) {
-				setHasMore(false);
-			} else {
-				setProducts((prev) => [...prev, ...data.data]);
-				setPage((prevPage) => prevPage + 1);
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const generateFilters = (data) => {
-		// Check if product has material, color ect...
-		var products = data.data;
-		var product = products[0];
-
-		// Get min and max price of products
-		var allPrices = [];
-		products.map((product) => {
-			allPrices.push(product.price);
-		});
-		minPrice = Math.min(...allPrices);
-		setMin(minPrice);
-		maxPrice = Math.max(...allPrices);
-		setMax(maxPrice);
-
-		// Create sets of unique materials and colors if available for products
-		if (product['material'].length > 0) {
-			// Loop thru and add all materials to array
-			var allMaterials = [];
-			products.map((product) => {
-				product.material.map((material) => {
-					allMaterials.push(material);
-				});
-			});
-			// Create set of materials
-			var materialsSet = Array.from(new Set(allMaterials));
-			setMaterial(materialsSet);
-		}
-		if (product['color'].length > 0 && product['color'] != '') {
-			// Loop thru and add all colors to array
-			var allColors = [];
-			products.map((product) => {
-				product['color'].map((color) => {
-					allColors.push(color);
-				});
-			});
-			// Create set of materials
-			var colorSet = Array.from(new Set(allColors));
-			setColor(colorSet);
-		}
-	};
-
 	useEffect(() => {
-		const getProducts = async () => {
-			try {
-				setLoading(true);
-				const res = await request.get(
-					category
-						? `/products?category=${category}&page=${page}`
-						: `/products?page=${page}`
-				);
-				setLoading(false);
-				const data = res.data;
-				setProducts(data.data);
-				generateFilters(data);
-			} catch (err) {
-				console.log(err);
-			}
-		};
-		getProducts();
+		getInitialProducts();
 	}, [category]);
 
-	useEffect(() => {}, [min, max]);
+	useEffect(() => {
+		getInitialProducts();
+		resetFilters();
+	}, [sort, defaultColor, defaultMaterial, min, max]);
 
 	const handlePriceFilterChange = (value) => {
+		console.log(value);
 		// Add value to min max
 		setMin(value[0]);
 		setMax(value[1]);
 		// Reset filters
 		resetFilters();
-		setDefaultColor('all');
-		setDefaultMaterial('all');
-		setDefaultStock('In Stock');
-
-		// Filter products by price and set filteredProducts to those products
-		setFilteredProducts(
-			products.filter((item) => item.price >= min && item.price <= max)
-		);
-	};
-
-	useEffect(() => {
-		if (category) {
-			setFilteredProducts(
-				products.filter((item) =>
-					Object.entries(filters).every(([key, value]) =>
-						item[key].includes(value)
-					)
-				)
-			);
-		}
-	}, [products, category, filters]);
-
-	useEffect(() => {
-		if (sort == 'newest') {
-			setFilteredProducts((prev) =>
-				[...prev].sort((a, b) => a.createdAt - b.createdAt)
-			);
-		} else if (sort == 'asc') {
-			setFilteredProducts((prev) =>
-				[...prev].sort((a, b) => a.price - b.price)
-			);
-		} else {
-			setFilteredProducts((prev) =>
-				[...prev].sort((a, b) => b.price - a.price)
-			);
-		}
-	}, [sort]);
-
-	const handleFilters = (e) => {
-		// Mobile fix so values dont return to default values
-		const value = e.target.value;
-		if (e.target.name == 'material') {
-			setDefaultMaterial(value);
-		} else if (e.target.name == 'color') {
-			setDefaultColor(value);
-		}
-
-		if (value == 'All') {
-			resetFilters();
-		} else {
-			setFilters({
-				...filters,
-				[e.target.name]: value,
-			});
-		}
-	};
-
-	const handleStockChange = (e) => {
-		setDefaultStock(e.target.value);
-
-		// Filter products by stock
-		if (e.target.value == 'In Stock') {
-			setFilteredProducts(products.filter((item) => item.inStock == true));
-		} else {
-			setFilteredProducts(products.filter((item) => item.inStock == false));
-		}
 	};
 
 	return (
@@ -259,7 +294,7 @@ const ProductList = () => {
 									<br></br>
 									<select
 										name="material"
-										onChange={handleFilters}
+										onChange={(e) => setDefaultMaterial(e.target.value)}
 										value={defaultMaterial}
 									>
 										<option disabled>MATERIAL</option>
@@ -276,7 +311,7 @@ const ProductList = () => {
 									<br></br>
 									<select
 										name="color"
-										onChange={handleFilters}
+										onChange={(e) => setDefaultColor(e.target.value)}
 										value={defaultColor}
 									>
 										<option disabled>COLOR</option>
@@ -292,7 +327,7 @@ const ProductList = () => {
 								<br></br>
 								<select
 									name="stock"
-									onChange={handleStockChange}
+									// onChange={handleStockChange}
 									value={defaultStock}
 								>
 									<option disabled>STOCK STATUS</option>
@@ -356,7 +391,7 @@ const ProductList = () => {
 									<br></br>
 									<select
 										name="material"
-										onChange={handleFilters}
+										onChange={(e) => setDefaultMaterial(e.target.value)}
 										value={defaultMaterial}
 									>
 										<option disabled>MATERIAL</option>
@@ -373,7 +408,7 @@ const ProductList = () => {
 									<br></br>
 									<select
 										name="color"
-										onChange={handleFilters}
+										onChange={(e) => setDefaultColor(e.target.value)}
 										value={defaultColor}
 									>
 										<option disabled>COLOR</option>
@@ -389,7 +424,7 @@ const ProductList = () => {
 								<select
 									name="stock"
 									value={defaultStock}
-									onChange={handleStockChange}
+									// onChange={handleStockChange}
 								>
 									<option disabled>STOCK STATUS</option>
 									<option>In Stock</option>
@@ -421,14 +456,17 @@ const ProductList = () => {
 								<Spinner />
 							</div>
 						) : (
-							<Products products={category ? filteredProducts : products} />
+							<>
+								<Products products={products} />
+								<div className="has-more-spinner">
+									{!loading && hasMore ? (
+										<div className="spinner-container" ref={loadRef}>
+											<Spinner />
+										</div>
+									) : null}
+								</div>
+							</>
 						)}
-
-						{!loading && hasMore ? (
-							<div className="spinner-container" ref={loadRef}>
-								<Spinner />
-							</div>
-						) : null}
 					</div>
 				</div>
 			</div>

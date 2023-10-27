@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
 
 exports.verifyTokenAndAuthorization = (req, res, next) => {
 	verifyToken(req, res, () => {
-		if (req.data.id === req.params.id || req.data.isAdmin) {
+		if (req.data.id === req.params.id || req.data.id === req.query.id) {
 			next();
 		} else {
 			return res.status(403).send({

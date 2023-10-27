@@ -3,7 +3,10 @@ import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Success from './pages/Success';
+import Wishlist from './pages/Wishlist';
 import { useSelector } from 'react-redux';
 
 import {
@@ -14,7 +17,7 @@ import {
 } from 'react-router-dom';
 
 const App = () => {
-	const user = useSelector((state) => state.user.currentUser._id);
+	const user = useSelector((state) => state.user.currentUser);
 
 	return (
 		<Router>
@@ -26,13 +29,24 @@ const App = () => {
 				<Route
 					exact
 					path="/login"
-					element={user ? <Navigate to="/" /> : <Login />}
+					element={user.length > 0 ? <Navigate to="/" /> : <Login />}
+				/>
+				<Route
+					exact
+					path="/forgot-password"
+					element={user.length > 0 ? <Navigate to="/" /> : <ForgotPassword />}
 				/>
 				<Route
 					exact
 					path="/register"
-					element={user ? <Navigate to="/" /> : <Register />}
+					element={user.length > 0 ? <Navigate to="/" /> : <Register />}
 				/>
+				<Route
+					exact
+					path="/wishlist"
+					element={user.length == 0 ? <Navigate to="/login" /> : <Wishlist />}
+				/>
+				<Route exact path="/reset-password" element={<ResetPassword />} />
 				<Route exact path="/success" element={<Success />} />
 			</Routes>
 		</Router>

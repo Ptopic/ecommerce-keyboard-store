@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './Navbar/Navbar.css';
+import '../Navbar/navbar.css';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
-import { request } from '../api';
+import { request } from '../../api';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
@@ -10,7 +10,7 @@ import {
 	removeProduct,
 	incrementProductQuantity,
 	decrementProductQuantity,
-} from '../redux/cartRedux';
+} from '../../redux/cartRedux';
 import { BsTrash3 } from 'react-icons/bs';
 
 function Cart() {

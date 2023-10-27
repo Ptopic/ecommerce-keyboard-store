@@ -6,6 +6,7 @@ const Product = require('../models/Product');
 
 exports.pay = async (req, res) => {
 	const items = req.body.products;
+	console.log(items);
 	let lineItems = [];
 	// Add items from cart to line items
 	items.forEach((item) => {
@@ -35,23 +36,16 @@ exports.pay = async (req, res) => {
 		shipping_address_collection: {
 			allowed_countries: ['HR'],
 		},
-		// line_items: [
-		// 	{
-		// 		price_data: {
-		// 			currency: 'eur',
-		// 			unit_amount: req.body.amount,
-		// 			product_data: {
-		// 				name: 'Clothes',
-		// 			},
-		// 		},
-		// 		quantity: 1,
-		// 	},
-		// ],
 		line_items: lineItems,
 		mode: 'payment',
-		success_url: 'https://ecommerce-keyboard-store.vercel.app/success',
-		cancel_url: 'https://ecommerce-keyboard-store.vercel.app/',
+		invoice_creation: {
+			enabled: true,
+		},
+		success_url: `${process.env.CLIENT_URL}success`,
+		cancel_url: `${process.env.CLIENT_URL}`,
 	});
+
+	console.log('succesfull payment');
 
 	return res.status(200).send({ url: session.url });
 };

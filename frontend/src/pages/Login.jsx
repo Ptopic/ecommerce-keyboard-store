@@ -1,106 +1,125 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { mobile } from '../responsive';
 import { login } from '../redux/apiCalls';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-const Container = styled.div`
-	width: 100vw;
-	height: 100vh;
-	background: linear-gradient(
-			rgba(255, 255, 255, 0.5),
-			rgba(255, 255, 255, 0.5)
-		),
-		url('https://images.pexels.com/photos/6984650/pexels-photo-6984650.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940')
-			center;
-	background-size: cover;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-`;
+// Formik
+import { Formik, Form, Field, useFormik } from 'formik';
+import * as Yup from 'yup';
 
-const Wrapper = styled.div`
-	width: 25%;
-	padding: 20px;
-	background-color: white;
-	${mobile({ width: '75%' })}
-`;
+// Components
+import Navbar from '../components/Navbar/Navbar';
 
-const Title = styled.h1`
-	font-size: 24px;
-	font-weight: 300;
-`;
+// Styles
+import './Login.css';
 
-const Form = styled.form`
-	display: flex;
-	flex-direction: column;
-`;
+// Social login icons
+import facebook from '../assets/socials/facebook.png';
+import twitter from '../assets/socials/twitter.png';
+import google from '../assets/socials/google.png';
+import apple from '../assets/socials/apple.png';
 
-const Input = styled.input`
-	flex: 1;
-	min-width: 40%;
-	margin: 10px 0;
-	padding: 10px;
-`;
+import { toast, Toaster } from 'react-hot-toast';
 
-const Button = styled.button`
-	width: 40%;
-	border: none;
-	padding: 15px 20px;
-	background-color: teal;
-	color: white;
-	cursor: pointer;
-	margin-bottom: 10px;
-	&:disabled {
-		color: gray;
-		cursor: not-allowed;
-	}
-`;
-
-const Link = styled.a`
-	margin: 5px 0px;
-	font-size: 12px;
-	text-decoration: underline;
-	cursor: pointer;
-`;
-
-const Error = styled.span`
-	color: red;
-`;
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const { isFetching, error } = useSelector((state) => state.user);
+	const { isFetching } = useSelector((state) => state.user);
 
-	const handleLogin = (e) => {
-		e.preventDefault();
-		login(dispatch, { username, password });
+	const loginSchema = Yup.object().shape({
+		email: Yup.string().email('Invalid email').required('Email is required'),
+		password: Yup.string()
+			.min(5, 'Too Short!')
+			.required('Password is required'),
+	});
+
+	const initialValues = {
+		email: '',
+		password: '',
 	};
+
+	const handleLogin = async (values, formikActions) => {
+		const res = await login(dispatch, { ...values });
+		if (res.success == false) {
+			toast.error(res.error);
+		} else {
+			formikActions.resetForm();
+			// Redirect to main page
+			navigate('/');
+		}
+	};
+
+	const handleFacebookLogin = () => {};
+	const handleTwitterLogin = () => {};
+	const handleGoogleLogin = () => {
+		window.location.href = 'http://localhost:3001/api/auth/google';
+	};
+	const handleAppleLogin = () => {};
 	return (
-		<Container>
-			<Wrapper>
-				<Title>SIGN IN</Title>
-				<Form>
-					<Input
-						placeholder="username"
-						onChange={(e) => setUsername(e.target.value)}
-					/>
-					<Input
-						placeholder="password"
-						type="password"
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-					<Button onClick={handleLogin} disabled={isFetching}>
-						LOGIN
-					</Button>
-					{error && <Error>Something went wrong...</Error>}
-					<Link>DO NOT YOU REMEMBER THE PASSWORD?</Link>
-					<Link>CREATE A NEW ACCOUNT</Link>
-				</Form>
-			</Wrapper>
-		</Container>
+		<>
+			<Toaster />
+			<Navbar />
+			<div className="login-container">
+				<div className="login-header">
+					<p>Login</p>
+				</div>
+				<div className="social-logins-container">
+					<button onClick={() => handleFacebookLogin()}>
+						<img src={facebook} alt="" />
+					</button>
+					<button onClick={() => handleTwitterLogin()}>
+						<img src={twitter} alt="" />
+					</button>
+					<button onClick={() => handleGoogleLogin()}>
+						<img src={google} alt="" />
+					</button>
+					<button onClick={() => handleAppleLogin()}>
+						<img src={apple} alt="" />
+					</button>
+				</div>
+				<Formik
+					initialValues={initialValues}
+					validationSchema={loginSchema}
+					onSubmit={(values, formikActions) =>
+						handleLogin(values, formikActions)
+					}
+				>
+					{({ errors, touched }) => (
+						<Form className="login-form">
+							<div className="login-form-inputs">
+								<Field name="email" placeholder="Email" autoCapitalize="off" />
+								{errors.email && touched.email ? (
+									<div className="error">{errors.email}</div>
+								) : null}
+								<Field
+									name="password"
+									placeholder="Password"
+									type="password"
+									autoCapitalize="off"
+								/>
+								{errors.password && touched.password ? (
+									<div className="error">{errors.password}</div>
+								) : null}
+							</div>
+							<Link to="/forgot-password">Forgot your password?</Link>
+
+							<div className="login-form-submit">
+								<button
+									type="submit"
+									disabled={isFetching}
+									style={{ backgroundColor: isFetching ? 'gray' : 'black' }}
+								>
+									Sign in
+								</button>
+								<Link to={'/register'}>Create account</Link>
+							</div>
+						</Form>
+					)}
+				</Formik>
+			</div>
+		</>
 	);
 };
 

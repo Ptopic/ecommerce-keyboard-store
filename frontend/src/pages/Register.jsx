@@ -1,80 +1,151 @@
-import styled from "styled-components";
-import { mobile } from "../responsive";
+import React, { useState } from 'react';
+import { register } from '../redux/apiCalls';
+import { Link } from 'react-router-dom';
 
-const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.5)
-    ),
-    url("https://images.pexels.com/photos/6984661/pexels-photo-6984661.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940")
-      center;
-  background-size: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+// Formik
+import { Formik, Form, Field, useFormik } from 'formik';
+import * as Yup from 'yup';
 
-const Wrapper = styled.div`
-  width: 40%;
-  padding: 20px;
-  background-color: white;
-  ${mobile({ width: "75%" })}
-`;
+// Components
+import Navbar from '../components/Navbar/Navbar';
 
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 300;
-`;
+// Styles
+import './Login.css';
 
-const Form = styled.form`
-  display: flex;
-  flex-wrap: wrap;
-`;
+// Social login icons
+import facebook from '../assets/socials/facebook.png';
+import twitter from '../assets/socials/twitter.png';
+import google from '../assets/socials/google.png';
+import apple from '../assets/socials/apple.png';
 
-const Input = styled.input`
-  flex: 1;
-  min-width: 40%;
-  margin: 20px 10px 0px 0px;
-  padding: 10px;
-`;
+import { toast, Toaster } from 'react-hot-toast';
 
-const Agreement = styled.span`
-  font-size: 12px;
-  margin: 20px 0px;
-`;
-
-const Button = styled.button`
-  width: 40%;
-  border: none;
-  padding: 15px 20px;
-  background-color: teal;
-  color: white;
-  cursor: pointer;
-`;
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  return (
-    <Container>
-      <Wrapper>
-        <Title>CREATE AN ACCOUNT</Title>
-        <Form>
-          <Input placeholder="name" />
-          <Input placeholder="last name" />
-          <Input placeholder="username" />
-          <Input placeholder="email" />
-          <Input placeholder="password" />
-          <Input placeholder="confirm password" />
-          <Agreement>
-            By creating an account, I consent to the processing of my personal
-            data in accordance with the <b>PRIVACY POLICY</b>
-          </Agreement>
-          <Button>CREATE</Button>
-        </Form>
-      </Wrapper>
-    </Container>
-  );
+	const navigate = useNavigate();
+
+	const registerSchema = Yup.object().shape({
+		email: Yup.string().email('Invalid email').required('Email is required'),
+		password: Yup.string()
+			.min(5, 'Too Short!')
+			.required('Password is required'),
+		firstName: Yup.string().required('First name is required'),
+		lastName: Yup.string().required('Last name is required'),
+		username: Yup.string().required('Username is required'),
+	});
+
+	const initialValues = {
+		email: '',
+		password: '',
+		firstName: '',
+		lastName: '',
+		username: '',
+	};
+
+	const handleRegister = async (values, formikActions) => {
+		const res = await register({
+			...values,
+		});
+		if (res.success == false) {
+			toast.error(res.error);
+		} else {
+			formikActions.resetForm();
+			// Redirect to login page
+			navigate('/login');
+		}
+	};
+
+	const handleFacebookRegister = () => {};
+	const handleTwitterRegister = () => {};
+	const handleGoogleRegister = () => {};
+	const handleAppleRegister = () => {};
+	return (
+		<>
+			<Toaster />
+			<Navbar />
+			<div className="login-container">
+				<div className="login-header">
+					<p>Register</p>
+				</div>
+				<div className="social-logins-container">
+					<button onClick={() => handleFacebookRegister()}>
+						<img src={facebook} alt="" />
+					</button>
+					<button onClick={() => handleTwitterRegister()}>
+						<img src={twitter} alt="" />
+					</button>
+					<button onClick={() => handleGoogleRegister()}>
+						<img src={google} alt="" />
+					</button>
+					<button onClick={() => handleAppleRegister()}>
+						<img src={apple} alt="" />
+					</button>
+				</div>
+				<Formik
+					initialValues={initialValues}
+					validationSchema={registerSchema}
+					onSubmit={(values, formikActions) =>
+						handleRegister(values, formikActions)
+					}
+				>
+					{({ errors, touched }) => (
+						<Form className="login-form">
+							<div className="login-form-inputs">
+								<Field
+									placeholder="First name"
+									name="firstName"
+									autoCapitalize="off"
+								/>
+								{errors.firstName && touched.firstName ? (
+									<div className="error">{errors.firstName}</div>
+								) : null}
+								<Field
+									placeholder="Last name"
+									name="lastName"
+									autoCapitalize="off"
+								/>
+								{errors.lastName && touched.lastName ? (
+									<div className="error">{errors.lastName}</div>
+								) : null}
+								<Field
+									placeholder="Username"
+									name="username"
+									autoCapitalize="off"
+								/>
+								{errors.username && touched.username ? (
+									<div className="error">{errors.username}</div>
+								) : null}
+								<Field
+									placeholder="Email"
+									type="email"
+									name="email"
+									autoCapitalize="off"
+								/>
+								{errors.email && touched.email ? (
+									<div className="error">{errors.email}</div>
+								) : null}
+								<Field
+									placeholder="Password"
+									type="password"
+									name="password"
+									autoCapitalize="off"
+								/>
+								{errors.password && touched.password ? (
+									<div className="error">{errors.password}</div>
+								) : null}
+							</div>
+
+							<div className="login-form-submit">
+								<button type="submit">Register</button>
+								<Link to={'/login'}>Already have an account? Login</Link>
+							</div>
+						</Form>
+					)}
+				</Formik>
+			</div>
+		</>
+	);
 };
 
 export default Register;

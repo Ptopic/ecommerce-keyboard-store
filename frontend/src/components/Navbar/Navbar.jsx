@@ -12,12 +12,14 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/userRedux';
 import { openCart, closeCart } from '../../redux/cartRedux';
-import Cart from '../Cart';
+import Cart from '../Cart/Cart';
 
 const Navbar = () => {
 	const dispatch = useDispatch();
 	const [navOpen, setNavOpen] = useState(false);
+	const user = useSelector((state) => state.user.currentUser);
 	const quantity = useSelector((state) => state.cart.quantity);
 	const { open } = useSelector((state) => state.cart);
 
@@ -40,6 +42,12 @@ const Navbar = () => {
 			document.body.style.overflow = 'hidden';
 		}
 	};
+
+	const handleLogOut = () => {
+		dispatch(logout());
+		window.location.reload();
+	};
+
 	return (
 		<nav className="navbar">
 			<div className="navbar-wrapper">
@@ -64,12 +72,22 @@ const Navbar = () => {
 					</Link>
 				</div>
 				<div className="navbar-right">
-					<Link
-						style={{ textDecoration: 'none', color: 'black' }}
-						to={'/login'}
-					>
-						<AiOutlineUser size={26} />
-					</Link>
+					{user.data ? (
+						<div className="navbar-user-data">
+							<p>{user.data.username}</p>
+							<button onClick={() => handleLogOut()}>Logout</button>
+						</div>
+					) : (
+						<Link
+							style={{
+								textDecoration: 'none',
+								color: 'black',
+							}}
+							to={'/login'}
+						>
+							<AiOutlineUser size={26} />
+						</Link>
+					)}
 					<Link
 						style={{ textDecoration: 'none', color: 'black' }}
 						to={'/wishlist'}

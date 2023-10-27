@@ -87,6 +87,12 @@ select:not(.newest) {
     display: none;
 }
 
+.has-more-spinner {
+    width: 100%;
+    margin-top: 15rem;
+    grid-column: 2/3;
+}
+
 /* ---------- Media querys ---------- */
 
 /* Phone */
@@ -168,5 +174,10 @@ select:not(.newest) {
 
     .filters-by-content div {
         width: 100%;
+    }
+
+    .has-more-spinner {
+        width: 100%;
+        grid-column: 1/2;
     }
 }

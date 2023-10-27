@@ -2,9 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
 exports.changePassword = async (req, res) => {
-	if (req.body.password) {
-		req.body.password = await bcrypt.hash(req.body.password, 8);
-	}
+	req.body.password = await bcrypt.hash(req.body.password, 8);
 
 	try {
 		const updatedUser = await User.findByIdAndUpdate(
