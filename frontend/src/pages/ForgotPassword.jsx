@@ -11,11 +11,13 @@ import * as Yup from 'yup';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import Button from '../components/Button/Button';
 
 // Styles
 import './Login.css';
 
 function ForgotPassword() {
+	const [isLoading, setIsLoading] = useState(false);
 	const forgotPasswordSchema = Yup.object().shape({
 		email: Yup.string().email('Invalid email').required('Email is required'),
 	});
@@ -25,16 +27,19 @@ function ForgotPassword() {
 	};
 
 	const handleForgotPassword = async (values, formikActions) => {
+		setIsLoading(true);
 		try {
 			const res = await request.post(`/auth/forgot-password`, {
 				...values,
 			});
 			const data = res.data;
+			setIsLoading(false);
 			if (data.success == true) {
 				formikActions.resetForm();
 				toast.success(data.message);
 			}
 		} catch (error) {
+			setIsLoading(false);
 			formikActions.resetForm();
 			console.log(error);
 			toast.error(error.response.data.message);
@@ -72,9 +77,12 @@ function ForgotPassword() {
 							<Link to="/login">Remembered your password? Login</Link>
 
 							<div className="login-form-submit">
-								<button type="submit" style={{ width: '300px' }}>
-									Reset password
-								</button>
+								<Button
+									type="submit"
+									text="Reset password"
+									isLoading={isLoading}
+									width="100%"
+								/>
 							</div>
 						</Form>
 					)}

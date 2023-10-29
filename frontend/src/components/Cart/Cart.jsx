@@ -13,17 +13,23 @@ import {
 } from '../../redux/cartRedux';
 import { BsTrash3 } from 'react-icons/bs';
 
+// Components
+import Button from '../Button/Button';
+
 function Cart() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const cart = useSelector((state) => state.cart);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const makePaymentRequest = async () => {
 		try {
+			setIsLoading(true);
 			const res = await request.post('/checkout/payment', {
 				products: cart.products,
 				amount: cart.totalPrice * 100,
 			});
+			setIsLoading(false);
 			console.log(res);
 			dispatch(closeCart());
 			window.location.assign(res.data.url);
@@ -79,7 +85,13 @@ function Cart() {
 											<img src={product.image} alt="product img" />
 										</div>
 										<div className="cart-product-center">
-											<p className="cart-product-title">{product.title}</p>
+											<Link
+												to={`/product/${product._id}`}
+												className="cart-product-title"
+												onClick={() => continueShopping()}
+											>
+												{product.title}
+											</Link>
 											<p className="cart-product-price">€{product.price}</p>
 											{product.color.length > 0 && (
 												<p style={{ fontSize: '1.6rem' }}>
@@ -133,12 +145,12 @@ function Cart() {
 									<p>Estimated total:</p>
 									<p>€{cart.totalPrice}</p>
 								</div>
-								<button
-									className="btn checkout"
-									onClick={() => makePaymentRequest()}
-								>
-									Checkout
-								</button>
+								<Button
+									width={'100%'}
+									text={'Checkout'}
+									onClickFunction={makePaymentRequest}
+									isLoading={isLoading}
+								/>
 							</div>
 						</div>
 					) : (
@@ -148,9 +160,11 @@ function Cart() {
 							</div>
 							<h1>Your cart is empty</h1>
 
-							<button className="btn" onClick={() => continueShopping()}>
-								Continue shopping
-							</button>
+							<Button
+								text={'Continue shopping'}
+								onClickFunction={continueShopping}
+								isLoading={isLoading}
+							/>
 
 							<p style={{ marginBottom: '1.4rem' }}>Have an account?</p>
 							<p>

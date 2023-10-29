@@ -34,7 +34,7 @@ const ProductList = () => {
 	const [defaultMaterial, setDefaultMaterial] = useState(null);
 	const [color, setColor] = useState([]);
 	const [defaultColor, setDefaultColor] = useState(null);
-	const [defaultStock, setDefaultStock] = useState('In Stock');
+	const [defaultStock, setDefaultStock] = useState(null);
 
 	// Price filters
 	const [min, setMin] = useState(0);
@@ -107,6 +107,12 @@ const ProductList = () => {
 					);
 					data = res.data;
 				}
+			} else if (
+				(defaultColor || defaultMaterial) &&
+				defaultStock &&
+				min &&
+				max
+			) {
 			} else if (defaultColor || defaultMaterial) {
 				if (defaultColor != 'All' && defaultColor != null) {
 					const res = await request.get(
@@ -164,6 +170,40 @@ const ProductList = () => {
 					} else if (sort === 'desc') {
 						const res = await request.get(
 							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
+						);
+						data = res.data;
+					}
+				} else if (defaultStock) {
+					if (sort == 'newest') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
+						);
+						data = res.data;
+					} else if (sort === 'asc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
+						);
+						data = res.data;
+					} else if (sort === 'desc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
+						);
+						data = res.data;
+					}
+				} else if (defaultColor && defaultStock) {
+					if (sort == 'newest') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
+						);
+						data = res.data;
+					} else if (sort === 'asc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
+						);
+						data = res.data;
+					} else if (sort === 'desc') {
+						const res = await request.get(
+							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
 						);
 						data = res.data;
 					}
@@ -247,7 +287,7 @@ const ProductList = () => {
 	useEffect(() => {
 		getInitialProducts();
 		resetFilters();
-	}, [sort, defaultColor, defaultMaterial, min, max]);
+	}, [sort, defaultColor, defaultMaterial, defaultStock, min, max]);
 
 	const handlePriceFilterChange = (value) => {
 		console.log(value);
@@ -327,7 +367,7 @@ const ProductList = () => {
 								<br></br>
 								<select
 									name="stock"
-									// onChange={handleStockChange}
+									onChange={(e) => setDefaultStock(e.target.value)}
 									value={defaultStock}
 								>
 									<option disabled>STOCK STATUS</option>
@@ -424,7 +464,7 @@ const ProductList = () => {
 								<select
 									name="stock"
 									value={defaultStock}
-									// onChange={handleStockChange}
+									onChange={(e) => setDefaultStock(e.target.value)}
 								>
 									<option disabled>STOCK STATUS</option>
 									<option>In Stock</option>

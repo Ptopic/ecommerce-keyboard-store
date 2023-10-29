@@ -15,6 +15,10 @@ const cartSlice = createSlice({
 		closeCart: (state) => {
 			state.open = false;
 		},
+		resetCart: (state) => {
+			state.open = false;
+			(state.products = []), (state.quantity = 0), (state.totalPrice = 0);
+		},
 		addProduct: (state, action) => {
 			state.quantity += action.payload.quantity;
 			state.products.push(action.payload);
@@ -61,6 +65,7 @@ const cartSlice = createSlice({
 export const {
 	openCart,
 	closeCart,
+	resetCart,
 	addProduct,
 	removeProduct,
 	incrementQuantity,

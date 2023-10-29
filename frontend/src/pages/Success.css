@@ -31,5 +31,6 @@
 @media (max-width: 600px) {
     .success-container .payment-animation {
         width: 250px;
+        margin-top: 3rem;
     }
 }

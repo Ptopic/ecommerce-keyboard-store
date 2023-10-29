@@ -2,21 +2,15 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema(
 	{
-		userId: {
+		name: {
 			type: String,
 			required: true,
 		},
-		products: [
-			{
-				productId: {
-					type: String,
-				},
-				quantity: {
-					type: Number,
-					default: 1,
-				},
-			},
-		],
+		receiptLink: {
+			type: String,
+			required: true,
+		},
+		products: [],
 		amount: {
 			type: Number,
 			required: true,

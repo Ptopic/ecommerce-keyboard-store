@@ -166,27 +166,6 @@
     margin: 0;
 }
 
-.btn {
-    text-decoration: none;
-    color: var(--white);
-    background-color: var(--black);
-    padding: 1rem 2rem;
-    margin: 2rem 0;
-    width: 100%;
-}
-
-.btn.wishlist {
-    background: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn.wishlist>svg {
-    margin-right: 1rem;
-    font-size: 2.4rem;
-}
-
 .product-page-filter-color-container {
     border: 1px solid black;
     width: 100%;

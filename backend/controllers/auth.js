@@ -7,10 +7,35 @@ const {
 	generatePasswordResetTemplate,
 } = require('../utils/mail');
 const ResetToken = require('../models/ResetToken');
+const schedule = require('node-schedule');
+
+const deleteTokenJob = (id, time) => {
+	let dateForJob = new Date();
+	let hours = dateForJob.getHours();
+	let minutes = dateForJob.getMinutes() + time;
+
+	// If minutes + 10 is more than 60 increase hour by one and minute by 60 - that time
+
+	if (minutes > 60) {
+		let minutesDif = Math.abs(60 - minutes);
+		hours = hours + 1;
+
+		minutes = minutesDif;
+	}
+	let rule = new schedule.RecurrenceRule();
+	rule.hour = hours;
+	rule.minute = minutes;
+	rule.seconds = 0;
+	const job = schedule.scheduleJob(rule, async function () {
+		// Delete auth token
+		await ResetToken.findOneAndDelete({
+			userId: id,
+		});
+	});
+};
 
 exports.forgotPassword = async (req, res) => {
-	const { email } = req.body;
-	console.log(email);
+	const { email } = req.body;;
 
 	// Check if email is provided
 	if (!email) {
@@ -51,6 +76,7 @@ exports.forgotPassword = async (req, res) => {
 		to: user.email,
 		subject: 'Forgot password',
 		html: generatePasswordResetTemplate(
+			user.username,
 			process.env.CLIENT_URL + `reset-password?token=${token}&id=${user._id}`
 		),
 	};
@@ -61,12 +87,13 @@ exports.forgotPassword = async (req, res) => {
 			res.json({ success: true, message: 'Email sent!' });
 		}
 	});
+
+	// Delete token after 5 minutes
+	deleteTokenJob(user._id, 5);
 };
 
 exports.verifyToken = async (req, res, next) => {
 	const { tokenValue, id } = req.query;
-	console.log(req.query);
-	console.log(tokenValue, id);
 	try {
 		// Get token from db
 		const foundToken = await ResetToken.findOne({
@@ -76,7 +103,6 @@ exports.verifyToken = async (req, res, next) => {
 		if (!foundToken) {
 			return res.status(400).send({ success: false, error: 'Token not found' });
 		}
-		console.log(foundToken);
 		next();
 	} catch (error) {
 		return res.status(500).send({ success: false, error: error });
@@ -89,15 +115,17 @@ exports.resetPassword = async (req, res) => {
 		// Encrypt password
 		let encryptedPassword = await bcrypt.hash(req.body.password, 8);
 
-		let foundUser = await User.findByIdAndUpdate(
+		await User.findByIdAndUpdate(
 			{ _id: req.query.id },
 			{ password: encryptedPassword },
 			{ new: true }
 		);
-		console.log(foundUser);
-		return res
-			.status(201)
-			.send({ success: true, message: 'Password changed.' });
+
+		// Delete auth token
+		await ResetToken.findOneAndDelete({
+			userId: req.query.id,
+		});
+		res.status(201).send({ success: true, message: 'Password changed.' });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).send({ success: false, error: error });
@@ -115,7 +143,6 @@ exports.register = async (req, res) => {
 
 	// Check if user with that username existst
 	const checkUsername = await User.findOne({ username: req.body.username });
-	console.log(checkUsername);
 	if (checkUsername)
 		return res.status(400).send({
 			success: false,
@@ -155,7 +182,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
 	try {
 		const user = await User.findOne({ email: req.body.email });
-		console.log(user);
 		if (!user) {
 			return res.status(401).send({ success: false, error: 'User not found.' });
 		}

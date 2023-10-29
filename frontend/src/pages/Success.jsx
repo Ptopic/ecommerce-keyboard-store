@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 
 // Lottie animations
@@ -7,8 +7,17 @@ import paymentSuccessAnimation from '../assets/lottie/payment.json';
 
 import { Link } from 'react-router-dom';
 
+// Redux
+import { useDispatch } from 'react-redux';
+import { resetCart } from '../redux/cartRedux';
+
 import './Success.css';
 function Success() {
+	const dispatch = useDispatch();
+	useEffect(() => {
+		// Reset cart
+		dispatch(resetCart());
+	}, []);
 	return (
 		<div>
 			<Navbar />

@@ -9,6 +9,7 @@ import * as Yup from 'yup';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import Button from '../components/Button/Button';
 
 // Styles
 import './Login.css';
@@ -106,13 +107,12 @@ const Login = () => {
 							<Link to="/forgot-password">Forgot your password?</Link>
 
 							<div className="login-form-submit">
-								<button
+								<Button
+									width="100%"
+									text="Sign in"
+									isLoading={isFetching}
 									type="submit"
-									disabled={isFetching}
-									style={{ backgroundColor: isFetching ? 'gray' : 'black' }}
-								>
-									Sign in
-								</button>
+								/>
 								<Link to={'/register'}>Create account</Link>
 							</div>
 						</Form>

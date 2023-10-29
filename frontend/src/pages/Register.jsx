@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import Button from '../components/Button/Button';
 
 // Styles
 import './Login.css';
@@ -23,6 +24,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 
 	const registerSchema = Yup.object().shape({
@@ -44,9 +46,11 @@ const Register = () => {
 	};
 
 	const handleRegister = async (values, formikActions) => {
+		setIsLoading(true);
 		const res = await register({
 			...values,
 		});
+		setIsLoading(false);
 		if (res.success == false) {
 			toast.error(res.error);
 		} else {
@@ -137,7 +141,12 @@ const Register = () => {
 							</div>
 
 							<div className="login-form-submit">
-								<button type="submit">Register</button>
+								<Button
+									type="submit"
+									isLoading={isLoading}
+									width="100%"
+									text="Register"
+								/>
 								<Link to={'/login'}>Already have an account? Login</Link>
 							</div>
 						</Form>

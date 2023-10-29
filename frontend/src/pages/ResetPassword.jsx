@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import Button from '../components/Button/Button';
 
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -18,6 +19,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import './Login.css';
 
 function ForgotPassword() {
+	const [isLoading, setIsLoading] = useState(false);
 	const navigation = useNavigate();
 	let [searchParams, setSearchParams] = useSearchParams();
 	const [passwordValue, setPasswordValue] = useState('');
@@ -36,15 +38,18 @@ function ForgotPassword() {
 
 	const handleForgotPassword = async (values, formikActions) => {
 		try {
-			console.log(values);
+			setIsLoading(true);
 			const res = await request.post(
 				`/auth/reset-password?tokenValue=${token}&id=${id}`,
 				{ ...values }
 			);
 			const data = res.data;
+			setIsLoading(false);
 			if (data.success == true) {
 				formikActions.resetForm();
 				toast.success(data.message);
+				// Navigate to login page
+				navigation('/login');	
 			}
 		} catch (error) {
 			formikActions.resetForm();
@@ -109,6 +114,7 @@ function ForgotPassword() {
 								<Field
 									placeholder="Password"
 									name="password"
+									type="password	"
 									autoCapitalize="off"
 								/>
 								{errors.password && touched.password ? (
@@ -118,9 +124,12 @@ function ForgotPassword() {
 							<Link to="/login">Remembered your password? Login</Link>
 
 							<div className="login-form-submit">
-								<button type="submit" style={{ width: '300px' }}>
-									Reset password
-								</button>
+								<Button
+									text="Reset password"
+									type="submit"
+									isLoading={isLoading}
+									width="100%"
+								/>
 							</div>
 						</Form>
 					)}

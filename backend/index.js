@@ -9,6 +9,7 @@ const passport = require('passport');
 const passportSetup = require('./passport');
 
 // Routes
+const { stripeWebHook } = require('./controllers/stripe');
 const userRoute = require('./routes/users');
 const authRoute = require('./routes/auth');
 const productsRoute = require('./routes/products');
@@ -25,20 +26,25 @@ mongoose
 	.catch((err) => console.log(err));
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
 app.use(cors());
 app.use(
 	session({ secret: 'keyboard cat', resave: true, saveUninitialized: true })
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.post(
+	'/api/checkout/webhook',
+	express.raw({ type: 'application/json' }),
+	stripeWebHook
+);
+app.use(express.json());
+app.use('/api/checkout', stripeRoute);
 
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/products', productsRoute);
 app.use('/api/cart', cartRoute);
 app.use('/api/orders', ordersRoute);
-app.use('/api/checkout', stripeRoute);
 app.use('/api/', wishlistRoute);
 
 app.listen(process.env.PORT || 3001, () => {

@@ -16,6 +16,10 @@ import { logout } from '../../redux/userRedux';
 import { openCart, closeCart } from '../../redux/cartRedux';
 import Cart from '../Cart/Cart';
 
+import logo from '../../assets/logo3.png';
+
+import NavbarLink from './NavbarLink';
+
 const Navbar = () => {
 	const dispatch = useDispatch();
 	const [navOpen, setNavOpen] = useState(false);
@@ -68,7 +72,8 @@ const Navbar = () => {
 						)}
 					</AnimatePresence>
 					<Link to={'/'} style={{ textDecoration: 'none', color: 'black' }}>
-						<h1>Switchy</h1>
+						{/* <h1>Switchy</h1> */}
+						<img src={logo} alt="" />
 					</Link>
 				</div>
 				<div className="navbar-right">
@@ -131,17 +136,62 @@ const Navbar = () => {
 								},
 							}}
 						>
-							<Link to="/products?new=new&name=New+Arrivals">New Arrivals</Link>
-							<Link to="/products/best?name=Best+Sellers">Best Sellers</Link>
-							<Link to="/products/keyboard?name=Keyboards">Keyboards</Link>
-							<Link to="/products/macropad?name=Macropads">MacroPads</Link>
-							<Link to="/products/pcb?name=PCBs+And+Plates">PCB & Plates</Link>
-							<Link to="/products/keycaps?name=Keycaps">Keycaps</Link>
-							<Link to="/products/switches?name=Switches">Switches</Link>
-							<Link to="/products/cables?name=Cables">Cables</Link>
-							<Link to="/products/deskmats?name=Deskmats">Deskmats</Link>
-							<Link to="/products/tools?name=Tools">Tools</Link>
-							<Link to="/about">About Us</Link>
+							<NavbarLink link={'/'} text="Home" closeFunction={closeNavbar} />
+							<NavbarLink
+								link={'/products?new=newest&name=New+Arrivals'}
+								text="New Arrivals"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/best?name=Best+Sellers'}
+								text="Best Sellers"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/keyboard?name=Keyboards'}
+								text="Keyboards"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/macropad?name=Macropads'}
+								text="MacroPads"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/pcb?name=PCBs+And+Plates'}
+								text="PCB & Plates"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/keycaps?name=Keycaps'}
+								text="Keycaps"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/switches?name=Switches'}
+								text="Switches"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/cables?name=Cables'}
+								text="Cables"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/deskmats?name=Deskmats'}
+								text="Deskmats"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/products/tools?name=Tools'}
+								text="Tools"
+								closeFunction={closeNavbar}
+							/>
+							<NavbarLink
+								link={'/about'}
+								text="About Us"
+								closeFunction={closeNavbar}
+							/>
 						</m.div>
 					</m.div>
 				)}

@@ -17,11 +17,14 @@ import { toast, Toaster } from 'react-hot-toast';
 import { AiOutlineDown, AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
 import { AiOutlineClose } from 'react-icons/ai';
+import Button from '../components/Button/Button';
 
 const Product = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const id = location.pathname.split('/')[2];
+	const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const [product, setProduct] = useState({});
 	const [isProductInWishlist, setIsProductInWishlist] = useState(false);
 	const [quantity, setQuantity] = useState(1);
@@ -87,6 +90,7 @@ const Product = () => {
 		const userId = currentUser.data._id;
 
 		try {
+			setIsLoadingWishlist(true);
 			console.log(currentUser.token);
 			const res = await request.post(
 				`/wishlist?id=${userId}`,
@@ -100,6 +104,7 @@ const Product = () => {
 					},
 				}
 			);
+			setIsLoadingWishlist(false);
 			console.log(res);
 			setIsProductInWishlist(true);
 			toast.success(res.data.data);
@@ -110,14 +115,11 @@ const Product = () => {
 	};
 
 	const handleRemoveFromWishlist = async () => {
-		console.log('remove');
 		const productId = product._id;
 		const userId = currentUser.data._id;
-		console.log(productId);
-		console.log(userId);
-		console.log(currentUser.token);
 
 		try {
+			setIsLoadingWishlist(true);
 			const config = {
 				headers: {
 					token: currentUser.token,
@@ -128,18 +130,18 @@ const Product = () => {
 				},
 			};
 			const res = await request.delete(`/wishlist?id=${userId}`, config);
+			setIsLoadingWishlist(false);
 			setIsProductInWishlist(false);
 			console.log(res);
 			toast.success(res.data.data);
-			// setSuccess(res.data.data);
 		} catch (error) {
 			console.log(error.response.data);
 			toast.error(error.response.data);
-			// setError(error.response.data);
 		}
 	};
 
 	const handleAddToCart = () => {
+		setIsLoading(true);
 		// Check if product is already in cart if it is just increment its quantity
 		var productAlreadyInCart = false;
 		for (var i = 0; i < cartProducts.length; i++) {
@@ -150,21 +152,22 @@ const Product = () => {
 				productAlreadyInCart = true;
 			}
 		}
-		console.log(color);
 		// Check if quantity is greater than stock if it is display message
 		if (quantity > product.stock) {
 			toast.error('Quantity cannot be greater than stock');
+			setIsLoading(false);
 			return;
 		}
 		if (!color && product.color.length > 0) {
 			toast.error('Please select a color');
+			setIsLoading(false);
 		}
 		// Check if color is selected if not display error
 		else if (color && !productAlreadyInCart) {
 			dispatch(addProduct({ ...product, quantity, color, size }));
 			// Open cart when product is added
 			dispatch(openCart());
-			setError('');
+			setIsLoading(false);
 		} else if (productAlreadyInCart) {
 			dispatch(
 				incrementProductQuantity({
@@ -174,11 +177,12 @@ const Product = () => {
 			);
 			// Open cart when product is added
 			dispatch(openCart());
-			setError('');
+			setIsLoading(false);
 		} else {
 			dispatch(addProduct({ ...product, quantity, color, size }));
 			// Open cart when product is added
 			dispatch(openCart());
+			setIsLoading(false);
 		}
 	};
 
@@ -279,27 +283,27 @@ const Product = () => {
 							)}
 						</div>
 						<div className="product-buttons">
-							<button
-								className="btn wishlist"
-								onClick={() =>
+							<Button
+								backgroundColor={'#E81123'}
+								textColor={'#fff'}
+								isLoading={isLoadingWishlist}
+								disabled={product.stock == 0 ? true : false}
+								onClickFunction={
 									isProductInWishlist
-										? handleRemoveFromWishlist()
-										: handleAddToWishlist()
+										? handleRemoveFromWishlist
+										: handleAddToWishlist
 								}
-							>
-								{isProductInWishlist ? <AiFillHeart /> : <AiOutlineHeart />}
-								Add to wishlsit
-							</button>
-							<button
-								className="btn"
-								disabled={product.stock == 0 ? 'disabled' : ''}
-								style={{
-									backgroundColor: product.stock == 0 ? 'grey' : 'black',
-								}}
-								onClick={() => handleAddToCart()}
-							>
-								ADD TO CART
-							</button>
+								icon={
+									isProductInWishlist ? <AiFillHeart /> : <AiOutlineHeart />
+								}
+								text={'Add to wishlsit'}
+							/>
+							<Button
+								disabled={product.stock == 0 ? true : false}
+								isLoading={isLoading}
+								onClickFunction={handleAddToCart}
+								text={'Add to Cart'}
+							/>
 						</div>
 					</div>
 					<p>{product.description}</p>
