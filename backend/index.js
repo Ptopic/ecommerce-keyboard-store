@@ -26,6 +26,8 @@ mongoose
 	.catch((err) => console.log(err));
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.raw({ type: '*/*' }));
+app.use(bodyParser.json());
 app.use(cors());
 app.use(
 	session({ secret: 'keyboard cat', resave: true, saveUninitialized: true })
