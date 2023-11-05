@@ -26,19 +26,14 @@ mongoose
 	.catch((err) => console.log(err));
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.raw({ type: '*/*' }));
-app.use(bodyParser.json());
 app.use(cors());
 app.use(
 	session({ secret: 'keyboard cat', resave: true, saveUninitialized: true })
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.post(
-	'/api/checkout/webhook',
-	express.raw({ type: 'application/json' }),
-	stripeWebHook
-);
+app.use(bodyParser.json());
+app.post('/api/checkout/webhook', express.raw({ type: '*/*' }), stripeWebHook);
 app.use(express.json());
 app.use('/api/checkout', stripeRoute);
 

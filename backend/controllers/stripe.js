@@ -117,8 +117,9 @@ exports.stripe = async (req, res) => {
 };
 
 exports.stripeWebHook = async (req, res) => {
-	let signSecret =
-		'whsec_fb8426c3e46382d865f1a5a9a724b3177474d21682becc80090965e30da21efb';
+	let signSecret = process.env.WEBHOOK_SECRET;
+
+	console.log(signSecret);
 
 	const payload = req.body;
 	const sig = req.headers['stripe-signature'];
