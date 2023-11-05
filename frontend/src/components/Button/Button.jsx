@@ -6,9 +6,10 @@ function Button({
 	text,
 	icon,
 	backgroundColor,
+	borderColor,
 	textColor,
-	isLoading,
 	onClickFunction,
+	isLoading,
 	...props
 }) {
 	return (
@@ -17,11 +18,12 @@ function Button({
 			className="btn"
 			style={{
 				width: width,
+				border: borderColor ? `2px solid ${borderColor}` : 'none',
 				backgroundColor: isLoading || props.disabled ? 'gray' : backgroundColor,
 				color: textColor,
 			}}
 			disabled={isLoading || props.disabled}
-			onClick={() => onClickFunction()}
+			onClick={() => (onClickFunction ? onClickFunction() : null)}
 		>
 			{icon}
 			{isLoading ? <div className="spinner"></div> : text}

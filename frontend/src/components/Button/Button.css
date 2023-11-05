@@ -4,6 +4,9 @@
     background-color: var(--black);
     padding: 1rem 2rem;
     margin: 2rem 0;
+    height: 6rem;
+    font-size: 1.8rem;
+    outline: none;
     display: flex;
     align-items: center;
     justify-content: center;

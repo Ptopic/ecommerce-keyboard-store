@@ -112,6 +112,7 @@ select:not(.newest) {
 
     .newest {
         width: 50%;
+        height: 100%;
     }
 
     select:not(.newest) {
@@ -126,6 +127,8 @@ select:not(.newest) {
         padding: 1.4rem 2rem;
         border: 1px solid var(--black);
         width: 50%;
+        height: 100%;
+        border-radius: 0;
         text-align: start;
     }
 

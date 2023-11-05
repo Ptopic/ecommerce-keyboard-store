@@ -23,19 +23,22 @@ function Cart() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const makePaymentRequest = async () => {
-		try {
-			setIsLoading(true);
-			const res = await request.post('/checkout/payment', {
-				products: cart.products,
-				amount: cart.totalPrice * 100,
-			});
-			setIsLoading(false);
-			console.log(res);
-			dispatch(closeCart());
-			window.location.assign(res.data.url);
-		} catch (err) {
-			console.log(err);
-		}
+		navigate('/checkout');
+		// close cart
+		dispatch(closeCart());
+		// try {
+		// 	setIsLoading(true);
+		// 	const res = await request.post('/checkout/payment', {
+		// 		products: cart.products,
+		// 		amount: cart.totalPrice * 100,
+		// 	});
+		// 	setIsLoading(false);
+		// 	console.log(res);
+		// 	dispatch(closeCart());
+		// 	window.location.assign(res.data.url);
+		// } catch (err) {
+		// 	console.log(err);
+		// }
 	};
 
 	const continueShopping = () => {

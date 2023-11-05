@@ -285,6 +285,7 @@ const Product = () => {
 						<div className="product-buttons">
 							<Button
 								backgroundColor={'#E81123'}
+								borderColor={'#000000'}
 								textColor={'#fff'}
 								isLoading={isLoadingWishlist}
 								disabled={product.stock == 0 ? true : false}

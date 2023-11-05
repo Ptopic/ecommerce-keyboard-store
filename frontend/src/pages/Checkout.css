@@ -1,0 +1,115 @@
+.checkout-content {
+    padding: 4rem 15rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+}
+
+.checkout-checkbox {
+    display: grid;
+    margin: 2rem 0;
+    display: flex;
+    align-items: center;
+}
+
+button {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    outline: none;
+    border-radius: .6rem;
+    margin-right: 1rem;
+}
+
+.checkout-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 2rem 0;
+    column-gap: 3rem;
+}
+
+.checkout-form input {
+    padding: 2rem;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.checkout-input.full {
+    margin: 0;
+    grid-column: 1/3;
+}
+
+.checkout-content-right {
+    position: sticky;
+    padding: 2rem;
+    border: 1px solid black;
+}
+
+.checkout-content-right h2 {
+    padding-bottom: 2rem;
+}
+
+.ukupno-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.ukupno-content-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ukupno-content-item h3 {
+    font-weight: normal;
+}
+
+.ukupno-dostava {
+    font-weight: normal;
+    color: #00A651
+}
+
+.checkout-form-mobile {
+    display: none;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .checkout-content {
+        padding: 4rem 2rem;
+        gap: 2rem;
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-form {
+        display: none;
+    }
+
+    .checkout-form-mobile {
+        display: block;
+        column-gap: 2rem;
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-form-mobile input {
+        padding: 2rem;
+        width: 100%;
+        margin: 1rem 0;
+        grid-column: 1/3;
+    }
+
+    .checkout-form-left {
+        width: 100%;
+        grid-column: 1/3;
+    }
+
+    .checkout-form-right {
+        width: 100%;
+        grid-column: 1/3;
+    }
+}

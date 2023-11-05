@@ -6,66 +6,113 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 const { mailTransport, generateReceipt } = require('../utils/mail');
 
-exports.pay = async (req, res) => {
-	const items = req.body.products;
-	let lineItems = [];
-	// Add items from cart to line items
-	items.forEach((item) => {
-		lineItems.push({
-			price_data: {
-				currency: 'eur',
-				unit_amount: item.price * 100,
-				product_data: {
-					name: item.title,
-					images: [item.image[0]],
-					metadata: {
-						color: item.color,
-						id: item._id,
-					},
-				},
-			},
-			quantity: item.quantity,
-		});
-	});
+// Old stripe payment system using built in checkout component
+// exports.pay = async (req, res) => {
+// 	const items = req.body.products;
+// 	let lineItems = [];
+// 	// Add items from cart to line items
+// 	items.forEach((item) => {
+// 		lineItems.push({
+// 			price_data: {
+// 				currency: 'eur',
+// 				unit_amount: item.price * 100,
+// 				product_data: {
+// 					name: item.title,
+// 					images: [item.image[0]],
+// 					metadata: {
+// 						color: item.color,
+// 						id: item._id,
+// 					},
+// 				},
+// 			},
+// 			quantity: item.quantity,
+// 		});
+// 	});
+
+// 	try {
+// 		const session = await stripe.checkout.sessions.create({
+// 			phone_number_collection: {
+// 				enabled: true,
+// 			},
+// 			shipping_address_collection: {
+// 				allowed_countries: ['HR'],
+// 			},
+// 			line_items: lineItems,
+// 			mode: 'payment',
+// 			invoice_creation: {
+// 				enabled: true,
+// 			},
+// 			// custom_fields: [
+// 			// 	{
+// 			// 		key: 'firstName',
+// 			// 		label: {
+// 			// 			type: 'custom',
+// 			// 			custom: 'First name (Shipping info)',
+// 			// 		},
+// 			// 		type: 'text',
+// 			// 	},
+// 			// 	{
+// 			// 		key: 'lastName',
+// 			// 		label: {
+// 			// 			type: 'custom',
+// 			// 			custom: 'Last name (Shipping info)',
+// 			// 		},
+// 			// 		type: 'text',
+// 			// 	},
+// 			// ],
+// 			success_url: `${process.env.CLIENT_URL}success`,
+// 			cancel_url: `${process.env.CLIENT_URL}`,
+// 		});
+
+// 		return res.status(200).send({ url: session.url });
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// };
+
+exports.stripe = async (req, res) => {
+	const { amount, items } = req.body;
 
 	try {
-		const session = await stripe.checkout.sessions.create({
-			phone_number_collection: {
-				enabled: true,
-			},
-			shipping_address_collection: {
-				allowed_countries: ['HR'],
-			},
-			line_items: lineItems,
-			mode: 'payment',
-			invoice_creation: {
-				enabled: true,
-			},
-			// custom_fields: [
-			// 	{
-			// 		key: 'firstName',
-			// 		label: {
-			// 			type: 'custom',
-			// 			custom: 'First name (Shipping info)',
-			// 		},
-			// 		type: 'text',
-			// 	},
-			// 	{
-			// 		key: 'lastName',
-			// 		label: {
-			// 			type: 'custom',
-			// 			custom: 'Last name (Shipping info)',
-			// 		},
-			// 		type: 'text',
-			// 	},
-			// ],
-			success_url: `${process.env.CLIENT_URL}success`,
-			cancel_url: `${process.env.CLIENT_URL}`,
+		// Create customer
+		const customer = await stripe.customers.create();
+
+		// Create invoice
+		const invoice = await stripe.invoices.create({
+			customer: customer.id,
 		});
 
-		return res.status(200).send({ url: session.url });
+		// Create invoice items and link them to invoice by id
+		for (var i = 0; i < items.length; i++) {
+			console.log(items[i]);
+			await stripe.invoiceItems.create({
+				invoice: invoice.id,
+				customer: customer.id,
+				amount: items[i].quantity,
+				currency: 'eur',
+				metadata: {
+					productId: items[i]._id,
+					color: items[i].color,
+					price: items[i].price,
+				},
+			});
+		}
+
+		const paymentIntent = await stripe.paymentIntents.create({
+			// receipt_email: 'pingo15102002@gmail.com',
+			amount,
+			currency: 'eur',
+			metadata: {
+				invoice_id: invoice.id,
+			},
+		});
+
+		return res
+			.status(200)
+			.send({ success: true, data: paymentIntent.client_secret });
 	} catch (error) {
-		console.log(error);
+		console.log('error', error);
+		return res.status(400).send({ success: false, error: error });
 	}
 };
 
@@ -84,62 +131,63 @@ exports.stripeWebHook = async (req, res) => {
 	}
 
 	switch (event.type) {
-		// case 'checkout.session.completed':
-		// 	const sessionIntent = event.data.object;
-		// 	let firstNameValue = sessionIntent.custom_fields[0].text.value;
-		// 	let lastNameValue = sessionIntent.custom_fields[1].text.value;
-		// 	break;
-		case 'invoice.payment_succeeded':
-			const paymentIntent = event.data.object;
-			const invoiceItems = paymentIntent.lines.data;
-			const customerEmail = paymentIntent.customer_email;
-			const customerDeliveryInfo = {
-				name: paymentIntent.customer_name,
-				phone: paymentIntent.customer_phone,
-				address: paymentIntent.customer_address,
-			};
-			const invoicePdf = paymentIntent.invoice_pdf;
+		case 'charge.succeeded':
+			const charge = event.data.object;
 
-			// Loop thru line items and remove their quantity from stock in db
-			const invoiceProducts = [];
+			const paymentIntent = await stripe.paymentIntents.retrieve(
+				charge.payment_intent
+			);
+
+			console.log(paymentIntent);
+
+			// Use this email to send receipt to user
+			const customerEmail = charge.billing_details.email;
+
+			// Get invoice from payment intent metadata
+			const invoice = await stripe.invoices.retrieve(
+				paymentIntent.metadata.invoice_id
+			);
+
+			const invoiceItems = invoice.lines.data;
+			const name = charge.billing_details.name;
+			const amount = charge.amount / 100;
+			const billingInfo = charge.billing_details;
+			const shippingInfo = charge.shipping;
+			const recieptUrl = charge.receipt_url;
+			// Save products from invoice items
+			const products = [];
 			for (var i = 0; i < invoiceItems.length; i++) {
-				const product = await stripe.products.retrieve(
-					invoiceItems[i].price.product
+				// Get product by productId
+				const productFromDb = await Product.findById(
+					invoiceItems[i].metadata.productId
 				);
-
-				const productId = product.metadata.id;
-
-				const productName = product.name;
-				const productImage = product.images[0];
-				const productColor = product.metadata.color;
-				const productQuantity = invoiceItems[i].quantity;
-				const productUnitAmount = invoiceItems[i].price.unit_amount / 100;
-				const productTotalAmount = productUnitAmount * productQuantity;
-
-				// Find products and add them to inoviceProducts array
-				const invoiceProduct = {
-					productName: productName,
-					productImage: productImage,
-					productColor: productColor,
-					productQuantity: productQuantity,
-					productUnitAmount: productUnitAmount,
-					productTotalAmount: productTotalAmount,
+				const product = {
+					productId: invoiceItems[i].metadata.productId,
+					color: invoiceItems[i].metadata.color,
+					price: invoiceItems[i].metadata.price,
+					quantity: invoiceItems[i].amount,
+					originalProduct: productFromDb,
 				};
-				invoiceProducts.push(invoiceProduct);
-				// Find product in db then subtract its stock
+				products.push(product);
+
+				// Decrement product stock
 				await Product.findByIdAndUpdate(
-					{ _id: productId },
-					{ $inc: { stock: -productQuantity } }
+					{ _id: invoiceItems[i].metadata.productId },
+					{ $inc: { stock: -invoiceItems[i].amount } }
 				);
 			}
 
+			var orderNumber = Math.floor(Math.random() * 9000000000) + 1000000000;
+
 			// Create order in db
 			const order = new Order({
-				name: 'name',
-				receiptLink: invoicePdf,
-				products: invoiceProducts,
-				amount: paymentIntent.amount_paid / 100,
-				addressInfo: customerDeliveryInfo,
+				_id: orderNumber,
+				name: name,
+				receiptLink: recieptUrl,
+				products: products,
+				amount: amount,
+				shippingInfo: shippingInfo,
+				billingInfo: billingInfo,
 				status: 'Paid',
 			});
 
@@ -150,13 +198,7 @@ exports.stripeWebHook = async (req, res) => {
 				from: 'email@email.com',
 				to: customerEmail,
 				subject: 'Switchy - Order receipt',
-				html: generateReceipt(),
-				attachments: [
-					{
-						filename: 'receipt.pdf',
-						path: invoicePdf,
-					},
-				],
+				html: generateReceipt(recieptUrl, order._id, amount, products),
 			};
 			mailTransport().sendMail(mailOptions, function (err, info) {
 				if (err) {
@@ -165,30 +207,27 @@ exports.stripeWebHook = async (req, res) => {
 					res.json({ success: true, message: 'Email sent!' });
 				}
 			});
-
-			// DELETE THIS AFTER TESTING
-			// const paymentIntent = await stripe.paymentIntents.create({
-			// 	amount: 1099,
-			// 	currency: 'eur',
-			// 	payment_method_types: ['card'],
-			// 	description: 'Thanks for your purchase!',
-			// 	receipt_email: 'pingo15102002@gmail.com',
-			// });
-
-			// const invoiceItem = await stripe.invoiceItems.retrieve(
-			// 	paymentIntent.lines.data[0].invoice_item
-			// );
-
-			// console.log(invoiceItem);
-
-			// const charge = await stripe.charges.retrieve(paymentIntent.latest_charge);
-			// console.log(charge);
-			// console.log(paymentIntent);
 			console.log('Payment was successful!');
 			break;
 	}
 
 	return res.status(200).send({ success: true });
+};
+
+exports.sendTestEmail = async (req, res) => {
+	const mailOptions = {
+		from: 'email@email.com',
+		to: 'pingo15102002@gmail.com',
+		subject: 'Switchy - Order receipt',
+		html: generateReceipt('test'),
+	};
+	mailTransport().sendMail(mailOptions, function (err, info) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json({ success: true, message: 'Email sent!' });
+		}
+	});
 };
 
 exports.generateProducts = async (req, res, next) => {

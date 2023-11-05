@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Product from './pages/Product';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
@@ -7,7 +8,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Success from './pages/Success';
 import Wishlist from './pages/Wishlist';
+import Payment from './pages/Payment';
 import { useSelector } from 'react-redux';
+import { loadStripe } from '@stripe/stripe-js';
 
 import {
 	BrowserRouter as Router,
@@ -17,7 +20,16 @@ import {
 } from 'react-router-dom';
 
 const App = () => {
+	const [stripePromise, setStripePromise] = useState(null);
 	const user = useSelector((state) => state.user.currentUser);
+
+	useEffect(() => {
+		setStripePromise(
+			loadStripe(
+				'pk_test_51NzTW3CbgJlRmRdknFU2YQUNpvZslhliNO4CfK9EhxNWPz3f5e7HLAunH27UJOXnkyZI1NjjE3apVdHvYhdYiQNG00W3TfKPTI'
+			)
+		);
+	}, []);
 
 	return (
 		<Router>
@@ -48,6 +60,11 @@ const App = () => {
 				/>
 				<Route exact path="/reset-password" element={<ResetPassword />} />
 				<Route exact path="/success" element={<Success />} />
+				<Route
+					exast
+					path="/checkout"
+					element={<Payment stripePromise={stripePromise} />}
+				/>
 			</Routes>
 		</Router>
 	);
