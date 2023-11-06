@@ -113,7 +113,7 @@ function Checkout({ clientSecret }) {
 		const { error } = await stripe.confirmPayment({
 			elements,
 			confirmParams: {
-				return_url: `http://192.168.1.200:3000/success`,
+				return_url: `${import.meta.env.VITE_APP_URL}/success`,
 				payment_method_data: {
 					billing_details: {
 						name: values.ime + ' ' + values.prezime,

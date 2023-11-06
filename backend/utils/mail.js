@@ -166,7 +166,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
           ${products[i].originalProduct.title}
         </p>
         <a href=${
-					'http://192.168.1.200:3000/product/' + products[i].productId
+					process.env.CLIENT_URL + '/product/' + products[i].productId
 				} style="color: #000000">Informacije o proizvodu</a>
       </td>
       <td rowspan="2" align="right" valign="center" width="80px">
@@ -214,7 +214,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
       <table width="95%" class="receipt-header" height="30" align="center">
         <tr>
           <td rowspan="2">
-            <a href="http://192.168.1.200:3000/">
+            <a href="${process.env.CLIENT_URL}">
               <img
                 src="https://ucarecdn.com/e43274d6-1212-4150-8c20-b6236a281193/logo.png"
                 alt=""
@@ -242,7 +242,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
         <tr style="height: 60px">
           <td style="padding: 0 0 40px 0">
             <a
-              href="http://192.168.1.200:3000/order/${orderId}"
+              href="${process.env.CLIENT_URL}/order/${orderId}"
               style="
                 background-color: #e81123;
                 color: white;
