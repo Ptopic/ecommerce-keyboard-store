@@ -25,6 +25,7 @@ mongoose
 	.then(() => console.log('db connected'))
 	.catch((err) => console.log(err));
 
+app.post('/api/checkout/webhook', express.raw({ type: '*/*' }), stripeWebHook);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(
@@ -33,7 +34,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
-app.post('/api/checkout/webhook', express.raw({ type: '*/*' }), stripeWebHook);
 app.use(express.json());
 app.use('/api/checkout', stripeRoute);
 
