@@ -11,6 +11,9 @@ import * as Yup from 'yup';
 import Navbar from '../components/Navbar/Navbar';
 import Button from '../components/Button/Button';
 
+// Icons
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+
 // Styles
 import './Login.css';
 
@@ -25,6 +28,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+	const [passwordShow, setPasswordShow] = useState(false);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { isFetching } = useSelector((state) => state.user);
@@ -50,6 +54,10 @@ const Login = () => {
 			// Redirect to main page
 			navigate('/');
 		}
+	};
+
+	const togglePasswordShow = () => {
+		setPasswordShow(!passwordShow);
 	};
 
 	const handleFacebookLogin = () => {};
@@ -90,16 +98,31 @@ const Login = () => {
 					{({ errors, touched }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<Field name="email" placeholder="Email" autoCapitalize="off" />
+								<div className="input-container">
+									<Field
+										name="email"
+										placeholder="Email *"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.email && touched.email ? (
 									<div className="error">{errors.email}</div>
 								) : null}
-								<Field
-									name="password"
-									placeholder="Password"
-									type="password"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										name="password"
+										placeholder="Password *"
+										type={passwordShow ? 'text' : 'password'}
+										autoCapitalize="off"
+									/>
+									<button type="button" onClick={() => togglePasswordShow()}>
+										{passwordShow ? (
+											<FaRegEyeSlash size={24} />
+										) : (
+											<FaRegEye size={24} />
+										)}
+									</button>
+								</div>
 								{errors.password && touched.password ? (
 									<div className="error">{errors.password}</div>
 								) : null}

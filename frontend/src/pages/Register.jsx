@@ -13,6 +13,9 @@ import Button from '../components/Button/Button';
 // Styles
 import './Login.css';
 
+// Icons
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+
 // Social login icons
 import facebook from '../assets/socials/facebook.png';
 import twitter from '../assets/socials/twitter.png';
@@ -24,6 +27,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+	const [passwordShow, setPasswordShow] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 
@@ -58,6 +62,10 @@ const Register = () => {
 			// Redirect to login page
 			navigate('/login');
 		}
+	};
+
+	const togglePasswordShow = () => {
+		setPasswordShow(!passwordShow);
 	};
 
 	const handleFacebookRegister = () => {};
@@ -96,45 +104,62 @@ const Register = () => {
 					{({ errors, touched }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<Field
-									placeholder="First name"
-									name="firstName"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										placeholder="First name *"
+										name="firstName"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.firstName && touched.firstName ? (
 									<div className="error">{errors.firstName}</div>
 								) : null}
-								<Field
-									placeholder="Last name"
-									name="lastName"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										placeholder="Last name *"
+										name="lastName"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.lastName && touched.lastName ? (
 									<div className="error">{errors.lastName}</div>
 								) : null}
-								<Field
-									placeholder="Username"
-									name="username"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										placeholder="Username *"
+										name="username"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.username && touched.username ? (
 									<div className="error">{errors.username}</div>
 								) : null}
-								<Field
-									placeholder="Email"
-									type="email"
-									name="email"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										placeholder="Email *"
+										type="email"
+										name="email"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.email && touched.email ? (
 									<div className="error">{errors.email}</div>
 								) : null}
-								<Field
-									placeholder="Password"
-									type="password"
-									name="password"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										name="password"
+										placeholder="Password *"
+										type={passwordShow ? 'text' : 'password'}
+										autoCapitalize="off"
+									/>
+									<button type="button" onClick={() => togglePasswordShow()}>
+										{passwordShow ? (
+											<FaRegEyeSlash size={24} />
+										) : (
+											<FaRegEye size={24} />
+										)}
+									</button>
+								</div>
 								{errors.password && touched.password ? (
 									<div className="error">{errors.password}</div>
 								) : null}

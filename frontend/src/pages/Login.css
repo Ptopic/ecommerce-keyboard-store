@@ -66,13 +66,27 @@
     width: 100%;
 }
 
-.login-form-inputs input {
+.input-container {
     outline: none;
     padding: 2rem;
-    font-size: 1.6rem;
-    margin: 1rem;
     border: 1px solid black;
     width: 100%;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form-inputs input {
+    outline: none;
+    font-size: 1.6rem;
+    border: none;
+    width: 100%;
+}
+
+.input-container button {
+    border: none;
+    outline: none;
 }
 
 .login-form-submit {
