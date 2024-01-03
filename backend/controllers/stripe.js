@@ -71,7 +71,7 @@ const { mailTransport, generateReceipt } = require('../utils/mail');
 // };
 
 exports.stripe = async (req, res) => {
-	const { amount, items } = req.body;
+	const { amount, items, tvrtka, tvrtkaDostava, oib } = req.body;
 
 	try {
 		// Create customer
@@ -84,7 +84,6 @@ exports.stripe = async (req, res) => {
 
 		// Create invoice items and link them to invoice by id
 		for (var i = 0; i < items.length; i++) {
-			console.log(items[i]);
 			await stripe.invoiceItems.create({
 				invoice: invoice.id,
 				customer: customer.id,
@@ -103,7 +102,17 @@ exports.stripe = async (req, res) => {
 			amount,
 			currency: 'eur',
 			metadata: {
+				// billingName: billing.name,
+				// billingPhone: billing.phone,
+				// billingAddressCity: billing.address.city,
+				// billingAddressCountry: billing.address.country,
+				// billingAddressLine1: billing.address.line1,
+				// billingAddressLine2: billing.address.line2,
+				// billingAddressPostalCode: billing.address.postal_code,
 				invoice_id: invoice.id,
+				tvrtka,
+				tvrtkaDostava,
+				oib,
 			},
 		});
 
@@ -129,6 +138,7 @@ exports.stripeWebHook = async (req, res) => {
 		return res.status(400).send({ success: false, error: error });
 	}
 
+	let customerEmail;
 	switch (event.type) {
 		case 'charge.succeeded':
 			const charge = event.data.object;
@@ -180,7 +190,6 @@ exports.stripeWebHook = async (req, res) => {
 
 			// Create order in db
 			const order = new Order({
-				_id: orderNumber,
 				name: name,
 				receiptLink: recieptUrl,
 				products: products,
@@ -188,6 +197,10 @@ exports.stripeWebHook = async (req, res) => {
 				shippingInfo: shippingInfo,
 				billingInfo: billingInfo,
 				status: 'Paid',
+				orderNumber: orderNumber,
+				tvrtka: paymentIntent.metadata.tvrtka,
+				tvrtkaDostava: paymentIntent.metadata.tvrtkaDostava,
+				oib: paymentIntent.metadata.oib,
 			});
 
 			await order.save();
@@ -197,7 +210,13 @@ exports.stripeWebHook = async (req, res) => {
 				from: 'email@email.com',
 				to: customerEmail,
 				subject: 'Switchy - Order receipt',
-				html: generateReceipt(recieptUrl, order._id, amount, products),
+				html: generateReceipt(
+					recieptUrl,
+					order._id,
+					orderNumber,
+					amount,
+					products
+				),
 			};
 			mailTransport().sendMail(mailOptions, function (err, info) {
 				if (err) {

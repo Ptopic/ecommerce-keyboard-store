@@ -66,7 +66,7 @@ const Login = () => {
 				<div className="login-header">
 					<p>Login</p>
 				</div>
-				<div className="social-logins-container">
+				{/* <div className="social-logins-container">
 					<button onClick={() => handleFacebookLogin()}>
 						<img src={facebook} alt="" />
 					</button>
@@ -79,7 +79,7 @@ const Login = () => {
 					<button onClick={() => handleAppleLogin()}>
 						<img src={apple} alt="" />
 					</button>
-				</div>
+				</div> */}
 				<Formik
 					initialValues={initialValues}
 					validationSchema={loginSchema}

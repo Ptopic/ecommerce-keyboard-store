@@ -13,6 +13,33 @@
 <br>
 » Database -> mongodb
 
+<h2>How to run? </h2>
+
+<h1>Backend: </h1>
+
+<p> Run Api </p>
+
+``` 
+cd backend
+npm run start
+```
+
+<p> Run stripe payment webhook </p>
+
+``` 
+cd backend
+stripe listen --forward-to localhost:3001/api/checkout/webhook
+```
+
+<h1>Frontend: </h1>
+
+<p>Run Frontend </p>
+
+``` 
+cd frontend
+npm run start
+```
+
 <h2>Screenshot of Project 📸</h2>
 <br>
 

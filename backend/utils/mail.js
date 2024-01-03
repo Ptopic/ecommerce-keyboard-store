@@ -51,7 +51,13 @@ const generatePasswordResetTemplate = (user, url) => {
         `;
 };
 
-const generateReceipt = (receiptUrl, orderId, amount, products) => {
+const generateReceipt = (
+	receiptUrl,
+	orderId,
+	orderNumber,
+	amount,
+	products
+) => {
 	let shipping;
 	if (amount > 20) {
 		shipping = 0;
@@ -74,7 +80,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
 		hour12: false,
 		timeZone: 'Europe/Zagreb',
 	});
-	var todayHour = Number(today.getHours() + 2);
+	var todayHour = Number(today.getHours());
 
 	if (todayHour > 24) {
 		todayHour = todayHour - 24;
@@ -86,7 +92,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
 		var todayTime = todayHour + ':' + today.getMinutes();
 	}
 
-	var newHour = Number(today.getHours()) + 2;
+	var newHour = Number(today.getHours());
 
 	if (newHour > 24) {
 		newHour = newHour - 24;
@@ -104,8 +110,9 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
 		timeZone: 'Europe/Zagreb',
 	});
 
-	let productsHtml = products.map((product) => {
-		return `<tr>
+	let productsHtml = products
+		.map((product) => {
+			return `<tr>
       <td
         rowspan="2"
         width="70px"
@@ -128,64 +135,20 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
 				} style="color: #000000">Informacije o proizvodu</a>
       </td>
       <td rowspan="2" align="right" valign="center" width="80px">
-        <h3 class="price" style="padding: 0; margin: 0">${product.price} €</h3>
-      </td>
-    </tr>
-    <tr>
-      <td align="left" valign="top" style="padding: 5px 0px 15px 0px">
-        ${product.quantity} kom ${
-			product.color ? `- Boja: ${product.color}` : ''
-		}
-      </td>
-    </tr>\n`;
-	});
-
-	console.log(productsHtml);
-
-	const templateLiterals = [];
-
-	for (var i = 0; i < products.length; i++) {
-		templateLiterals.push(
-			`
-      <tr>
-      <td
-        rowspan="2"
-        width="70px"
-        align="center"
-        valign="center"
-        style="padding: 5px 15px 0px 0px"
-      >
-        <img
-          src="${products[i].originalProduct.image[0]}"
-          alt=""
-          style="width: 70px; height: 70px; object-fit: cover"
-        />
-      </td>
-      <td align="left" valign="top" style="padding: 15px 0px 5px 0px">
-        <p style="padding: 0 0 10px 0; margin: 0">
-          ${products[i].originalProduct.title}
-        </p>
-        <a href=${
-					process.env.CLIENT_URL + '/product/' + products[i].productId
-				} style="color: #000000">Informacije o proizvodu</a>
-      </td>
-      <td rowspan="2" align="right" valign="center" width="80px">
         <h3 class="price" style="padding: 0; margin: 0">${
-					products[i].price
+					product.price * product.quantity
 				} €</h3>
       </td>
     </tr>
     <tr>
       <td align="left" valign="top" style="padding: 5px 0px 15px 0px">
-        ${products[i].quantity} kom ${
-				products[i].color ? `- Boja: ${products[i].color}` : ''
+        ${product.quantity} kom ${
+				product.color ? `- Boja: ${product.color}` : ''
 			}
       </td>
-    </tr>`
-		);
-	}
-
-	console.log(templateLiterals);
+    </tr>\n`;
+		})
+		.join('');
 
 	return (
 		`<!DOCTYPE html>
@@ -223,7 +186,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
             </a>
             <!-- <h1 style="color: #e81123; margin: 0; padding: 0">Switchy</h1> -->
           </td>
-          <td align="right">Broj narudžbe: <span>${orderId}</span></td>
+          <td align="right">Broj narudžbe: <span>${orderNumber}</span></td>
         </tr>
         <tr>
           <td colspan="2" align="right">
@@ -242,7 +205,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
         <tr style="height: 60px">
           <td style="padding: 0 0 40px 0">
             <a
-              href="${process.env.CLIENT_URL}/order/${orderId}"
+              href="${process.env.CLIENT_URL}order/${orderId}"
               style="
                 background-color: #e81123;
                 color: white;
@@ -274,7 +237,7 @@ const generateReceipt = (receiptUrl, orderId, amount, products) => {
         align="center"
       >
     ` +
-		templateLiterals +
+		productsHtml +
 		`
       </table>
   

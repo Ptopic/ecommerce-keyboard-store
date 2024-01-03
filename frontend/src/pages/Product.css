@@ -188,6 +188,7 @@
 .product-buttons {
     display: flex;
     flex-direction: column;
+    /* width: 50%; */
 }
 
 /* ---------- Media querys ---------- */
@@ -216,5 +217,9 @@
 
     .spinner-container {
         margin-top: 4rem;
+    }
+
+    .product-buttons {
+        /* width: 100%; */
     }
 }

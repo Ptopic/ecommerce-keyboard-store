@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import cartReducer from './cartRedux';
 import userReducer from './userRedux';
+import paymentReducer from './paymentRedux';
 import {
 	persistStore,
 	persistReducer,
@@ -15,11 +16,17 @@ import storage from 'redux-persist/lib/storage';
 
 const persistConfig = {
 	key: 'root',
+	// Add blocklist in production
+	// blacklist: ['payment'],
 	version: 1,
 	storage,
 };
 
-const rootReducer = combineReducers({ user: userReducer, cart: cartReducer });
+const rootReducer = combineReducers({
+	user: userReducer,
+	cart: cartReducer,
+	payment: paymentReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

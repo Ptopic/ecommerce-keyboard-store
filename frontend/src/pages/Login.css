@@ -50,7 +50,7 @@
 }
 
 .social-logins-container button:not(:last-child) {
-    margin-right: 2rem;
+    margin-right: 4rem;
 }
 
 .login-form {

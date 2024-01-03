@@ -13,6 +13,7 @@ const {
 	deleteOrder,
 	getUserOrder,
 	getAllOrders,
+	getOrderByOrderId,
 } = require('../controllers/order');
 
 // Get monthly income
@@ -21,6 +22,9 @@ router.get('/income', verifyTokenAndAdmin, getIncome);
 
 // Create Order
 router.post('/', verifyTokenAndAuthorization, createOrder);
+
+// Get order by order id
+router.get('/getByOrderId', getOrderByOrderId);
 
 // Edit Order (admin only)
 router.put('/:id', verifyTokenAndAdmin, editOrder);

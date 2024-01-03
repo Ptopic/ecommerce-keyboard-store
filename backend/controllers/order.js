@@ -81,3 +81,13 @@ exports.getAllOrders = async (req, res) => {
 		return res.status(500).send({ success: false, error: err });
 	}
 };
+
+exports.getOrderByOrderId = async (req, res) => {
+	try {
+		console.log(req.query.orderId);
+		const order = await Order.find({ _id: req.query.orderId });
+		return res.status(200).send({ success: true, data: order });
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};

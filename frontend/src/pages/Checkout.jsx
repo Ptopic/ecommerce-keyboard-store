@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import './Checkout.css';
-import {
-	Elements,
-	PaymentElement,
-	useStripe,
-	useElements,
-} from '@stripe/react-stripe-js';
 
-import { useSelector } from 'react-redux';
 import { IoMdCheckmark } from 'react-icons/io';
 
 // Formik
 import { Formik, Form, Field, useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import { toast, Toaster } from 'react-hot-toast';
-
 // Components
 import Navbar from '../components/Navbar/Navbar';
 import Button from '../components/Button/Button';
 
-function Checkout({ clientSecret }) {
-	const stripe = useStripe();
-	const elements = useElements();
+import { useNavigate } from 'react-router-dom';
+
+// Redux
+import { setState, resetState } from '../redux/paymentRedux';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
+function Checkout() {
 	const cart = useSelector((state) => state.cart);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const [r1, setR1] = useState(false);
 	const [dostava, setDostava] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -106,63 +104,64 @@ function Checkout({ clientSecret }) {
 		telefon2: '',
 	};
 
-	const sendPayment = async (values, formikActions) => {
+	const goToCheckout = async (values, formikActions) => {
 		setIsProcessing(true);
-		console.log(values);
-		// Make payment
-		const { error } = await stripe.confirmPayment({
-			elements,
-			confirmParams: {
-				return_url: `${import.meta.env.VITE_APP_URL}/success`,
-				payment_method_data: {
-					billing_details: {
-						name: values.ime + ' ' + values.prezime,
-						email: values.email,
-						phone: values.telefon,
-						address: {
-							city: values.mjesto,
-							country: 'HR',
-							line1: values.adresa,
-							line2: '',
-							postal_code: values.zip,
-						},
-					},
-					metadata: {
-						tvrtka: values.tvrtka,
-						tvrtkaDostava: dostava ? values.tvrtka2 : values.tvrtka,
-						oib: values.oib,
-					},
-				},
-				shipping: {
-					name: dostava
-						? values.ime2 + ' ' + values.prezime2
-						: values.ime + ' ' + values.prezime,
-					address: {
-						city: dostava ? values.mjesto2 : values.mjesto,
-						country: 'HR',
-						line1: dostava ? values.adresa2 : values.adresa,
-						line2: '',
-						postal_code: dostava ? values.zip2 : values.zip,
-					},
-					phone: dostava ? values.telefon2 : values.telefon,
-					carrier: 'DPD',
-					tracking_number: '123456789',
-				},
+		// const clientSecret = res.data.data;
+		// // Add data to redux state
+		// console.log(stripePromise);
+		// console.log(clientSecret);
+
+		const billingDetails = {
+			name: values.ime + ' ' + values.prezime,
+			email: values.email,
+			phone: values.telefon,
+			address: {
+				city: values.mjesto,
+				country: 'HR',
+				line1: values.adresa,
+				line2: '',
+				postal_code: values.zip,
 			},
-		});
+		};
+
+		const shippingDetails = {
+			name: dostava
+				? values.ime2 + ' ' + values.prezime2
+				: values.ime + ' ' + values.prezime,
+			address: {
+				city: dostava ? values.mjesto2 : values.mjesto,
+				country: 'HR',
+				line1: dostava ? values.adresa2 : values.adresa,
+				line2: '',
+				postal_code: dostava ? values.zip2 : values.zip,
+			},
+			phone: dostava ? values.telefon2 : values.telefon,
+			carrier: 'DPD',
+			tracking_number: '123456789',
+		};
+
+		const tvrtka = values.tvrtka;
+		const tvrtkaDostava = dostava ? values.tvrtka2 : values.tvrtka;
+		const oib = values.oib;
+
+		dispatch(
+			setState({
+				billingDetails: billingDetails,
+				shippingDetails: shippingDetails,
+				tvrtka: tvrtka,
+				tvrtkaDostava: tvrtkaDostava,
+				oib: oib,
+				dostava: dostava,
+			})
+		);
 
 		setIsProcessing(false);
-		if (error) {
-			// Display error message to user
-			toast.error(error.message);
-		} else {
-			formikActions.resetForm();
-		}
+		// Redirect to payment page
+		navigate('/payment');
 	};
 
 	return (
 		<div className="checkout-container">
-			<Toaster />
 			<Navbar />
 			<Formik
 				initialValues={initialValues}
@@ -176,7 +175,9 @@ function Checkout({ clientSecret }) {
 						? validationSchemaWithDostava
 						: validationSchema
 				}
-				onSubmit={(values, formikActions) => sendPayment(values, formikActions)}
+				onSubmit={(values, formikActions) =>
+					goToCheckout(values, formikActions)
+				}
 			>
 				{({ errors, touched }) => (
 					<Form className="checkout-content">
@@ -483,7 +484,6 @@ function Checkout({ clientSecret }) {
 									</div>
 								</div>
 							)}
-							<PaymentElement id="payment-element" />
 						</div>
 
 						<div className="checkout-content-right">
@@ -530,12 +530,7 @@ function Checkout({ clientSecret }) {
 								</div>
 								<Button
 									type="submit"
-									text={
-										'Plati €' +
-										(cart.totalPrice > 20
-											? cart.totalPrice
-											: cart.totalPrice + 3)
-									}
+									text={'Idi na plačanje'}
 									isLoading={isProcessing}
 									width={'100%'}
 								/>

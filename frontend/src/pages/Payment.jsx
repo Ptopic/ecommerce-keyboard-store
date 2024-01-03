@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from 'react';
+import './Checkout.css';
 
 import { Elements } from '@stripe/react-stripe-js';
-import Checkout from './Checkout';
+import PaymentForm from './PaymentForm';
 
-import { useSelector } from 'react-redux';
 import { request } from '../api';
 
+// Redux
+import { useSelector } from 'react-redux';
+
 function Payment(props) {
+	const paymentInfo = useSelector((state) => state.payment);
 	const cart = useSelector((state) => state.cart);
+	const { stripePromise } = props;
+	const [clientSecret, setClientSecret] = useState(null);
+
 	const configureStripe = async () => {
-		// Create PaymentIntent as soon as the page loads
+		// Add all form data to metadata of payment
 		const res = await request.post('/checkout/pay', {
 			amount:
 				(cart.totalPrice > 20 ? cart.totalPrice : cart.totalPrice + 3) * 100,
 			items: cart.products,
+			tvrtka: paymentInfo.tvrtka,
+			tvrtkaDostava: paymentInfo.tvrtkaDostava,
+			oib: paymentInfo.oib,
 		});
+
 		setClientSecret(res.data.data);
 	};
-
 	useEffect(() => {
+		// Get data from redux state
+		console.log(paymentInfo);
+
 		configureStripe();
 	}, []);
-	const { stripePromise } = props;
-	const [clientSecret, setClientSecret] = useState('');
+
 	return (
 		<div>
 			{clientSecret && stripePromise && (
 				<Elements stripe={stripePromise} options={{ clientSecret }}>
-					<Checkout clientSecret={clientSecret} />
+					<PaymentForm />
 				</Elements>
 			)}
 		</div>

@@ -25,9 +25,9 @@ mongoose
 	.then(() => console.log('db connected'))
 	.catch((err) => console.log(err));
 
-app.post('/api/checkout/webhook', express.raw({ type: '*/*' }), stripeWebHook);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.post('/api/checkout/webhook', express.raw({ type: '*/*' }), stripeWebHook);
 app.use(
 	session({ secret: 'keyboard cat', resave: true, saveUninitialized: true })
 );

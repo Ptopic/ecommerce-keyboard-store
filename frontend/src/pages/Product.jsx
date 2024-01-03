@@ -287,6 +287,7 @@ const Product = () => {
 								backgroundColor={'#E81123'}
 								borderColor={'#000000'}
 								textColor={'#fff'}
+								width={'100%'}
 								isLoading={isLoadingWishlist}
 								disabled={product.stock == 0 ? true : false}
 								onClickFunction={
@@ -304,6 +305,7 @@ const Product = () => {
 								isLoading={isLoading}
 								onClickFunction={handleAddToCart}
 								text={'Add to Cart'}
+								width={'100%'}
 							/>
 						</div>
 					</div>

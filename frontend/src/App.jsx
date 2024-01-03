@@ -8,7 +8,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Success from './pages/Success';
 import Wishlist from './pages/Wishlist';
+import Checkout from './pages/Checkout';
 import Payment from './pages/Payment';
+import Order from './pages/Order';
 import { useSelector } from 'react-redux';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -29,6 +31,7 @@ const App = () => {
 				'pk_test_51NzTW3CbgJlRmRdknFU2YQUNpvZslhliNO4CfK9EhxNWPz3f5e7HLAunH27UJOXnkyZI1NjjE3apVdHvYhdYiQNG00W3TfKPTI'
 			)
 		);
+		console.log(user);
 	}, []);
 
 	return (
@@ -60,11 +63,13 @@ const App = () => {
 				/>
 				<Route exact path="/reset-password" element={<ResetPassword />} />
 				<Route exact path="/success" element={<Success />} />
+				<Route exast path="/checkout" element={<Checkout />} />
 				<Route
 					exast
-					path="/checkout"
+					path="/payment"
 					element={<Payment stripePromise={stripePromise} />}
 				/>
+				<Route exact path="/order/:id" element={<Order />} />
 			</Routes>
 		</Router>
 	);
