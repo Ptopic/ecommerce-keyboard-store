@@ -38,39 +38,45 @@ const Product = () => {
 
 	const dispatch = useDispatch();
 
-	useEffect(() => {
-		const getProductById = async () => {
-			try {
-				const res = await request.get('/products/find/' + id);
-				const data = res.data;
-				setProduct(data.data);
-			} catch (err) {
-				console.log(err);
-			}
-		};
+	const getProductById = async () => {
+		try {
+			const res = await request.get('/products/find/' + id);
+			const data = res.data;
+			setProduct(data.data);
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
-		const getWishlist = async () => {
-			try {
-				// Check if product is in users wishlist
-				const wishlist = await request.get(
-					`/wishlist?userId=${currentUser.data._id}`
-				);
+	const getWishlist = async () => {
+		try {
+			// Check if product is in users wishlist
+			const wishlist = await request.get(
+				`/wishlist?userId=${currentUser.data._id}`
+			);
 
-				const products = wishlist.data.data.products;
-				console.log(products);
-				// Loop thru products to find id of current product
-				for (let i = 0; i < products.length; i++) {
-					if (products[i]._id == id) {
-						setIsProductInWishlist(true);
-					}
+			const products = wishlist.data.data.products;
+			console.log(products);
+			// Loop thru products to find id of current product
+			for (let i = 0; i < products.length; i++) {
+				if (products[i]._id == id) {
+					setIsProductInWishlist(true);
 				}
-			} catch (error) {
-				console.log(error.response.data);
 			}
-		};
+		} catch (error) {
+			console.log(error.response.data);
+		}
+	};
+
+	useEffect(() => {
 		getProductById();
 		getWishlist();
 	}, []);
+
+	// Refetch product when location (url) changes
+	useEffect(() => {
+		getProductById();
+	}, [location]);
 
 	const handleQuantity = (type) => {
 		if (type == 'increase') {

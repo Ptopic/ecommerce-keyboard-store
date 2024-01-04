@@ -46,6 +46,15 @@
     justify-content: center;
 }
 
+.navbar-right button {
+    margin-right: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    border: none;
+}
+
 .navbar-left a>img {
     width: 250px;
     margin-left: -1rem;
@@ -83,6 +92,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-right: 2rem;
 }
 
 .navbar-user-data p {
@@ -302,8 +312,17 @@
         overflow: scroll;
     }
 
+    .navbar-right a {
+        margin-right: 1rem;
+    }
+
+    .navbar-right button {
+        margin-right: 1rem;
+    }
+
     .navbar-user-data {
         flex-direction: column;
+        margin-right: 1rem;
     }
 
     .cart-container {

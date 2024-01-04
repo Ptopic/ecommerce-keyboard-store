@@ -9,6 +9,7 @@ const {
 	createProduct,
 	updateProduct,
 	deleteProduct,
+	searchProducts,
 	getProduct,
 	getAllProducts,
 } = require('../controllers/products');
@@ -21,6 +22,9 @@ router.put('/:id', verifyTokenAndAdmin, updateProduct);
 
 // Delete product (admin only)
 router.delete('/:id', verifyTokenAndAdmin, deleteProduct);
+
+// Search for product
+router.get('/search', searchProducts);
 
 // Get product
 router.get('/find/:id', getProduct);

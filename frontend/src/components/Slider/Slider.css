@@ -49,6 +49,7 @@
 .carousel-item-right a {
     text-decoration: none;
     font-size: 2rem;
+    color: var(--primary-color);
 }
 
 .carousel-indicators {

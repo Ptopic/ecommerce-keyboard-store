@@ -46,6 +46,23 @@ exports.getProduct = async (req, res) => {
 	}
 };
 
+exports.searchProducts = async (req, res) => {
+	const term = req.query.search;
+	let termString = String(term);
+
+	try {
+		console.log(term);
+		// Search for product that contains term in title
+		let products = await Product.find({
+			title: { $regex: termString, $options: 'i' },
+		});
+		return res.status(200).send({ success: true, data: products });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
 exports.getAllProducts = async (req, res) => {
 	const qsort = req.query.sort;
 	const qCategory = req.query.category;
@@ -57,6 +74,7 @@ exports.getAllProducts = async (req, res) => {
 	const material = req.query.material;
 	try {
 		let products;
+		// Refactor this
 		if (qCategory && qsort && (color || material) && minPrice && maxPrice) {
 			if (color) {
 				if (qsort === 'newest') {

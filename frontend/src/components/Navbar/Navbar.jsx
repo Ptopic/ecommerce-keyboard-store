@@ -3,6 +3,7 @@ import { Badge } from '@material-ui/core';
 import { motion as m, AnimatePresence } from 'framer-motion';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import {
+	AiOutlineSearch,
 	AiOutlineClose,
 	AiOutlineUser,
 	AiOutlineHeart,
@@ -19,13 +20,25 @@ import Cart from '../Cart/Cart';
 import logo from '../../assets/logo3.png';
 
 import NavbarLink from './NavbarLink';
+import SearchModal from '../SearchModal/SearchModal';
 
 const Navbar = () => {
 	const dispatch = useDispatch();
 	const [navOpen, setNavOpen] = useState(false);
+	const [searchOpen, setSearchOpen] = useState(false);
 	const user = useSelector((state) => state.user.currentUser);
 	const quantity = useSelector((state) => state.cart.quantity);
 	const { open } = useSelector((state) => state.cart);
+
+	const toggleSearchOpen = () => {
+		if (searchOpen) {
+			setSearchOpen(false);
+			document.body.style.overflow = 'visible';
+		} else {
+			setSearchOpen(true);
+			document.body.style.overflow = 'hidden';
+		}
+	};
 
 	const openNavbar = () => {
 		setNavOpen(true);
@@ -93,6 +106,11 @@ const Navbar = () => {
 							<AiOutlineUser size={26} />
 						</Link>
 					)}
+
+					<button type="button" onClick={() => toggleSearchOpen()}>
+						<AiOutlineSearch size={26} />
+					</button>
+
 					<Link
 						style={{ textDecoration: 'none', color: 'black' }}
 						to={'/wishlist'}
@@ -106,6 +124,8 @@ const Navbar = () => {
 					</div>
 				</div>
 			</div>
+
+			{searchOpen && <SearchModal toggleSearchOpen={toggleSearchOpen} />}
 
 			<AnimatePresence>
 				{navOpen && (
