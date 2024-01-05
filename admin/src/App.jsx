@@ -11,10 +11,26 @@ import Product from './pages/product/Product';
 import NewProduct from './pages/newProduct/NewProduct';
 import Login from './pages/login/Login';
 
+import { useSelector } from 'react-redux';
+
 function App() {
-	const admin = JSON.parse(
-		JSON.parse(localStorage.getItem('persist:root')).user
-	).currentUser.data.isAdmin;
+	const user = useSelector((state) => state.user.currentUser);
+	let admin = user?.data?.isAdmin;
+
+	// if (
+	// 	localStorage.getItem('persist:root').user != undefined ||
+	// 	user.data != null
+	// ) {
+	// 	if (localStorage.getItem('persist:root').user != undefined) {
+	// 		admin = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user)
+	// 			.currentUser?.data?.isAdmin;
+	// 	} else {
+	// 		admin = user?.data?.isAdmin;
+	// 	}
+	// } else {
+	// 	admin = false;
+	// }
+
 	return (
 		<Router>
 			{admin ? (
@@ -34,7 +50,9 @@ function App() {
 					</div>
 				</>
 			) : (
-				<Route exact path="/login" element={<Login />} />
+				<Routes>
+					<Route exact path="/" element={<Login />} />
+				</Routes>
 			)}
 		</Router>
 	);

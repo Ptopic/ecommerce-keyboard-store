@@ -209,3 +209,8 @@
     align-items: center;
     justify-content: space-between;
 }
+
+.map-container-box {
+    height: 400px;
+    width: 100%;
+}

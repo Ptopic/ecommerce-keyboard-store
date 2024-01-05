@@ -35,7 +35,7 @@ const deleteTokenJob = (id, time) => {
 };
 
 exports.forgotPassword = async (req, res) => {
-	const { email } = req.body;;
+	const { email } = req.body;
 
 	// Check if email is provided
 	if (!email) {

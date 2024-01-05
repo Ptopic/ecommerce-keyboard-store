@@ -14,7 +14,11 @@ const {
 	getUserOrder,
 	getAllOrders,
 	getOrderByOrderId,
+	getOrdersCount,
 } = require('../controllers/order');
+
+// Get orders count
+router.get('/count', verifyTokenAndAdmin, getOrdersCount);
 
 // Get monthly income
 

@@ -1,0 +1,11 @@
+.map-container {
+    height: 250px;
+    width: 100%;
+    background: red;
+    display: flex;
+}
+
+/* .leaflet-container {
+    display: flex;
+    height: 150px;
+} */

@@ -1,57 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Order.css';
+import 'leaflet/dist/leaflet.css';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { request } from '../api';
 
 // Components
-import Map from '../components/Map/Map';
+import CustomMap from '../components/Map/CustomMap';
 import OrderStatus from '../components/OrderStatus/OrderStatus';
 
 // Assets
 import logo from '../assets/logo3.png';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 
+import {
+	MapContainer,
+	Marker,
+	Popup,
+	TileLayer,
+	Tooltip,
+	useMapEvent,
+	useMap,
+} from 'react-leaflet';
+
 function Order() {
 	const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
 	const navigate = useNavigate();
 	const location = useLocation();
 	const id = location.pathname.split('/')[2];
 	const [order, setOrder] = useState({});
-	const [cordinates, setCordinates] = useState({});
+	const [cordinates, setCordinates] = useState();
 
 	const getOrderByOrderId = async () => {
 		const res = await request.get('/orders/getByOrderId', {
 			params: { orderId: id },
 		});
 		setOrder(res.data.data[0]);
-		console.log(res.data.data[0]);
-
-		getAddressCordinates(res.data.data[0]);
 	};
 
-	const getAddressCordinates = async (order) => {
+	const getAddressCordinates = async () => {
 		const city = order.shippingInfo.address.city;
 		const adresa = order.shippingInfo.address.line1.split(' ');
-		console.log(adresa);
 
 		// Map thru address to make object for google maps api
 		let query = ``;
 		for (var i = adresa.length - 1; i >= 0; i--) {
 			query += adresa[i] + '%20';
 		}
-		console.log(query);
 		const res = await request.get(
 			`https://maps.googleapis.com/maps/api/geocode/json?address=${query}${city}&key=${apiKey}`,
 			{}
 		);
-		console.log(res.data.results[0].geometry.location);
-		setCordinates(res.data.results[0].geometry.location);
+
+		setCordinates([
+			res.data.results[0].geometry.location.lat,
+			res.data.results[0].geometry.location.lng,
+		]);
 	};
+
 	useEffect(() => {
 		getOrderByOrderId();
 	}, []);
+
+	useEffect(() => {
+		getAddressCordinates();
+	}, [order]);
+
 	return (
 		<div className="order-container">
 			<div className="order-container-right-mobile"></div>
@@ -72,15 +88,12 @@ function Order() {
 					<div className="order-status">
 						<OrderStatus status={order?.status} />
 					</div>
-					<Map
-						cordinates={cordinates}
-						googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
-						loadingElement={<div style={{ height: `100%` }} />}
-						containerElement={
-							<div style={{ height: `250px` }} className="map" />
-						}
-						mapElement={<div style={{ height: `100%` }} />}
-					/>
+
+					<div className="map-container-box">
+						{cordinates && (
+							<CustomMap lat={cordinates[0]} lng={cordinates[1]} />
+						)}
+					</div>
 
 					<div className="box-map-content">
 						<h3>Your order is on its way</h3>

@@ -11,7 +11,11 @@ const {
 	getUser,
 	getAllUsers,
 	getUserStats,
+	getCount,
 } = require('../controllers/users');
+
+// Get users count (admin only)
+router.get('/count', verifyTokenAndAdmin, getCount);
 
 // Get user stats (admin only)
 router.get('/stats', verifyTokenAndAdmin, getUserStats);

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_URL;
-const TOKEN = '';
+let TOKEN = '';
 // Check if token is in local storage
-if (localStorage.getItem('persist:root').user != null) {
+if (localStorage.getItem('persist:root') != undefined) {
 	TOKEN = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user)
 		.currentUser.token;
 }
@@ -15,5 +15,5 @@ export const request = axios.create({
 
 export const userRequest = axios.create({
 	baseURL: BASE_URL,
-	header: { token: TOKEN },
+	headers: { token: TOKEN },
 });

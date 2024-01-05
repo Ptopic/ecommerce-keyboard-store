@@ -1,6 +1,25 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
+exports.getCount = async (req, res) => {
+	try {
+		const usersCount = await User.aggregate([
+			{
+				$group: {
+					_id: {
+						month: { $month: '$createdAt' },
+						year: { $year: '$createdAt' },
+					},
+					usersCount: { $sum: 1 },
+				},
+			},
+		]);
+		return res.status(200).send({ success: true, data: usersCount });
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
 exports.changePassword = async (req, res) => {
 	req.body.password = await bcrypt.hash(req.body.password, 8);
 
