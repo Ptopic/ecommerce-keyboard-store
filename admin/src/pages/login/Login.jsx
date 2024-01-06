@@ -46,14 +46,16 @@ const Login = () => {
 
 	const handleLogin = async (values, formikActions) => {
 		const res = await login(dispatch, { ...values });
-		if (res.success == true) {
+		console.log(res);
+		console.log(res.data);
+		if (res.success == true && res.isAdmin == true) {
 			formikActions.resetForm();
 			// Redirect to main page
 			navigate('/');
-		} else if (res.data.isAdmin == false) {
-			toast.error('User is not admin, Try other user.');
-		} else {
+		} else if (res.success == false) {
 			toast.error(res.error);
+		} else {
+			toast.error('User is not an Admin, Try another user.');
 		}
 	};
 
