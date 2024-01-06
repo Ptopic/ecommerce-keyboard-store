@@ -1,11 +1,11 @@
 <div align='center'><img style="width:20%"></div>
 
-<h2>Ecomerce app - Switchy</h2>
+<h1>Ecomerce app - Switchy</h1>
 <p>Ecomerce app for selling products for building custom mechanical keyboards.</p>
 
 👉 Live Demo: <a href='https://ecommerce-keyboard-store.vercel.app/'>Live Demo</a>
 
-<h3>Build with:</h3>
+<h2>Build with:</h2>
 
 » Frontend -> react, redux, framer motion
 <br>
@@ -13,30 +13,39 @@
 <br>
 » Database -> mongodb
 
-<h2>How to run? </h2>
+<h1>How to run? </h1>
 
-<h1>Backend: </h1>
+<h2>Backend: </h2>
 
 <p> Run Api </p>
 
-``` 
+```
 cd backend
 npm run start
 ```
 
 <p> Run stripe payment webhook </p>
 
-``` 
+```
 cd backend
 stripe listen --forward-to localhost:3001/api/checkout/webhook
 ```
 
-<h1>Frontend: </h1>
+<h2>Frontend: </h2>
 
 <p>Run Frontend </p>
 
-``` 
+```
 cd frontend
+npm run start
+```
+
+<h2>Admin Panel: </h2>
+
+<p>Run Admin Panel </p>
+
+```
+cd admin
 npm run start
 ```
 

@@ -6,6 +6,7 @@ const userSlice = createSlice({
 		currentUser: null,
 		isFetching: false,
 		error: false,
+		activeScreen: '',
 	},
 	reducers: {
 		loginStart: (state) => {
@@ -24,9 +25,17 @@ const userSlice = createSlice({
 			state.isFetching = false;
 			state.error = false;
 		},
+		setActiveScreen: (state, action) => {
+			state.activeScreen = action.payload;
+		},
 	},
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } =
-	userSlice.actions;
+export const {
+	loginStart,
+	loginSuccess,
+	loginFailure,
+	logout,
+	setActiveScreen,
+} = userSlice.actions;
 export default userSlice.reducer;

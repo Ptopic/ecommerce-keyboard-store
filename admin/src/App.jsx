@@ -12,24 +12,11 @@ import NewProduct from './pages/newProduct/NewProduct';
 import Login from './pages/login/Login';
 
 import { useSelector } from 'react-redux';
+import Analytics from './pages/analytics/analytics';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
 	let admin = user?.data?.isAdmin;
-
-	// if (
-	// 	localStorage.getItem('persist:root').user != undefined ||
-	// 	user.data != null
-	// ) {
-	// 	if (localStorage.getItem('persist:root').user != undefined) {
-	// 		admin = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user)
-	// 			.currentUser?.data?.isAdmin;
-	// 	} else {
-	// 		admin = user?.data?.isAdmin;
-	// 	}
-	// } else {
-	// 	admin = false;
-	// }
 
 	return (
 		<Router>
@@ -40,6 +27,7 @@ function App() {
 						<Sidebar />
 						<Routes>
 							<Route exact path="/" element={<Home />} />
+							<Route exact path="/analytics" element={<Analytics />} />
 							<Route exact path="/users" element={<UserList />} />
 							<Route exact path="/user/:userId" element={<User />} />
 							<Route exact path="/newUser" element={<NewUser />} />
