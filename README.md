@@ -66,6 +66,4 @@ npm run start
 <h2>Todo: ✔️</h2>
 <br>
 
-👉 Notion TODO Link: <a href='https://www.notion.so/petartopic/Ecomerce-App-TODO-15e0fad0a2cb402ebefabdd6db860dfc?pvs=4'>LINK</a>
-
 <br>
