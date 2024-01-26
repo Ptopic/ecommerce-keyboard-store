@@ -108,6 +108,18 @@ const Navbar = () => {
 						</Link>
 					)}
 
+					{user.data && (
+						<Link
+							style={{
+								textDecoration: 'none',
+								color: 'black',
+							}}
+							to={'/userDetails'}
+						>
+							<AiOutlineUser size={26} />
+						</Link>
+					)}
+
 					<button type="button" onClick={() => toggleSearchOpen()}>
 						<AiOutlineSearch size={26} />
 					</button>
