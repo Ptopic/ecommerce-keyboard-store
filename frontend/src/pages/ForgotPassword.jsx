@@ -64,12 +64,14 @@ function ForgotPassword() {
 					{({ errors, touched }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<Field
-									name="email"
-									type="email"
-									placeholder="Email"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										name="email"
+										type="email"
+										placeholder="Email"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.email && touched.email ? (
 									<div className="error">{errors.email}</div>
 								) : null}

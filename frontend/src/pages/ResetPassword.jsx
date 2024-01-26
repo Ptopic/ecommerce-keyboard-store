@@ -49,7 +49,7 @@ function ForgotPassword() {
 				formikActions.resetForm();
 				toast.success(data.message);
 				// Navigate to login page
-				navigation('/login');	
+				navigation('/login');
 			}
 		} catch (error) {
 			formikActions.resetForm();
@@ -111,12 +111,14 @@ function ForgotPassword() {
 					{({ errors, touched }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<Field
-									placeholder="Password"
-									name="password"
-									type="password	"
-									autoCapitalize="off"
-								/>
+								<div className="input-container">
+									<Field
+										placeholder="Password"
+										name="password"
+										type="password	"
+										autoCapitalize="off"
+									/>
+								</div>
 								{errors.password && touched.password ? (
 									<div className="error">{errors.password}</div>
 								) : null}
