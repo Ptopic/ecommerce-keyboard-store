@@ -14,6 +14,8 @@ import Order from './pages/Order';
 import { useSelector } from 'react-redux';
 import { loadStripe } from '@stripe/stripe-js';
 
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -34,44 +36,64 @@ const App = () => {
 		console.log(user);
 	}, []);
 
+	// Mui theme
+	const theme = createTheme({
+		palette: {
+			primary: {
+				light: '#757ce8',
+				main: '#E81123',
+				dark: '#002884',
+				contrastText: '#fff',
+			},
+			secondary: {
+				light: '#ff7961',
+				main: '#f44336',
+				dark: '#ba000d',
+				contrastText: '#000',
+			},
+		},
+	});
+
 	return (
-		<Router>
-			<Routes>
-				<Route exact path="/" element={<Home />} />
-				<Route exact path="/products" element={<ProductList />} />
-				<Route exact path="/products/:category" element={<ProductList />} />
-				<Route exact path="/product/:id" element={<Product />} />
-				<Route
-					exact
-					path="/login"
-					element={user.length > 0 ? <Navigate to="/" /> : <Login />}
-				/>
-				<Route
-					exact
-					path="/forgot-password"
-					element={user.length > 0 ? <Navigate to="/" /> : <ForgotPassword />}
-				/>
-				<Route
-					exact
-					path="/register"
-					element={user.length > 0 ? <Navigate to="/" /> : <Register />}
-				/>
-				<Route
-					exact
-					path="/wishlist"
-					element={user.length == 0 ? <Navigate to="/login" /> : <Wishlist />}
-				/>
-				<Route exact path="/reset-password" element={<ResetPassword />} />
-				<Route exact path="/success" element={<Success />} />
-				<Route exast path="/checkout" element={<Checkout />} />
-				<Route
-					exast
-					path="/payment"
-					element={<Payment stripePromise={stripePromise} />}
-				/>
-				<Route exact path="/order/:id" element={<Order />} />
-			</Routes>
-		</Router>
+		<ThemeProvider theme={theme}>
+			<Router>
+				<Routes>
+					<Route exact path="/" element={<Home />} />
+					<Route exact path="/products" element={<ProductList />} />
+					<Route exact path="/products/:category" element={<ProductList />} />
+					<Route exact path="/product/:id" element={<Product />} />
+					<Route
+						exact
+						path="/login"
+						element={user.length > 0 ? <Navigate to="/" /> : <Login />}
+					/>
+					<Route
+						exact
+						path="/forgot-password"
+						element={user.length > 0 ? <Navigate to="/" /> : <ForgotPassword />}
+					/>
+					<Route
+						exact
+						path="/register"
+						element={user.length > 0 ? <Navigate to="/" /> : <Register />}
+					/>
+					<Route
+						exact
+						path="/wishlist"
+						element={user.length == 0 ? <Navigate to="/login" /> : <Wishlist />}
+					/>
+					<Route exact path="/reset-password" element={<ResetPassword />} />
+					<Route exact path="/success" element={<Success />} />
+					<Route exast path="/checkout" element={<Checkout />} />
+					<Route
+						exast
+						path="/payment"
+						element={<Payment stripePromise={stripePromise} />}
+					/>
+					<Route exact path="/order/:id" element={<Order />} />
+				</Routes>
+			</Router>
+		</ThemeProvider>
 	);
 };
 

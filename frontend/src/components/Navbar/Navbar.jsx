@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Badge } from '@material-ui/core';
+import Badge from '@mui/material/Badge';
+import { red } from '@mui/material/colors';
 import { motion as m, AnimatePresence } from 'framer-motion';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import {
@@ -118,7 +119,7 @@ const Navbar = () => {
 						<AiOutlineHeart size={26} />
 					</Link>
 					<div className="cart-icon" onClick={() => toggleCart()}>
-						<Badge badgeContent={quantity} color="secondary" scale="2">
+						<Badge badgeContent={quantity} color="primary" scale="2">
 							<AiOutlineShopping size={26} />
 						</Badge>
 					</div>
