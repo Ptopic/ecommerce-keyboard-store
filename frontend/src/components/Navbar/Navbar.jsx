@@ -114,7 +114,7 @@ const Navbar = () => {
 								textDecoration: 'none',
 								color: 'black',
 							}}
-							to={'/userDetails'}
+							to={'/user/details'}
 						>
 							<AiOutlineUser size={26} />
 						</Link>

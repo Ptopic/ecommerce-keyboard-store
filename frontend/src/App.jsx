@@ -22,6 +22,9 @@ import {
 	Route,
 	Navigate,
 } from 'react-router-dom';
+import UserDetails from './pages/UserDetails';
+import UserOrders from './pages/UserOrders';
+import UserChangePassword from './pages/UserChangePassword';
 
 const App = () => {
 	const [stripePromise, setStripePromise] = useState(null);
@@ -33,7 +36,6 @@ const App = () => {
 				'pk_test_51NzTW3CbgJlRmRdknFU2YQUNpvZslhliNO4CfK9EhxNWPz3f5e7HLAunH27UJOXnkyZI1NjjE3apVdHvYhdYiQNG00W3TfKPTI'
 			)
 		);
-		console.log(user);
 	}, []);
 
 	// Mui theme
@@ -81,6 +83,31 @@ const App = () => {
 						exact
 						path="/wishlist"
 						element={user.length == 0 ? <Navigate to="/login" /> : <Wishlist />}
+					/>
+					<Route
+						exact
+						path="/user/details"
+						element={
+							user.length == 0 ? <Navigate to="/login" /> : <UserDetails />
+						}
+					/>
+					<Route
+						exact
+						path="/user/orders"
+						element={
+							user.length == 0 ? <Navigate to="/login" /> : <UserOrders />
+						}
+					/>
+					<Route
+						exact
+						path="/user/changePassword"
+						element={
+							user.length == 0 ? (
+								<Navigate to="/login" />
+							) : (
+								<UserChangePassword />
+							)
+						}
 					/>
 					<Route exact path="/reset-password" element={<ResetPassword />} />
 					<Route exact path="/success" element={<Success />} />

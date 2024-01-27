@@ -34,6 +34,21 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		shippingInfo: {
+			type: Object,
+		},
+		billingInfo: {
+			type: Object,
+		},
+		tvrtka: {
+			type: String,
+		},
+		tvrtkaDostava: {
+			type: String,
+		},
+		oib: {
+			type: String,
+		},
 	},
 	{ timestamps: true }
 );

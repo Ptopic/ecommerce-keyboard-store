@@ -19,6 +19,8 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
 function Checkout() {
+	const user = useSelector((state) => state.user.currentUser);
+
 	const cart = useSelector((state) => state.cart);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -152,6 +154,7 @@ function Checkout() {
 				tvrtkaDostava: tvrtkaDostava,
 				oib: oib,
 				dostava: dostava,
+				userId: user.length > 0 ? user.data._id : '',
 			})
 		);
 
@@ -203,7 +206,7 @@ function Checkout() {
 									<Field
 										type="text"
 										name="email"
-										placeholder="Email"
+										placeholder="Email *"
 										autoCapitalize="off"
 									/>
 									{errors.email && touched.email ? (
@@ -212,7 +215,7 @@ function Checkout() {
 								</div>
 								{r1 && (
 									<div className="checkout-input">
-										<Field type="text" name="tvrtka" placeholder="Tvrtka" />
+										<Field type="text" name="tvrtka" placeholder="Tvrtka *" />
 										{errors.tvrtka && touched.tvrtka ? (
 											<div className="error">{errors.tvrtka}</div>
 										) : null}
@@ -220,45 +223,49 @@ function Checkout() {
 								)}
 								{r1 && (
 									<div className="checkout-input">
-										<Field type="number" name="oib" placeholder="OIB" />
+										<Field type="number" name="oib" placeholder="OIB *" />
 										{errors.oib && touched.oib ? (
 											<div className="error">{errors.oib}</div>
 										) : null}
 									</div>
 								)}
 								<div className="checkout-input">
-									<Field type="text" name="ime" placeholder="Ime" />
+									<Field type="text" name="ime" placeholder="Ime *" />
 									{errors.ime && touched.ime ? (
 										<div className="error">{errors.ime}</div>
 									) : null}
 								</div>
 
 								<div className="checkout-input">
-									<Field type="text" name="prezime" placeholder="Prezime" />
+									<Field type="text" name="prezime" placeholder="Prezime *" />
 									{errors.prezime && touched.prezime ? (
 										<div className="error">{errors.prezime}</div>
 									) : null}
 								</div>
 								<div className="checkout-input">
-									<Field type="text" name="adresa" placeholder="Adresa" />
+									<Field type="text" name="adresa" placeholder="Adresa *" />
 									{errors.adresa && touched.adresa ? (
 										<div className="error">{errors.adresa}</div>
 									) : null}
 								</div>
 								<div className="checkout-input">
-									<Field type="text" name="mjesto" placeholder="Mjesto" />
+									<Field type="text" name="mjesto" placeholder="Mjesto *" />
 									{errors.mjesto && touched.mjesto ? (
 										<div className="error">{errors.mjesto}</div>
 									) : null}
 								</div>
 								<div className="checkout-input">
-									<Field type="text" name="zip" placeholder="Poštanski broj" />
+									<Field
+										type="text"
+										name="zip"
+										placeholder="Poštanski broj *"
+									/>
 									{errors.zip && touched.zip ? (
 										<div className="error">{errors.zip}</div>
 									) : null}
 								</div>
 								<div className="checkout-input">
-									<Field type="text" name="telefon" placeholder="Telefon" />
+									<Field type="text" name="telefon" placeholder="Telefon *" />
 									{errors.telefon && touched.telefon ? (
 										<div className="error">{errors.telefon}</div>
 									) : null}
@@ -271,7 +278,7 @@ function Checkout() {
 									<Field
 										type="text"
 										name="email"
-										placeholder="Email"
+										placeholder="Email *"
 										autoCapitalize="off"
 									/>
 									{errors.email && touched.email ? (
@@ -281,26 +288,26 @@ function Checkout() {
 								<div className="checkout-form-left">
 									{r1 && (
 										<div className="checkout-input">
-											<Field type="text" name="tvrtka" placeholder="Tvrtka" />
+											<Field type="text" name="tvrtka" placeholder="Tvrtka *" />
 											{errors.tvrtka && touched.tvrtka ? (
 												<div className="error">{errors.tvrtka}</div>
 											) : null}
 										</div>
 									)}
 									<div className="checkout-input">
-										<Field type="text" name="ime" placeholder="Ime" />
+										<Field type="text" name="ime" placeholder="Ime *" />
 										{errors.ime && touched.ime ? (
 											<div className="error">{errors.ime}</div>
 										) : null}
 									</div>
 									<div className="checkout-input">
-										<Field type="text" name="mjesto" placeholder="Mjesto" />
+										<Field type="text" name="mjesto" placeholder="Mjesto *" />
 										{errors.mjesto && touched.mjesto ? (
 											<div className="error">{errors.mjesto}</div>
 										) : null}
 									</div>
 									<div className="checkout-input">
-										<Field type="text" name="adresa" placeholder="Adresa" />
+										<Field type="text" name="adresa" placeholder="Adresa *" />
 										{errors.adresa && touched.adresa ? (
 											<div className="error">{errors.adresa}</div>
 										) : null}
@@ -310,14 +317,14 @@ function Checkout() {
 								<div className="checkout-form-right">
 									{r1 && (
 										<div className="checkout-input">
-											<Field type="number" name="oib" placeholder="OIB" />
+											<Field type="number" name="oib" placeholder="OIB *" />
 											{errors.oib && touched.oib ? (
 												<div className="error">{errors.oib}</div>
 											) : null}
 										</div>
 									)}
 									<div className="checkout-input">
-										<Field type="text" name="prezime" placeholder="Prezime" />
+										<Field type="text" name="prezime" placeholder="Prezime *" />
 										{errors.prezime && touched.prezime ? (
 											<div className="error">{errors.prezime}</div>
 										) : null}
@@ -326,14 +333,14 @@ function Checkout() {
 										<Field
 											type="text"
 											name="zip"
-											placeholder="Poštanski broj"
+											placeholder="Poštanski broj *"
 										/>
 										{errors.zip && touched.zip ? (
 											<div className="error">{errors.zip}</div>
 										) : null}
 									</div>
 									<div className="checkout-input">
-										<Field type="text" name="telefon" placeholder="Telefon" />
+										<Field type="text" name="telefon" placeholder="Telefon *" />
 										{errors.telefon && touched.telefon ? (
 											<div className="error">{errors.telefon}</div>
 										) : null}
@@ -363,35 +370,43 @@ function Checkout() {
 								<div className="checkout-form-mobile">
 									{r1 && (
 										<div className="checkout-input">
-											<Field type="text" name="tvrtka2" placeholder="Tvrtka" />
+											<Field
+												type="text"
+												name="tvrtka2"
+												placeholder="Tvrtka *"
+											/>
 											{errors.tvrtka2 && touched.tvrtka2 ? (
 												<div className="error">{errors.tvrtka2}</div>
 											) : null}
 										</div>
 									)}
 									<div className="checkout-input">
-										<Field type="text" name="ime2" placeholder="Ime" />
+										<Field type="text" name="ime2" placeholder="Ime *" />
 										{errors.ime2 && touched.ime2 ? (
 											<div className="error">{errors.ime2}</div>
 										) : null}
 									</div>
 
 									<div className="checkout-input">
-										<Field type="text" name="prezime2" placeholder="Prezime" />
+										<Field
+											type="text"
+											name="prezime2"
+											placeholder="Prezime *"
+										/>
 										{errors.prezime2 && touched.prezime2 ? (
 											<div className="error">{errors.prezime2}</div>
 										) : null}
 									</div>
 
 									<div className="checkout-input">
-										<Field type="text" name="adresa2" placeholder="Adresa" />
+										<Field type="text" name="adresa2" placeholder="Adresa *" />
 										{errors.adresa2 && touched.adresa2 ? (
 											<div className="error">{errors.adresa2}</div>
 										) : null}
 									</div>
 
 									<div className="checkout-input">
-										<Field type="text" name="mjesto2" placeholder="Mjesto" />
+										<Field type="text" name="mjesto2" placeholder="Mjesto *" />
 										{errors.mjesto2 && touched.mjesto2 ? (
 											<div className="error">{errors.mjesto2}</div>
 										) : null}
@@ -401,14 +416,18 @@ function Checkout() {
 										<Field
 											type="text"
 											name="zip2"
-											placeholder="Poštanski broj"
+											placeholder="Poštanski broj *"
 										/>
 										{errors.zip2 && touched.zip2 ? (
 											<div className="error">{errors.zip2}</div>
 										) : null}
 									</div>
 									<div className="checkout-input">
-										<Field type="text" name="telefon2" placeholder="Telefon" />
+										<Field
+											type="text"
+											name="telefon2"
+											placeholder="Telefon *"
+										/>
 										{errors.telefon2 && touched.telefon2 ? (
 											<div className="error">{errors.telefon2}</div>
 										) : null}
@@ -424,7 +443,7 @@ function Checkout() {
 												<Field
 													type="text"
 													name="tvrtka2"
-													placeholder="Tvrtka"
+													placeholder="Tvrtka *"
 												/>
 												{errors.tvrtka2 && touched.tvrtka2 ? (
 													<div className="error">{errors.tvrtka2}</div>
@@ -432,19 +451,27 @@ function Checkout() {
 											</div>
 										)}
 										<div className="checkout-input">
-											<Field type="text" name="ime2" placeholder="Ime" />
+											<Field type="text" name="ime2" placeholder="Ime *" />
 											{errors.ime2 && touched.ime2 ? (
 												<div className="error">{errors.ime2}</div>
 											) : null}
 										</div>
 										<div className="checkout-input">
-											<Field type="text" name="mjesto2" placeholder="Mjesto" />
+											<Field
+												type="text"
+												name="mjesto2"
+												placeholder="Mjesto *"
+											/>
 											{errors.mjesto2 && touched.mjesto2 ? (
 												<div className="error">{errors.mjesto2}</div>
 											) : null}
 										</div>
 										<div className="checkout-input">
-											<Field type="text" name="adresa2" placeholder="Adresa" />
+											<Field
+												type="text"
+												name="adresa2"
+												placeholder="Adresa *"
+											/>
 											{errors.adresa2 && touched.adresa2 ? (
 												<div className="error">{errors.adresa2}</div>
 											) : null}
@@ -455,7 +482,7 @@ function Checkout() {
 											<Field
 												type="text"
 												name="prezime2"
-												placeholder="Prezime"
+												placeholder="Prezime *"
 											/>
 											{errors.prezime2 && touched.prezime2 ? (
 												<div className="error">{errors.prezime2}</div>
@@ -465,7 +492,7 @@ function Checkout() {
 											<Field
 												type="text"
 												name="zip2"
-												placeholder="Poštanski broj"
+												placeholder="Poštanski broj *"
 											/>
 											{errors.zip2 && touched.zip2 ? (
 												<div className="error">{errors.zip2}</div>
@@ -475,7 +502,7 @@ function Checkout() {
 											<Field
 												type="text"
 												name="telefon2"
-												placeholder="Telefon"
+												placeholder="Telefon *"
 											/>
 											{errors.telefon2 && touched.telefon2 ? (
 												<div className="error">{errors.telefon2}</div>

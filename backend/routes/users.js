@@ -6,6 +6,7 @@ const {
 } = require('../controllers/verifyToken');
 
 const {
+	userChangePassword,
 	changePassword,
 	deleteUser,
 	getUser,
@@ -20,7 +21,10 @@ router.get('/count', verifyTokenAndAdmin, getCount);
 // Get user stats (admin only)
 router.get('/stats', verifyTokenAndAdmin, getUserStats);
 
-// Change user details
+// User change password
+router.put('/changePassword', userChangePassword);
+
+// Change user password
 router.put('/:id', verifyTokenAndAuthorization, changePassword);
 
 // Delete user (admin only)

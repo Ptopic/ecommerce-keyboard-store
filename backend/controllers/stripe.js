@@ -71,7 +71,8 @@ const { mailTransport, generateReceipt } = require('../utils/mail');
 // };
 
 exports.stripe = async (req, res) => {
-	const { amount, items, tvrtka, tvrtkaDostava, oib } = req.body;
+	const { amount, items, tvrtka, tvrtkaDostava, oib, userId } = req.body;
+	console.log(userId);
 
 	try {
 		// Create customer
@@ -113,6 +114,7 @@ exports.stripe = async (req, res) => {
 				tvrtka,
 				tvrtkaDostava,
 				oib,
+				userId,
 			},
 		});
 
@@ -201,6 +203,7 @@ exports.stripeWebHook = async (req, res) => {
 				tvrtka: paymentIntent.metadata.tvrtka,
 				tvrtkaDostava: paymentIntent.metadata.tvrtkaDostava,
 				oib: paymentIntent.metadata.oib,
+				userId: paymentIntent.metadata.userId,
 			});
 
 			await order.save();

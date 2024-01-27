@@ -1,0 +1,84 @@
+.user-orders-container {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    padding: 4rem 15rem;
+    gap: 4rem;
+}
+
+.user-orders-content {}
+
+.user-orders-content h1 {
+    margin-bottom: 4rem;
+    font-size: 3.2rem;
+}
+
+.table {
+    font-size: 1.8rem;
+    border: 1.5px solid var(--bg1000);
+    border-radius: .4rem;
+    border-collapse: collapse;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: scroll;
+}
+
+.seperator {
+    width: 1px;
+    height: 20px;
+    background: white;
+    margin-right: 1rem;
+}
+
+.table-head {
+    background: black;
+}
+
+.table-head tr>th:first-child {
+    padding-left: 1rem;
+}
+
+.table-head tr>th {
+    text-align: center;
+    border-bottom: 1.5px solid var(--bg1000);
+    padding: 1rem 1rem 1rem 0;
+}
+
+.table-head tr>th>a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+}
+
+.table-head tr>th>a>p {
+    font-weight: bolder;
+    margin-right: 1rem;
+}
+
+.table-content tr>td,
+th {
+    padding: 1rem 1rem 1rem 0;
+}
+
+.table-content tr td {
+    padding-left: 1rem;
+}
+
+.table-content tr>td {
+    font-size: 1.6rem;
+    text-align: start;
+}
+
+.table-content tr>td>a {
+    color: black;
+    text-decoration: underline;
+}
+
+.table-content-row {
+    box-sizing: border-box;
+    border: 1.5px solid var(--bg1000);
+}
+
+.table-content-row:hover {
+    background: var(--bg800);
+}

@@ -8,8 +8,8 @@ const orderSchema = new mongoose.Schema(
 		receiptLink: {
 			type: String,
 		},
-		user: {
-			type: Object,
+		userId: {
+			type: String,
 		},
 		products: [],
 		amount: {

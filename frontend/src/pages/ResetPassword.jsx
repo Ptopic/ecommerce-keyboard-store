@@ -9,6 +9,9 @@ import { request } from '../api';
 import { Formik, Form, Field, useFormik } from 'formik';
 import * as Yup from 'yup';
 
+// Icons
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+
 // Components
 import Navbar from '../components/Navbar/Navbar';
 import Button from '../components/Button/Button';
@@ -19,10 +22,9 @@ import { toast, Toaster } from 'react-hot-toast';
 import './Login.css';
 
 function ForgotPassword() {
+	const [passwordShow, setPasswordShow] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const navigation = useNavigate();
-	let [searchParams, setSearchParams] = useSearchParams();
-	const [passwordValue, setPasswordValue] = useState('');
 	const [error, setError] = useState('');
 	const { token, id } = queryString.parse(location.search);
 
@@ -93,6 +95,11 @@ function ForgotPassword() {
 			</>
 		);
 	}
+
+	const togglePasswordShow = () => {
+		setPasswordShow(!passwordShow);
+	};
+
 	return (
 		<>
 			<Toaster />
@@ -113,11 +120,18 @@ function ForgotPassword() {
 							<div className="login-form-inputs">
 								<div className="input-container">
 									<Field
-										placeholder="Password"
 										name="password"
-										type="password	"
+										placeholder="Password *"
+										type={passwordShow ? 'text' : 'password'}
 										autoCapitalize="off"
 									/>
+									<button type="button" onClick={() => togglePasswordShow()}>
+										{passwordShow ? (
+											<FaRegEyeSlash size={24} />
+										) : (
+											<FaRegEye size={24} />
+										)}
+									</button>
 								</div>
 								{errors.password && touched.password ? (
 									<div className="error">{errors.password}</div>

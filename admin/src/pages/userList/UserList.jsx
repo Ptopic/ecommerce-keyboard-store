@@ -15,6 +15,7 @@ import { admin_request } from '../../api';
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
+import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 
 export default function UserList() {
 	const dispatch = useDispatch();

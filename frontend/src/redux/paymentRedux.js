@@ -10,6 +10,7 @@ const paymentSlice = createSlice({
 		tvrtka: '',
 		tvrtkaDostava: '',
 		oib: '',
+		userId: '',
 	},
 	reducers: {
 		setState: (state, action) => {
@@ -20,6 +21,7 @@ const paymentSlice = createSlice({
 			state.tvrtka = action.payload.tvrtka;
 			state.tvrtkaDostava = action.payload.tvrtkaDostava;
 			state.oib = action.payload.oib;
+			state.userId = action.payload.userId;
 		},
 		resetState: (state) => {
 			state.stripePromise = '';
@@ -29,6 +31,7 @@ const paymentSlice = createSlice({
 			state.tvrtka = '';
 			state.tvrtkaDostava = '';
 			state.oib = '';
+			state.userId = '';
 		},
 	},
 });

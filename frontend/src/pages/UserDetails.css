@@ -1,0 +1,36 @@
+.user-details-container {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    padding: 4rem 15rem;
+    gap: 4rem;
+}
+
+.user-sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-sidebar>a {
+    text-decoration: none;
+    color: black;
+    padding: 1rem 2rem;
+    border-radius: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.user-sidebar>a:hover {
+    background: #e9f6ff;
+    color: black;
+}
+
+.user-sidebar .active {
+    background: black;
+    color: white;
+}
+
+.user-content {}
+
+.user-content-left h1 {
+    margin-bottom: 4rem;
+    font-size: 3.2rem;
+}

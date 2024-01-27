@@ -24,14 +24,12 @@ function Payment(props) {
 			tvrtka: paymentInfo.tvrtka,
 			tvrtkaDostava: paymentInfo.tvrtkaDostava,
 			oib: paymentInfo.oib,
+			userId: paymentInfo.userId,
 		});
 
 		setClientSecret(res.data.data);
 	};
 	useEffect(() => {
-		// Get data from redux state
-		console.log(paymentInfo);
-
 		configureStripe();
 	}, []);
 

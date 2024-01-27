@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const {
 	verifyToken,
+	verifyTokenAuthenticity,
 	verifyTokenAndAuthorization,
 	verifyTokenAndAdmin,
 } = require('../controllers/verifyToken');
@@ -25,7 +26,7 @@ router.get('/count', verifyTokenAndAdmin, getOrdersCount);
 router.get('/income', verifyTokenAndAdmin, getIncome);
 
 // Create Order
-router.post('/', verifyTokenAndAuthorization, createOrder);
+router.post('/', verifyTokenAndAdmin, createOrder);
 
 // Get order by order id
 router.get('/getByOrderId', getOrderByOrderId);
@@ -37,7 +38,7 @@ router.put('/:id', verifyTokenAndAdmin, editOrder);
 router.delete('/:id', verifyTokenAndAdmin, deleteOrder);
 
 // Get user order
-router.get('/find/:userId', verifyTokenAndAuthorization, getUserOrder);
+router.get('/find/:userId', verifyTokenAuthenticity, getUserOrder);
 
 // Get all orders (admin only)
 router.get('/', verifyTokenAndAdmin, getAllOrders);
