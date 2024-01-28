@@ -25,6 +25,7 @@ import {
 import UserDetails from './pages/UserDetails';
 import UserOrders from './pages/UserOrders';
 import UserChangePassword from './pages/UserChangePassword';
+import UserRegisterThanks from './pages/UserRegisterThanks';
 
 const App = () => {
 	const [stripePromise, setStripePromise] = useState(null);
@@ -106,6 +107,17 @@ const App = () => {
 								<Navigate to="/login" />
 							) : (
 								<UserChangePassword />
+							)
+						}
+					/>
+					<Route
+						exact
+						path="/user/registerThanks"
+						element={
+							user.length == 0 ? (
+								<Navigate to="/login" />
+							) : (
+								<UserRegisterThanks />
 							)
 						}
 					/>

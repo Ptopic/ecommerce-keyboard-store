@@ -1,0 +1,28 @@
+.registration-success-container {
+    text-align: center;
+}
+
+.registration-success-container-btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4rem;
+    gap: 10rem;
+}
+
+.btn.left {
+    display: flex;
+    justify-content: center;
+}
+
+.btn.left svg {
+    margin-right: 3rem;
+}
+
+.btn.right {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.btn.right svg {
+    margin-left: 3rem;
+}

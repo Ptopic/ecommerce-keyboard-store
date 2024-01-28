@@ -60,7 +60,7 @@ const Register = () => {
 		} else {
 			formikActions.resetForm();
 			// Redirect to login page
-			navigate('/login');
+			navigate('/user/registerThanks');
 		}
 	};
 
