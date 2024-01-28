@@ -15,7 +15,8 @@ function Payment(props) {
 	const { stripePromise } = props;
 	const [clientSecret, setClientSecret] = useState(null);
 
-	const configureStripe = async () => {
+	const configureStripe = async () => {;
+
 		// Add all form data to metadata of payment
 		const res = await request.post('/checkout/pay', {
 			amount:

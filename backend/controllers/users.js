@@ -66,6 +66,42 @@ exports.userChangePassword = async (req, res) => {
 	}
 };
 
+exports.changeUserInfo = async (req, res) => {
+	const {
+		userId,
+		firstName,
+		lastName,
+		shippingInfo,
+		billingInfo,
+		tvrtka,
+		tvrtkaDostava,
+		oib,
+	} = req.body;
+
+	console.log(userId);
+	try {
+		const updatedUser = await User.findByIdAndUpdate(
+			userId,
+			{
+				$set: {
+					firstName: firstName,
+					lastName: lastName,
+					shippingInfo: shippingInfo,
+					billingInfo: billingInfo,
+					tvrtka: tvrtka,
+					tvrtkaDostava: tvrtkaDostava,
+					oib: oib,
+				},
+			},
+			{ new: true }
+		);
+
+		return res.status(200).send({ success: true, data: updatedUser });
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
 exports.deleteUser = async (req, res) => {
 	try {
 		await User.findByIdAndDelete(req.params.id);

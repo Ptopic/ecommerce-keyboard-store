@@ -14,15 +14,24 @@ import Navbar from '../components/Navbar/Navbar';
 import Button from '../components/Button/Button';
 import { Link } from 'react-router-dom';
 
+// Redux
+import { setUserData } from '../redux/userRedux';
+import { useSelector, useDispatch } from 'react-redux';
+import { userRequest } from '../api';
+
 function UserDetails() {
-	const [r1, setR1] = useState(false);
+	const dispatch = useDispatch();
+	let user = useSelector((state) => state.user.currentUser);
+	user = user.data;
+
+	const [r1, setR1] = useState(user.tvrtka !== '' ? true : false);
 	const [dostava, setDostava] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	const validationSchema = Yup.object().shape({
 		email: Yup.string().email('Invalid email').required('Email is required'),
-		ime: Yup.string().required('Ime is required'),
-		prezime: Yup.string().required('Prezime is required'),
+		firstName: Yup.string().required('Ime is required'),
+		lastName: Yup.string().required('Prezime is required'),
 		mjesto: Yup.string().required('Mjesto is required'),
 		zip: Yup.string().required('Zip is required'),
 		adresa: Yup.string().required('Adresa is required'),
@@ -33,8 +42,8 @@ function UserDetails() {
 		email: Yup.string().email('Invalid email').required('Email is required'),
 		tvrtka: Yup.string().required('Tvrtka is required'),
 		oib: Yup.number().required('OIB is required'),
-		ime: Yup.string().required('Ime is required'),
-		prezime: Yup.string().required('Prezime is required'),
+		firstName: Yup.string().required('Ime is required'),
+		lastName: Yup.string().required('Prezime is required'),
 		mjesto: Yup.string().required('Mjesto is required'),
 		zip: Yup.string().required('Zip is required'),
 		adresa: Yup.string().required('Adresa is required'),
@@ -43,8 +52,8 @@ function UserDetails() {
 
 	const validationSchemaWithDostava = Yup.object().shape({
 		email: Yup.string().email('Invalid email').required('Email is required'),
-		ime: Yup.string().required('Ime is required'),
-		prezime: Yup.string().required('Prezime is required'),
+		firstName: Yup.string().required('Ime is required'),
+		lastName: Yup.string().required('Prezime is required'),
 		mjesto: Yup.string().required('Mjesto is required'),
 		zip: Yup.string().required('Zip is required'),
 		adresa: Yup.string().required('Adresa is required'),
@@ -62,8 +71,8 @@ function UserDetails() {
 		email: Yup.string().email('Invalid email').required('Email is required'),
 		tvrtka: Yup.string().required('Tvrtka is required'),
 		oib: Yup.number().required('OIB is required'),
-		ime: Yup.string().required('Ime is required'),
-		prezime: Yup.string().required('Prezime is required'),
+		firstName: Yup.string().required('Ime is required'),
+		lastName: Yup.string().required('Prezime is required'),
 		mjesto: Yup.string().required('Mjesto is required'),
 		zip: Yup.string().required('Zip is required'),
 		adresa: Yup.string().required('Adresa is required'),
@@ -79,31 +88,43 @@ function UserDetails() {
 	});
 
 	const initialValues = {
-		email: '',
-		tvrtka: '',
-		oib: '',
-		ime: '',
-		prezime: '',
-		mjesto: '',
-		zip: '',
-		adresa: '',
-		telefon: '',
+		email: user.email ? user.email : '',
+		tvrtka: user.tvrtka ? user.tvrtka : '',
+		oib: user.oib ? user.oib : '',
+		firstName: user.firstName ? user.firstName : '',
+		lastName: user.lastName ? user.lastName : '',
+		mjesto: user.billingInfo.address.city ? user.billingInfo.address.city : '',
+		zip: user.billingInfo.address.postal_code
+			? user.billingInfo.address.postal_code
+			: '',
+		adresa: user.billingInfo.address.line1
+			? user.billingInfo.address.line1
+			: '',
+		telefon: user.billingInfo.phone ? user.billingInfo.phone : '',
 		// Additional shipping info
-		tvrtka2: '',
-		ime2: '',
-		prezime2: '',
-		mjesto2: '',
-		zip2: '',
-		adresa2: '',
-		telefon2: '',
+		tvrtka2: user.tvrtkaDostava ? user.tvrtkaDostava : '',
+		ime2: user.shippingInfo.firstName ? user.shippingInfo.firstName : '',
+		prezime2: user.shippingInfo.lastName ? user.shippingInfo.lastName : '',
+		mjesto2: user.shippingInfo.address.city
+			? user.shippingInfo.address.city
+			: '',
+		zip2: user.shippingInfo.address.postal_code
+			? user.shippingInfo.address.postal_code
+			: '',
+		adresa2: user.shippingInfo.address.line1
+			? user.shippingInfo.address.line1
+			: '',
+		telefon2: user.shippingInfo.phone ? user.shippingInfo.phone : '',
 	};
 
 	const editUserInfo = async (values, formikActions) => {
 		setIsProcessing(true);
 
 		// Set users shipping and billing info
-		const billingDetails = {
-			name: values.ime + ' ' + values.prezime,
+		const billingInfo = {
+			firstName: values.firstName,
+			lastName: values.lastName,
+			fullName: values.firstName + ' ' + values.lastName,
 			email: values.email,
 			phone: values.telefon,
 			address: {
@@ -115,8 +136,10 @@ function UserDetails() {
 			},
 		};
 
-		const shippingDetails = {
-			name: dostava
+		const shippingInfo = {
+			firstName: dostava ? values.ime2 : values.ime,
+			lastName: dostava ? values.prezime2 : values.prezime,
+			fullName: dostava
 				? values.ime2 + ' ' + values.prezime2
 				: values.ime + ' ' + values.prezime,
 			address: {
@@ -135,7 +158,23 @@ function UserDetails() {
 		const tvrtkaDostava = dostava ? values.tvrtka2 : values.tvrtka;
 		const oib = values.oib;
 
+		console.log(values);
+
 		// Api call to update users info
+		const res = await userRequest.put('/user/changeUserInfo', {
+			userId: user._id,
+			...values,
+			shippingInfo,
+			billingInfo,
+			tvrtka,
+			tvrtkaDostava,
+			oib,
+		});
+
+		// Change redux state data of user
+		dispatch(setUserData(res.data.data));
+
+		console.log(res);
 
 		setIsProcessing(false);
 	};
@@ -220,16 +259,20 @@ function UserDetails() {
 										</div>
 									)}
 									<div className="checkout-input">
-										<Field type="text" name="ime" placeholder="Ime *" />
-										{errors.ime && touched.ime ? (
-											<div className="error">{errors.ime}</div>
+										<Field type="text" name="firstName" placeholder="Ime *" />
+										{errors.firstName && touched.firstName ? (
+											<div className="error">{errors.firstName}</div>
 										) : null}
 									</div>
 
 									<div className="checkout-input">
-										<Field type="text" name="prezime" placeholder="Prezime *" />
-										{errors.prezime && touched.prezime ? (
-											<div className="error">{errors.prezime}</div>
+										<Field
+											type="text"
+											name="lastName"
+											placeholder="Prezime *"
+										/>
+										{errors.lastName && touched.lastName ? (
+											<div className="error">{errors.lastName}</div>
 										) : null}
 									</div>
 									<div className="checkout-input">
@@ -289,9 +332,9 @@ function UserDetails() {
 											</div>
 										)}
 										<div className="checkout-input">
-											<Field type="text" name="ime" placeholder="Ime *" />
-											{errors.ime && touched.ime ? (
-												<div className="error">{errors.ime}</div>
+											<Field type="text" name="firstName" placeholder="Ime *" />
+											{errors.firstName && touched.firstName ? (
+												<div className="error">{errors.firstName}</div>
 											) : null}
 										</div>
 										<div className="checkout-input">
@@ -320,11 +363,11 @@ function UserDetails() {
 										<div className="checkout-input">
 											<Field
 												type="text"
-												name="prezime"
+												name="lastName"
 												placeholder="Prezime *"
 											/>
-											{errors.prezime && touched.prezime ? (
-												<div className="error">{errors.prezime}</div>
+											{errors.lastName && touched.lastName ? (
+												<div className="error">{errors.lastName}</div>
 											) : null}
 										</div>
 										<div className="checkout-input">
@@ -449,19 +492,19 @@ function UserDetails() {
 								{/* ----- Desktop checkout form dostava ----- */}
 								{dostava && (
 									<div className="checkout-form">
+										{r1 && (
+											<div className="checkout-input full email">
+												<Field
+													type="text"
+													name="tvrtka2"
+													placeholder="Tvrtka *"
+												/>
+												{errors.tvrtka2 && touched.tvrtka2 ? (
+													<div className="error">{errors.tvrtka2}</div>
+												) : null}
+											</div>
+										)}
 										<div className="checkout-form-left">
-											{r1 && (
-												<div className="checkout-input">
-													<Field
-														type="text"
-														name="tvrtka2"
-														placeholder="Tvrtka *"
-													/>
-													{errors.tvrtka2 && touched.tvrtka2 ? (
-														<div className="error">{errors.tvrtka2}</div>
-													) : null}
-												</div>
-											)}
 											<div className="checkout-input">
 												<Field type="text" name="ime2" placeholder="Ime *" />
 												{errors.ime2 && touched.ime2 ? (

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {
 	verifyToken,
+	verifyTokenAuthenticity,
 	verifyTokenAndAuthorization,
 	verifyTokenAndAdmin,
 } = require('../controllers/verifyToken');
@@ -8,6 +9,7 @@ const {
 const {
 	userChangePassword,
 	changePassword,
+	changeUserInfo,
 	deleteUser,
 	getUser,
 	getAllUsers,
@@ -23,6 +25,9 @@ router.get('/stats', verifyTokenAndAdmin, getUserStats);
 
 // User change password
 router.put('/changePassword', userChangePassword);
+
+// User change details
+router.put('/changeUserInfo', verifyTokenAuthenticity, changeUserInfo);
 
 // Change user password
 router.put('/:id', verifyTokenAndAuthorization, changePassword);
