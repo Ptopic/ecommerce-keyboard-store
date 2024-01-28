@@ -36,11 +36,11 @@ const userSchema = new mongoose.Schema(
 		},
 		shippingInfo: {
 			type: Object,
-			default: {},
+			default: null,
 		},
 		billingInfo: {
 			type: Object,
-			default: {},
+			default: null,
 		},
 		tvrtka: {
 			type: String,

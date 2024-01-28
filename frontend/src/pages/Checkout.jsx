@@ -94,28 +94,19 @@ function Checkout() {
 		oib: user.oib ? user.oib : '',
 		firstName: user.firstName ? user.firstName : '',
 		lastName: user.lastName ? user.lastName : '',
-		mjesto: user.billingInfo.address.city ? user.billingInfo.address.city : '',
-		zip: user.billingInfo.address.postal_code
-			? user.billingInfo.address.postal_code
-			: '',
-		adresa: user.billingInfo.address.line1
-			? user.billingInfo.address.line1
-			: '',
-		telefon: user.billingInfo.phone ? user.billingInfo.phone : '',
+		mjesto: user.billingInfo != null ? user.billingInfo.address.city : '',
+		zip: user.billingInfo != null ? user.billingInfo.address.postal_code : '',
+		adresa: user.billingInfo != null ? user.billingInfo.address.line1 : '',
+		telefon: user.billingInfo != null ? user.billingInfo.phone : '',
 		// Additional shipping info
 		tvrtka2: user.tvrtkaDostava ? user.tvrtkaDostava : '',
-		ime2: user.shippingInfo.firstName ? user.shippingInfo.firstName : '',
-		prezime2: user.shippingInfo.lastName ? user.shippingInfo.lastName : '',
-		mjesto2: user.shippingInfo.address.city
-			? user.shippingInfo.address.city
-			: '',
-		zip2: user.shippingInfo.address.postal_code
-			? user.shippingInfo.address.postal_code
-			: '',
-		adresa2: user.shippingInfo.address.line1
-			? user.shippingInfo.address.line1
-			: '',
-		telefon2: user.shippingInfo.phone ? user.shippingInfo.phone : '',
+		ime2: user.shippingInfo != null ? user.shippingInfo.firstName : '',
+		prezime2: user.shippingInfo != null ? user.shippingInfo.lastName : '',
+		mjesto2: user.shippingInfo != null ? user.shippingInfo.address.city : '',
+		zip2:
+			user.shippingInfo != null ? user.shippingInfo.address.postal_code : '',
+		adresa2: user.shippingInfo != null ? user.shippingInfo.address.line1 : '',
+		telefon2: user.shippingInfo != null ? user.shippingInfo.phone : '',
 	};
 
 	const goToCheckout = async (values, formikActions) => {

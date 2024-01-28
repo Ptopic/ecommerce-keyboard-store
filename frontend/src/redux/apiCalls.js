@@ -21,9 +21,11 @@ export const login = async (dispatch, userCredentials) => {
 	}
 };
 
-export const register = async (userCredentials) => {
+export const register = async (dispatch, userCredentials) => {
 	try {
 		const res = await request.post('/auth/register', userCredentials);
+		// Set user in redux when user registers
+		dispatch(loginSuccess(res.data));
 		return res.data;
 	} catch (error) {
 		return catchError(error);

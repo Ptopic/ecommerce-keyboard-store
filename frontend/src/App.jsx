@@ -113,13 +113,7 @@ const App = () => {
 					<Route
 						exact
 						path="/user/registerThanks"
-						element={
-							user.length == 0 ? (
-								<Navigate to="/login" />
-							) : (
-								<UserRegisterThanks />
-							)
-						}
+						element={<UserRegisterThanks />}
 					/>
 					<Route exact path="/reset-password" element={<ResetPassword />} />
 					<Route exact path="/success" element={<Success />} />

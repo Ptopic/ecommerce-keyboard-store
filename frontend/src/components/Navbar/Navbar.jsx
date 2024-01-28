@@ -23,7 +23,10 @@ import logo from '../../assets/logo3.png';
 import NavbarLink from './NavbarLink';
 import SearchModal from '../SearchModal/SearchModal';
 
+import { useNavigate } from 'react-router-dom';
+
 const Navbar = () => {
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [navOpen, setNavOpen] = useState(false);
 	const [searchOpen, setSearchOpen] = useState(false);
@@ -63,6 +66,7 @@ const Navbar = () => {
 
 	const handleLogOut = () => {
 		dispatch(logout());
+		navigate('/');
 		window.location.reload();
 	};
 

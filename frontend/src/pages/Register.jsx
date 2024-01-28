@@ -26,7 +26,11 @@ import { toast, Toaster } from 'react-hot-toast';
 
 import { useNavigate } from 'react-router-dom';
 
+// Redux
+import { useDispatch } from 'react-redux';
+
 const Register = () => {
+	const dispatch = useDispatch();
 	const [passwordShow, setPasswordShow] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
@@ -51,7 +55,7 @@ const Register = () => {
 
 	const handleRegister = async (values, formikActions) => {
 		setIsLoading(true);
-		const res = await register({
+		const res = await register(dispatch, {
 			...values,
 		});
 		setIsLoading(false);
@@ -59,6 +63,7 @@ const Register = () => {
 			toast.error(res.error);
 		} else {
 			formikActions.resetForm();
+
 			// Redirect to login page
 			navigate('/user/registerThanks');
 		}

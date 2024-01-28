@@ -171,9 +171,21 @@ exports.register = async (req, res) => {
 			.send({ success: false, error: 'Some user information is missing!' });
 	}
 
+	// Generate access token (same when login so that user is automaticly logged in when registered)
+
+	const accessToken = jwt.sign(
+		{
+			id: newUser._id,
+		},
+		process.env.JWT_SECRET,
+		{ expiresIn: '3d' }
+	);
+
 	try {
 		const savedUser = await newUser.save();
-		return res.status(201).send({ success: true, data: savedUser });
+		return res
+			.status(201)
+			.send({ success: true, data: savedUser, token: accessToken });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}
