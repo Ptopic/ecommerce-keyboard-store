@@ -58,7 +58,7 @@ function UserChangePassword() {
 				userId: user.data._id,
 				...values,
 			});
-			console.log(res);
+			toast.success('Your password was succesfully changed!');
 			formikActions.resetForm();
 		} catch (error) {
 			toast.error(error.response.data.error);

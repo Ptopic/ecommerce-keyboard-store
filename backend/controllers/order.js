@@ -81,8 +81,17 @@ exports.deleteOrder = async (req, res) => {
 };
 
 exports.getUserOrder = async (req, res) => {
+	const { sort, direction } = req.query;
+
 	try {
-		const order = await Order.find({ userId: req.params.userId });
+		let order;
+		if (sort && direction) {
+			order = await Order.find({ userId: req.params.userId }).sort([
+				[sort, direction],
+			]);
+		} else {
+			order = await Order.find({ userId: req.params.userId });
+		}
 		return res.status(200).send({ success: true, data: order });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });

@@ -19,6 +19,8 @@ import { setUserData } from '../redux/userRedux';
 import { useSelector, useDispatch } from 'react-redux';
 import { userRequest } from '../api';
 
+import { toast, Toaster } from 'react-hot-toast';
+
 function UserDetails() {
 	const dispatch = useDispatch();
 	let user = useSelector((state) => state.user.currentUser);
@@ -153,26 +155,31 @@ function UserDetails() {
 		console.log(values);
 
 		// Api call to update users info
-		const res = await userRequest.put('/user/changeUserInfo', {
-			userId: user._id,
-			...values,
-			shippingInfo,
-			billingInfo,
-			tvrtka,
-			tvrtkaDostava,
-			oib,
-		});
+		try {
+			const res = await userRequest.put('/user/changeUserInfo', {
+				userId: user._id,
+				...values,
+				shippingInfo,
+				billingInfo,
+				tvrtka,
+				tvrtkaDostava,
+				oib,
+			});
+			toast.success('Your info was succesfully updated!');
 
-		// Change redux state data of user
-		dispatch(setUserData(res.data.data));
+			// Change redux state data of user
+			dispatch(setUserData(res.data.data));
 
-		console.log(res);
-
-		setIsProcessing(false);
+			setIsProcessing(false);
+		} catch (error) {
+			toast.error(error.response.data.error);
+			setIsProcessing(false);
+		}
 	};
 
 	return (
 		<div className="user-details">
+			<Toaster />
 			<Navbar />
 
 			<div className="user-details-container">

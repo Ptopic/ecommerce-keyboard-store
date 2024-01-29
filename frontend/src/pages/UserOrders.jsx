@@ -21,12 +21,27 @@ import { useSelector } from 'react-redux';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { userRequest } from '../api';
 
+import { useLocation, useSearchParams } from 'react-router-dom';
+
 function UserOrders() {
 	const user = useSelector((state) => state.user.currentUser);
 	const [orders, setOrders] = useState([]);
 
+	// Sorting params
+	const [searchParams, setSearchParams] = useSearchParams();
+	const sort = searchParams.get('sort');
+	const direction = searchParams.get('direction');
+
+	console.log(sort, direction);
+
+	// Get all orders from user
+
 	const getUsersOrders = async () => {
 		const res = await userRequest.get('/orders/find/' + user.data._id, {
+			params: {
+				sort: sort,
+				direction: direction,
+			},
 			headers: { token: user.token },
 		});
 		setOrders(res.data.data);
@@ -35,6 +50,18 @@ function UserOrders() {
 		// Get all orders from user
 		getUsersOrders();
 	}, []);
+
+	const filterDirectionIcons = (fieldName) => {
+		if (sort == fieldName) {
+			if (direction == 'asc') {
+				return <FaSortAlphaDown color="white" />;
+			} else {
+				return <FaSortAlphaDownAlt color="white" />;
+			}
+		} else {
+			return <FaSortAlphaDown color="white" />;
+		}
+	};
 
 	return (
 		<div className="user-orders">
@@ -58,29 +85,46 @@ function UserOrders() {
 						<thead className="table-head">
 							<tr>
 								<th>
-									<a>
+									<a
+										href={`/user/orders?sort=orderNumber&direction=${
+											direction == 'asc' ? 'desc' : 'asc'
+										}`}
+									>
 										<p>Broj narudžbe</p>
+										{filterDirectionIcons('orderNumber')}
 									</a>
 								</th>
 								<th>
-									<a href="/user/orders?sort=datum">
+									<a
+										href={`/user/orders?sort=createdAt&direction=${
+											direction == 'asc' ? 'desc' : 'asc'
+										}`}
+									>
 										<div className="seperator"></div>
 										<p>Datum</p>
-										<FaSortAlphaDown color="white" />
+										{filterDirectionIcons('createdAt')}
 									</a>
 								</th>
 								<th>
-									<a href="/user/orders?sort=status">
+									<a
+										href={`/user/orders?sort=status&direction=${
+											direction == 'asc' ? 'desc' : 'asc'
+										}`}
+									>
 										<div className="seperator"></div>
 										<p>Status</p>
-										<FaSortAlphaDown color="white" />
+										{filterDirectionIcons('status')}
 									</a>
 								</th>
 								<th>
-									<a href="/user/orders?sort=ukupno">
+									<a
+										href={`/user/orders?sort=amount&direction=${
+											direction == 'asc' ? 'desc' : 'asc'
+										}`}
+									>
 										<div className="seperator"></div>
 										<p>Ukupno</p>
-										<FaSortAlphaDown color="white" />
+										{filterDirectionIcons('amount')}
 									</a>
 								</th>
 								<th>
@@ -94,7 +138,7 @@ function UserOrders() {
 
 						<tbody className="table-content">
 							{orders.map((order) => (
-								<tr className="table-content-row">
+								<tr className="table-content-row" key={order.orderNumber}>
 									<td>{order.orderNumber}</td>
 									<td>{order.createdAt.split('T')[0]}</td>
 									<td>{order.status}</td>
