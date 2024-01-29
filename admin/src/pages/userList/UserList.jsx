@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './userList.css';
-import { Link } from 'react-router-dom';
+
+import { Link, useNavigate } from 'react-router-dom';
 
 // Components
 import DeleteModal from '../../components/DeleteModal/DeleteModal';
@@ -18,9 +19,11 @@ import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 
 export default function UserList() {
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 
+	const [userIdToDelete, setUserIdToDelete] = useState(null);
 	const [data, setData] = useState([]);
 	const [deleteModal, setDeleteModal] = useState({
 		open: false,
@@ -40,15 +43,27 @@ export default function UserList() {
 	};
 
 	useEffect(() => {
+		// On page load set active screen to Users to display in side bar
+		dispatch(setActiveScreen('Users'));
+
 		getUsersData();
 	}, []);
 
-	const openDeleteModal = (textValue) => {
+	const openDeleteModal = (textValue, userId) => {
+		setUserIdToDelete(userId);
 		setDeleteModal({ open: true, text: textValue });
 	};
 
 	const closeDeleteModal = () => {
+		setUserIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
+	};
+
+	const handleUserDelete = async () => {
+		await admin_request(userToken).delete(`/user/${userIdToDelete}`);
+		setUserIdToDelete(null);
+		setDeleteModal({ open: false, text: '' });
+		navigate(0);
 	};
 
 	return (
@@ -139,7 +154,10 @@ export default function UserList() {
 											className="delete-btn"
 											title="Delete User"
 											onClick={() =>
-												openDeleteModal(`${user.firstName} ${user.lastName}`)
+												openDeleteModal(
+													`${user.firstName} ${user.lastName}`,
+													user._id
+												)
 											}
 										>
 											<FaTrash />
@@ -155,6 +173,7 @@ export default function UserList() {
 				<DeleteModal
 					text={deleteModal.text}
 					type={'User'}
+					handleDelete={handleUserDelete}
 					closeDeleteModal={closeDeleteModal}
 				/>
 			)}

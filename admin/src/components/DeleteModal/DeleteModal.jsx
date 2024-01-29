@@ -1,7 +1,7 @@
 import React from 'react';
 import './DeleteModal.css';
 
-function DeleteModal({ text, type, closeDeleteModal }) {
+function DeleteModal({ text, type, closeDeleteModal, handleDelete }) {
 	return (
 		<div class="modal-overlay" id="deleteModal">
 			<div class="delete-modal">
@@ -17,9 +17,14 @@ function DeleteModal({ text, type, closeDeleteModal }) {
 					</p>
 				</div>
 				<div class="modal-footer">
-					<a class="yes-btn" id="yesBtn" type="button">
+					<button
+						class="yes-btn"
+						id="yesBtn"
+						type="button"
+						onClick={handleDelete}
+					>
 						Delete {type}
-					</a>
+					</button>
 					<button
 						class="no-btn noBtn"
 						data-bs-dismiss="modal"

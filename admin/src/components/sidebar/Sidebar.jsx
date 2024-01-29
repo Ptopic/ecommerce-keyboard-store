@@ -63,16 +63,6 @@ export default function Sidebar() {
 								Users
 							</li>
 						</Link>
-						<Link to="/products" className="link">
-							<li
-								className={`sidebarListItem ${
-									active == 'Products' ? 'active' : ''
-								}`}
-							>
-								<Storefront className="sidebarIcon" />
-								Products
-							</li>
-						</Link>
 						<Link to="/categories" className="link">
 							<li
 								className={`sidebarListItem ${
@@ -81,6 +71,16 @@ export default function Sidebar() {
 							>
 								<Storefront className="sidebarIcon" />
 								Categories
+							</li>
+						</Link>
+						<Link to="/products" className="link">
+							<li
+								className={`sidebarListItem ${
+									active == 'Products' ? 'active' : ''
+								}`}
+							>
+								<Storefront className="sidebarIcon" />
+								Products
 							</li>
 						</Link>
 						<Link to="/orders" className="link">
