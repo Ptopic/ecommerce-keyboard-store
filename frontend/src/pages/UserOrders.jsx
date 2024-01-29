@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 // Icons
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { AiOutlineSearch } from 'react-icons/ai';
 
 import { userRequest } from '../api';
 
@@ -30,8 +31,16 @@ function UserOrders() {
 	const [orders, setOrders] = useState([]);
 	const [totalPages, setTotalPages] = useState(0);
 
-	// Sorting params
+	console.log(totalPages);
+
 	const [searchParams, setSearchParams] = useSearchParams();
+
+	// Search params
+	const [searchTermValue, setSearchTermValue] = useState(
+		searchParams.get('search') == null ? '' : searchParams.get('search')
+	);
+
+	// Sorting params
 	const sort = searchParams.get('sort');
 	const direction = searchParams.get('direction');
 	const page = searchParams.get('page') == null ? 0 : searchParams.get('page');
@@ -47,6 +56,7 @@ function UserOrders() {
 				direction: direction,
 				page: page,
 				pageSize: pageSize,
+				search: searchTermValue,
 			},
 			headers: { token: user.token },
 		});
@@ -61,7 +71,7 @@ function UserOrders() {
 	// When page changes or page size changes rerender
 	useEffect(() => {
 		getUsersOrders();
-	}, [page, pageSize]);
+	}, [page, pageSize, searchTermValue, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -93,6 +103,28 @@ function UserOrders() {
 				<div className="user-orders-content">
 					<h1>Pregled narudžbi</h1>
 
+					<div className="input-container search">
+						<input
+							type="text"
+							name="search"
+							id="search"
+							placeholder="Search orders by order number"
+							value={searchTermValue}
+							onChange={(e) => setSearchTermValue(e.target.value)}
+						/>
+
+						<Link
+							to={`/user/orders
+										?sort=orderNumber
+										&direction=${direction}
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
+						>
+							<AiOutlineSearch />
+						</Link>
+					</div>
+
 					<table className="table">
 						<thead className="table-head">
 							<tr>
@@ -102,7 +134,8 @@ function UserOrders() {
 										?sort=orderNumber
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
-										&pageSize=${pageSize}`}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
 									>
 										<p>Broj narudžbe</p>
 										{filterDirectionIcons('orderNumber')}
@@ -114,7 +147,8 @@ function UserOrders() {
 										?sort=createdAt
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
-										&pageSize=${pageSize}`}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
 									>
 										<div className="seperator"></div>
 										<p>Datum</p>
@@ -127,7 +161,8 @@ function UserOrders() {
 										?sort=status
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
-										&pageSize=${pageSize}`}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
 									>
 										<div className="seperator"></div>
 										<p>Status</p>
@@ -140,7 +175,8 @@ function UserOrders() {
 										?sort=amount
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
-										&pageSize=${pageSize}`}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
 									>
 										<div className="seperator"></div>
 										<p>Ukupno</p>
@@ -178,7 +214,9 @@ function UserOrders() {
 								?page=${Number(page) - 1}
 								&pageSize=${pageSize}
 								${sort != null ? '&sort=' + sort : ''}
-								${direction != null ? '&direction=' + direction : ''}`}
+								${direction != null ? '&direction=' + direction : ''}
+								${searchTermValue != null ? '&search=' + searchTermValue : ''}
+								`}
 							>
 								<FaChevronLeft />
 							</Link>
@@ -191,7 +229,9 @@ function UserOrders() {
 								?page=${Number(page) + 1}
 								&pageSize=${pageSize}
 								${sort != null ? '&sort=' + sort : ''}
-								${direction != null ? '&direction=' + direction : ''}`}
+								${direction != null ? '&direction=' + direction : ''}
+								${searchTermValue != null ? '&search=' + searchTermValue : ''}
+								`}
 							>
 								<FaChevronRight />
 							</Link>

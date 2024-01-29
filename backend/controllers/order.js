@@ -81,17 +81,46 @@ exports.deleteOrder = async (req, res) => {
 };
 
 exports.getUserOrder = async (req, res) => {
-	const { sort, direction, page, pageSize } = req.query;
+	const { sort, direction, page, pageSize, search } = req.query;
 
 	// Get total number of orders
-	const totalOrders = await Order.find({ userId: req.params.userId }).count();
+	let totalOrders;
+	// If search query is not empty, get total number of orders that match search query
+	if (search != '') {
+		totalOrders = await Order.find({
+			userId: req.params.userId,
+			orderNumber: { $regex: search, $options: 'i' },
+		}).count();
+	} else {
+		totalOrders = await Order.find({ userId: req.params.userId }).count();
+	}
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalOrders / pageSize);
 
 	try {
 		let order;
-		if (page && pageSize && sort && direction) {
+		if (page && pageSize && sort && direction && search != '') {
+			order = await Order.find({
+				userId: req.params.userId,
+				orderNumber: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize && search != '') {
+			order = await Order.find({
+				userId: req.params.userId,
+				orderNumber: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction && search != '') {
+			order = await Order.find({
+				userId: req.params.userId,
+				orderNumber: { $regex: search, $options: 'i' },
+			}).sort([[sort, direction]]);
+		} else if (page && pageSize && sort && direction) {
 			order = await Order.find({ userId: req.params.userId })
 				.limit(pageSize)
 				.skip(pageSize * page)
