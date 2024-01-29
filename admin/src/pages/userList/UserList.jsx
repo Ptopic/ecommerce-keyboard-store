@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './userList.css';
+import './UserList.css';
 
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -133,6 +133,11 @@ export default function UserList() {
 						<AiOutlineSearch />
 					</Link>
 				</div>
+				<div className="add-new-container">
+					<Link to={'/users/add'} className="add-btn">
+						Add new User
+					</Link>
+				</div>
 				<table className="table">
 					<thead className="table-head">
 						<tr>
@@ -188,8 +193,17 @@ export default function UserList() {
 								</a>
 							</th>
 							<th>
-								<a href="">
-									<div className="seperator"></div>Role
+								<a
+									href={`/users
+										?sort=isAdmin
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
+								>
+									<div className="seperator"></div>
+									<h1>Role</h1>
+									{filterDirectionIcons('roles')}
 								</a>
 							</th>
 							<th>

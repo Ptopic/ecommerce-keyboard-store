@@ -27,10 +27,12 @@
     --bg900: #e1e1e1;
     --bg1000: #d0d0d0;
     --box-shadow: 0 0 10px rgba(0, 0, 0, .09);
+    --error: #ff3333;
     --error-bg: #f2dedd;
     --error-text: #a94442;
     --sucess-bg: #d4edda;
     --sucess-text: #155724;
+    --sucess: #4BB543;
 }
 
 .container {
@@ -81,16 +83,23 @@ p {
     font-size: 1.6rem;
 }
 
+.box {
+    padding: 2rem;
+    border-radius: .4rem;
+    background: var(--bg500);
+    box-shadow: var(--box-shadow);
+}
+
 .error {
     display: flex;
     width: 100%;
     align-items: flex-start;
     justify-content: flex-start;
-    color: #ff3333;
+    color: var(--error);
 }
 
 .success {
-    color: #4BB543
+    color: var(--sucess)
 }
 
 /* Pagination and search */

@@ -78,7 +78,6 @@ exports.changeUserInfo = async (req, res) => {
 		oib,
 	} = req.body;
 
-	console.log(userId);
 	try {
 		const updatedUser = await User.findByIdAndUpdate(
 			userId,
@@ -97,18 +96,6 @@ exports.changeUserInfo = async (req, res) => {
 		);
 
 		return res.status(200).send({ success: true, data: updatedUser });
-	} catch (err) {
-		return res.status(500).send({ success: false, error: err });
-	}
-};
-
-exports.deleteUser = async (req, res) => {
-	console.log(req.params);
-	try {
-		await User.findByIdAndDelete(req.params.id);
-		return res
-			.status(200)
-			.send({ success: true, data: 'User has been deleted' });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}
@@ -207,6 +194,97 @@ exports.getUserStats = async (req, res) => {
 			},
 		]);
 		return res.status(200).send({ success: true, data: data });
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
+// Create user
+exports.createUser = async (req, res) => {
+	let { firstName, lastName, username, email, password, isAdmin } = req.body;
+
+	// Hash password
+	password = await bcrypt.hash(password, 8);
+
+	const user = new User({
+		firstName: firstName,
+		lastName: lastName,
+		username: username,
+		email: email,
+		password: password,
+		isAdmin: isAdmin,
+	});
+
+	// Check if user with that username existst
+	const checkUsername = await User.findOne({ username: req.body.username });
+	if (checkUsername)
+		return res.status(400).send({
+			success: false,
+			error: 'User with that username already exists.',
+		});
+
+	// Check if user with that email exists
+	const checkEmail = await User.findOne({
+		email: req.body.email,
+	});
+	if (checkEmail)
+		return res.status(400).send({
+			success: false,
+			error: 'User with that email already exists.',
+		});
+
+	try {
+		const newUser = await user.save();
+		return res.status(200).send({ success: true, data: newUser });
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
+exports.editUser = async (req, res) => {
+	let { firstName, lastName, username, email, password, isAdmin } = req.body;
+	console.log(req.body);
+
+	// Hash password
+	if (password != '') {
+		password = await bcrypt.hash(password, 8);
+	} else {
+		// Get old password
+		const user = await User.findById(req.params.id);
+		password = user.password;
+	}
+
+	try {
+		const updatedUser = await User.findByIdAndUpdate(
+			req.params.id,
+			{
+				$set: {
+					firstName: firstName,
+					lastName: lastName,
+					username: username,
+					email: email,
+					password: password,
+					isAdmin: isAdmin,
+				},
+			},
+			{ new: true }
+		);
+
+		console.log(updatedUser);
+
+		return res.status(200).send({ success: true, data: updatedUser });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
+exports.deleteUser = async (req, res) => {
+	try {
+		await User.findByIdAndDelete(req.params.id);
+		return res
+			.status(200)
+			.send({ success: true, data: 'User has been deleted' });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}

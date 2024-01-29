@@ -10,6 +10,8 @@ const {
 	userChangePassword,
 	changePassword,
 	changeUserInfo,
+	createUser,
+	editUser,
 	deleteUser,
 	getUser,
 	getAllUsers,
@@ -32,13 +34,19 @@ router.put('/changeUserInfo', verifyTokenAuthenticity, changeUserInfo);
 // Change user password
 router.put('/:id', verifyTokenAndAuthorization, changePassword);
 
-// Delete user (admin only)
-router.delete('/:id', verifyTokenAndAdmin, deleteUser);
-
 // Get user (admin only)
 router.get('/:id', verifyTokenAndAdmin, getUser);
 
 // Get all users (admin only)
 router.get('/', verifyTokenAndAdmin, getAllUsers);
+
+// Create user (admin only)
+router.post('/add', verifyTokenAndAdmin, createUser);
+
+// Edit user (admin only)
+router.put('/edit/:id', verifyTokenAndAdmin, editUser);
+
+// Delete user (admin only)
+router.delete('/:id', verifyTokenAndAdmin, deleteUser);
 
 module.exports = router;

@@ -34,6 +34,21 @@
   margin: 2rem 0;
 }
 
+.add-new-container {
+  display: flex;
+  margin: 2rem 0;
+}
+
+.add-btn {
+  padding: .6rem 2.2rem;
+  border: none;
+  outline: none;
+  background: black;
+  color: white;
+  text-decoration: none;
+}
+
+
 .table {
   font-size: 1.8rem;
   border: 1.5px solid var(--bg1000);

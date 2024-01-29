@@ -1,22 +1,19 @@
 import Sidebar from './components/sidebar/Sidebar';
 import Topbar from './components/topbar/Topbar';
 import './App.css';
-import Home from './pages/home/Home';
+import Home from './pages/Home/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import UserList from './pages/userList/UserList';
-import ProductList from './pages/productList/ProductList';
-import Product from './pages/product/Product';
-import NewProduct from './pages/newProduct/NewProduct';
-import Login from './pages/login/Login';
+import UserList from './pages/UserList/UserList';
+import Login from './pages/Login/Login';
 
 import { useSelector } from 'react-redux';
-import Analytics from './pages/analytics/analytics';
+import Analytics from './pages/Analytics/Analytics';
+import NewUser from './pages/newUser/NewUser';
+import EditUser from './pages/EditUser/EditUser';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
 	let admin = user?.data?.isAdmin;
-
-	console.log(user);
 
 	return (
 		<Router>
@@ -29,9 +26,8 @@ function App() {
 							<Route exact path="/" element={<Home />} />
 							<Route exact path="/analytics" element={<Analytics />} />
 							<Route exact path="/users" element={<UserList />} />
-							<Route exact path="/products" element={<ProductList />} />
-							<Route exact path="/product/:productId" element={<Product />} />
-							<Route exact path="/newproduct" element={<NewProduct />} />
+							<Route exact path="/users/add" element={<NewUser />} />
+							<Route exact path="/users/edit/:id" element={<EditUser />} />
 						</Routes>
 					</div>
 				</>
