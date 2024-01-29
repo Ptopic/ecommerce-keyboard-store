@@ -82,3 +82,42 @@ th {
 .table-content-row:hover {
     background: var(--bg800);
 }
+
+.pagination-controls {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prev-btn {
+    padding: 1rem;
+    border: none;
+    outline: none;
+    background: black;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    border-radius: .4rem;
+    font-size: 1.6rem;
+}
+
+.current-page {
+    margin: 0 2rem;
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+.next-btn {
+    padding: 1rem;
+    border: none;
+    outline: none;
+    background: black;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    border-radius: .4rem;
+    font-size: 1.6rem;
+}

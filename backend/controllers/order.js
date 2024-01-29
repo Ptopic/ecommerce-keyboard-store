@@ -81,18 +81,38 @@ exports.deleteOrder = async (req, res) => {
 };
 
 exports.getUserOrder = async (req, res) => {
-	const { sort, direction } = req.query;
+	const { sort, direction, page, pageSize } = req.query;
+
+	// Get total number of orders
+	const totalOrders = await Order.find({ userId: req.params.userId }).count();
+
+	// Calculate number of pages based on page size
+	const totalPages = Math.ceil(totalOrders / pageSize);
 
 	try {
 		let order;
-		if (sort && direction) {
+		if (page && pageSize && sort && direction) {
+			order = await Order.find({ userId: req.params.userId })
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize) {
+			order = await Order.find({ userId: req.params.userId })
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction) {
 			order = await Order.find({ userId: req.params.userId }).sort([
 				[sort, direction],
 			]);
 		} else {
 			order = await Order.find({ userId: req.params.userId });
 		}
-		return res.status(200).send({ success: true, data: order });
+		return res.status(200).send({
+			success: true,
+			data: order,
+			totalOrders: totalOrders,
+			totalPages: totalPages,
+		});
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}

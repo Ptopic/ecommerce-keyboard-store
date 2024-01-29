@@ -19,6 +19,8 @@ import { useSelector } from 'react-redux';
 
 // Icons
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
 import { userRequest } from '../api';
 
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -26,13 +28,15 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 function UserOrders() {
 	const user = useSelector((state) => state.user.currentUser);
 	const [orders, setOrders] = useState([]);
+	const [totalPages, setTotalPages] = useState(0);
 
 	// Sorting params
 	const [searchParams, setSearchParams] = useSearchParams();
 	const sort = searchParams.get('sort');
 	const direction = searchParams.get('direction');
-
-	console.log(sort, direction);
+	const page = searchParams.get('page') == null ? 0 : searchParams.get('page');
+	const pageDisplay = Number(page) + 1;
+	const pageSize = 5;
 
 	// Get all orders from user
 
@@ -41,15 +45,23 @@ function UserOrders() {
 			params: {
 				sort: sort,
 				direction: direction,
+				page: page,
+				pageSize: pageSize,
 			},
 			headers: { token: user.token },
 		});
+		setTotalPages(res.data.totalPages - 1);
 		setOrders(res.data.data);
 	};
 	useEffect(() => {
 		// Get all orders from user
 		getUsersOrders();
 	}, []);
+
+	// When page changes or page size changes rerender
+	useEffect(() => {
+		getUsersOrders();
+	}, [page, pageSize]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -86,9 +98,11 @@ function UserOrders() {
 							<tr>
 								<th>
 									<a
-										href={`/user/orders?sort=orderNumber&direction=${
-											direction == 'asc' ? 'desc' : 'asc'
-										}`}
+										href={`/user/orders
+										?sort=orderNumber
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}`}
 									>
 										<p>Broj narudžbe</p>
 										{filterDirectionIcons('orderNumber')}
@@ -96,9 +110,11 @@ function UserOrders() {
 								</th>
 								<th>
 									<a
-										href={`/user/orders?sort=createdAt&direction=${
-											direction == 'asc' ? 'desc' : 'asc'
-										}`}
+										href={`/user/orders
+										?sort=createdAt
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}`}
 									>
 										<div className="seperator"></div>
 										<p>Datum</p>
@@ -107,9 +123,11 @@ function UserOrders() {
 								</th>
 								<th>
 									<a
-										href={`/user/orders?sort=status&direction=${
-											direction == 'asc' ? 'desc' : 'asc'
-										}`}
+										href={`/user/orders
+										?sort=status
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}`}
 									>
 										<div className="seperator"></div>
 										<p>Status</p>
@@ -118,9 +136,11 @@ function UserOrders() {
 								</th>
 								<th>
 									<a
-										href={`/user/orders?sort=amount&direction=${
-											direction == 'asc' ? 'desc' : 'asc'
-										}`}
+										href={`/user/orders
+										?sort=amount
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}`}
 									>
 										<div className="seperator"></div>
 										<p>Ukupno</p>
@@ -150,6 +170,33 @@ function UserOrders() {
 							))}
 						</tbody>
 					</table>
+					<div className="pagination-controls">
+						{page != 0 && (
+							<Link
+								className="prev-btn"
+								to={`/user/orders
+								?page=${Number(page) - 1}
+								&pageSize=${pageSize}
+								${sort != null ? '&sort=' + sort : ''}
+								${direction != null ? '&direction=' + direction : ''}`}
+							>
+								<FaChevronLeft />
+							</Link>
+						)}
+						<p className="current-page">{pageDisplay}</p>
+						{page != totalPages && (
+							<Link
+								className="next-btn"
+								to={`/user/orders
+								?page=${Number(page) + 1}
+								&pageSize=${pageSize}
+								${sort != null ? '&sort=' + sort : ''}
+								${direction != null ? '&direction=' + direction : ''}`}
+							>
+								<FaChevronRight />
+							</Link>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
