@@ -34,9 +34,12 @@
   margin: 1rem 0;
 }
 
-.sidebarListItem.active,
+.sidebarListItem.active {
+  background-color: var(--primary200);
+}
+
 .sidebarListItem:hover {
-  background-color: rgb(240, 240, 255);
+  background-color: var(--primary100);
 }
 
 .sidebarIcon {

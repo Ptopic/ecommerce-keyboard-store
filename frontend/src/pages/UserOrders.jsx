@@ -31,8 +31,6 @@ function UserOrders() {
 	const [orders, setOrders] = useState([]);
 	const [totalPages, setTotalPages] = useState(0);
 
-	console.log(totalPages);
-
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	// Search params
@@ -76,12 +74,12 @@ function UserOrders() {
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
 			if (direction == 'asc') {
-				return <FaSortAlphaDown color="white" />;
+				return <FaSortAlphaDown color="white" size={20} />;
 			} else {
-				return <FaSortAlphaDownAlt color="white" />;
+				return <FaSortAlphaDownAlt color="white" size={20} />;
 			}
 		} else {
-			return <FaSortAlphaDown color="white" />;
+			return <FaSortAlphaDown color="white" size={20} />;
 		}
 	};
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './userList.css';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 // Components
 import DeleteModal from '../../components/DeleteModal/DeleteModal';
@@ -17,6 +17,8 @@ import { admin_request } from '../../api';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { AiOutlineSearch } from 'react-icons/ai';
 
 export default function UserList() {
 	const navigate = useNavigate();
@@ -32,10 +34,34 @@ export default function UserList() {
 
 	let userToken = user.currentUser.token;
 
+	const [searchParams, setSearchParams] = useSearchParams();
+	const [totalPages, setTotalPages] = useState(0);
+
+	// Search params
+	const [searchTermValue, setSearchTermValue] = useState(
+		searchParams.get('search') == null ? '' : searchParams.get('search')
+	);
+
+	// Sorting params
+	const sort = searchParams.get('sort');
+	const direction = searchParams.get('direction');
+	const page = searchParams.get('page') == null ? 0 : searchParams.get('page');
+	const pageDisplay = Number(page) + 1;
+	const pageSize = 5;
+
 	const getUsersData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/user/');
+			const res = await admin_request(userToken).get('/user', {
+				params: {
+					sort: sort,
+					direction: direction,
+					page: page,
+					pageSize: pageSize,
+					search: searchTermValue,
+				},
+			});
+			setTotalPages(res.data.totalPages - 1);
 			setData(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -48,6 +74,23 @@ export default function UserList() {
 
 		getUsersData();
 	}, []);
+
+	// When page changes or page size changes rerender
+	useEffect(() => {
+		getUsersData();
+	}, [page, pageSize, searchTermValue, sort, direction]);
+
+	const filterDirectionIcons = (fieldName) => {
+		if (sort == fieldName) {
+			if (direction == 'asc') {
+				return <FaSortAlphaDown color="black" size={20} />;
+			} else {
+				return <FaSortAlphaDownAlt color="black" size={20} />;
+			}
+		} else {
+			return <FaSortAlphaDown color="black" size={20} />;
+		}
+	};
 
 	const openDeleteModal = (textValue, userId) => {
 		setUserIdToDelete(userId);
@@ -69,6 +112,27 @@ export default function UserList() {
 	return (
 		<>
 			<div className="user-list">
+				<div className="input-container search">
+					<input
+						type="text"
+						name="search"
+						id="search"
+						placeholder="Search users by email"
+						value={searchTermValue}
+						onChange={(e) => setSearchTermValue(e.target.value)}
+					/>
+
+					<Link
+						to={`/users
+							?sort=orderNumber
+							&direction=${direction}
+							&page=${page}
+							&pageSize=${pageSize}
+							&search=${searchTermValue}`}
+					>
+						<AiOutlineSearch />
+					</Link>
+				</div>
 				<table className="table">
 					<thead className="table-head">
 						<tr>
@@ -76,17 +140,31 @@ export default function UserList() {
 								<a href="">ID</a>
 							</th>
 							<th>
-								<a href="">
+								<a
+									href={`/users
+										?sort=firstName
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
+								>
 									<div className="seperator"></div>
-									First Name
-									<i className="bi bi-sort-up"></i>
+									<h1>First Name</h1>
+									{filterDirectionIcons('firstName')}
 								</a>
 							</th>
 							<th>
-								<a href="">
+								<a
+									href={`/users
+										?sort=lastName
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
+								>
 									<div className="seperator"></div>
-									Last Name
-									<i className="bi bi-sort-up"></i>
+									<h1>Last Name</h1>
+									{filterDirectionIcons('lastName')}
 								</a>
 							</th>
 							<th>
@@ -96,10 +174,17 @@ export default function UserList() {
 								</a>
 							</th>
 							<th>
-								<a href="">
+								<a
+									href={`/users
+										?sort=email
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}`}
+								>
 									<div className="seperator"></div>
-									E-Mail
-									<i className="bi bi-sort-up"></i>
+									<h1>Email</h1>
+									{filterDirectionIcons('email')}
 								</a>
 							</th>
 							<th>
@@ -168,6 +253,37 @@ export default function UserList() {
 						})}
 					</tbody>
 				</table>
+				<div className="pagination-controls">
+					{page != 0 && (
+						<Link
+							className="prev-btn"
+							to={`/users
+								?page=${Number(page) - 1}
+								&pageSize=${pageSize}
+								${sort != null ? '&sort=' + sort : ''}
+								${direction != null ? '&direction=' + direction : ''}
+								${searchTermValue != null ? '&search=' + searchTermValue : ''}
+								`}
+						>
+							<FaChevronLeft />
+						</Link>
+					)}
+					<p className="current-page">{pageDisplay}</p>
+					{page != totalPages && (
+						<Link
+							className="next-btn"
+							to={`/users
+								?page=${Number(page) + 1}
+								&pageSize=${pageSize}
+								${sort != null ? '&sort=' + sort : ''}
+								${direction != null ? '&direction=' + direction : ''}
+								${searchTermValue != null ? '&search=' + searchTermValue : ''}
+								`}
+						>
+							<FaChevronRight />
+						</Link>
+					)}
+				</div>
 			</div>
 			{deleteModal.open && (
 				<DeleteModal

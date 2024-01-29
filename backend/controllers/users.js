@@ -125,12 +125,61 @@ exports.getUser = async (req, res) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-	const query = req.query.new;
+	const { sort, direction, page, pageSize, search } = req.query;
+
+	// Get total number of orders
+	let totalUsers;
+	// If search query is not empty, get total number of orders that match search query
+	if (search != '') {
+		totalUsers = await User.find({
+			email: { $regex: search, $options: 'i' },
+		}).count();
+	} else {
+		totalUsers = await User.find({ userId: req.params.userId }).count();
+	}
+
+	// Calculate number of pages based on page size
+	const totalPages = Math.ceil(totalUsers / pageSize);
+
 	try {
-		const users = query
-			? await User.find().sort({ _id: -1 }).limit(5)
-			: await User.find();
-		return res.status(200).send({ success: true, data: users });
+		let users;
+		if (page && pageSize && sort && direction && search != '') {
+			users = await User.find({
+				email: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize && search != '') {
+			users = await User.find({
+				email: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction && search != '') {
+			users = await User.find({
+				email: { $regex: search, $options: 'i' },
+			}).sort([[sort, direction]]);
+		} else if (page && pageSize && sort && direction) {
+			users = await User.find()
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize) {
+			users = await User.find()
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction) {
+			users = await User.find().sort([[sort, direction]]);
+		} else {
+			users = await User.find();
+		}
+		return res.status(200).send({
+			success: true,
+			data: users,
+			totalUsers: totalUsers,
+			totalPages: totalPages,
+		});
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}

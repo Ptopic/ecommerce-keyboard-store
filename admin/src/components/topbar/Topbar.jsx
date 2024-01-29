@@ -19,7 +19,6 @@ export default function Topbar() {
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.user);
 	let currentUser = user.currentUser.data;
-	console.log(currentUser);
 	const dispatch = useDispatch();
 	const handleLogOut = () => {
 		dispatch(logout());

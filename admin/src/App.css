@@ -8,9 +8,18 @@
     --black: #000000;
     --padding: 26rem;
 
-    --primary400: #8DCEFC;
-    --primary500: #0095FF;
-    --primary600: #0069B4;
+    --primary100: #fde7e9;
+    --primary200: #f8b8bd;
+    --primary300: #f48891;
+    --primary400: #ef5865;
+    --primary500: #E81123;
+    --primary600: #d10f20;
+    --primary700: #8b0a15;
+
+    --secondary400: #8DCEFC;
+    --secondary500: #0095FF;
+    --secondary600: #0069B4;
+
     --bg500: #ffffff;
     --bg600: #fafafa;
     --bg700: #f6f6f6;
@@ -82,4 +91,67 @@ p {
 
 .success {
     color: #4BB543
+}
+
+/* Pagination and search */
+
+.pagination-controls {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prev-btn {
+    padding: 1rem;
+    border: none;
+    outline: none;
+    background: black;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    border-radius: .4rem;
+    font-size: 1.6rem;
+}
+
+.current-page {
+    margin: 0 2rem;
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+.next-btn {
+    padding: 1rem;
+    border: none;
+    outline: none;
+    background: black;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    border-radius: .4rem;
+    font-size: 1.6rem;
+}
+
+.input-container.search {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.input-container.search input {
+    width: 100%;
+    padding: 0rem;
+    border: none;
+    outline: none;
+    font-size: 1.4rem;
+}
+
+.input-container.search svg {
+    color: black;
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
 }
