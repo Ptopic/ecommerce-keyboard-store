@@ -15,8 +15,6 @@ export const login = async (dispatch, userCredentials) => {
 		const res = await request.post('/auth/login', userCredentials);
 		dispatch(loginSuccess(res.data));
 
-		console.log(res.data);
-
 		// Set localStorage.currentUser to res.data instead of waiting for page refresh
 
 		return res.data;

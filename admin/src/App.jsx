@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 import Analytics from './pages/analytics/analytics';
 
 function App() {
-	const user = useSelector((state) => state.user);
+	const user = useSelector((state) => state.user.currentUser);
 	let admin = user?.data?.isAdmin;
 
 	console.log(user);

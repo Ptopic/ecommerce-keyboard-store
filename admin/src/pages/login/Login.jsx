@@ -46,9 +46,7 @@ const Login = () => {
 
 	const handleLogin = async (values, formikActions) => {
 		const res = await login(dispatch, { ...values });
-		console.log(res);
-		console.log(res.data);
-		if (res.success == true && res.isAdmin == true) {
+		if (res.success == true && res.data.isAdmin == true) {
 			formikActions.resetForm();
 			// Redirect to main page
 			navigate('/');

@@ -106,7 +106,7 @@ export default function Home() {
 			);
 			console.log(latestSaleValue);
 			// Set first latest sale value to display for analitics
-			setCurSales(latestSaleValue[0].value);
+			setCurSales(latestSaleValue[0].value.toFixed(2));
 			// Calculate sale percentage increase/decrease compared to previous month
 			let curValue = latestSaleValue[0].value;
 			let prevValue = latestSaleValue[1].value;
@@ -123,6 +123,11 @@ export default function Home() {
 			let sortedSales = curSalesValues.sort((a, b) =>
 				a.date > b.date ? -1 : 1
 			);
+
+			// Fix all sort values to 2 decimal
+			for (let i = 0; i < sortedSales.length; i++) {
+				sortedSales[i].value = sortedSales[i].value.toFixed(2);
+			}
 
 			setSalesForChart(sortedSales);
 		} else {

@@ -86,6 +86,11 @@ const Analytics = () => {
 				a.date > b.date ? -1 : 1
 			);
 
+			// Fix all sort values to 2 decimal
+			for (let i = 0; i < sortedSales.length; i++) {
+				sortedSales[i].value = sortedSales[i].value.toFixed(2);
+			}
+
 			setSalesChartData(sortedSales);
 		}
 	}, [sales]);
