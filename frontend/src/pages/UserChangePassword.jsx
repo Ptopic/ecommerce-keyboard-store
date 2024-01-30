@@ -16,7 +16,9 @@ import { useSelector } from 'react-redux';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import InputField from '../components/InputField/InputField';
 import Button from '../components/Button/Button';
+
 import { Link } from 'react-router-dom';
 import { userRequest } from '../api';
 
@@ -96,46 +98,23 @@ function UserChangePassword() {
 						{({ errors, touched }) => (
 							<Form className="login-form" style={{ width: '100%' }}>
 								<div className="login-form-inputs">
-									<div className="input-container">
-										<Field
-											name="currentPassword"
-											placeholder="Current Password *"
-											type={passwordShow ? 'text' : 'password'}
-											autoCapitalize="off"
-										/>
-										<button type="button" onClick={() => togglePasswordShow()}>
-											{passwordShow ? (
-												<FaRegEyeSlash size={24} />
-											) : (
-												<FaRegEye size={24} />
-											)}
-										</button>
-									</div>
-									{errors.currentPassword && touched.currentPassword ? (
-										<div className="error">{errors.currentPassword}</div>
-									) : null}
+									<InputField
+										name={'currentPassword'}
+										placeholder={'Current Password *'}
+										passwordShow={passwordShow}
+										togglePasswordShow={() => togglePasswordShow()}
+										errors={errors.currentPassword}
+										touched={touched.currentPassword}
+									/>
 
-									<div className="input-container">
-										<Field
-											name="newPassword"
-											placeholder="New Password *"
-											type={newPasswordShow ? 'text' : 'password'}
-											autoCapitalize="off"
-										/>
-										<button
-											type="button"
-											onClick={() => toggleNewPasswordShow()}
-										>
-											{newPasswordShow ? (
-												<FaRegEyeSlash size={24} />
-											) : (
-												<FaRegEye size={24} />
-											)}
-										</button>
-									</div>
-									{errors.newPassword && touched.newPassword ? (
-										<div className="error">{errors.newPassword}</div>
-									) : null}
+									<InputField
+										name={'newPassword'}
+										placeholder={'New Password *'}
+										passwordShow={newPasswordShow}
+										togglePasswordShow={() => toggleNewPasswordShow()}
+										errors={errors.newPassword}
+										touched={touched.newPassword}
+									/>
 								</div>
 
 								{error ? <div className="error">{error}</div> : null}

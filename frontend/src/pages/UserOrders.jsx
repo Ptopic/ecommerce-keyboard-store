@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import InputField from '../components/InputField/InputField';
 import Button from '../components/Button/Button';
 import { Link } from 'react-router-dom';
 
@@ -58,7 +59,10 @@ function UserOrders() {
 			},
 			headers: { token: user.token },
 		});
-		setTotalPages(res.data.totalPages - 1);
+
+		res.data.totalPages == 0
+			? setTotalPages(0)
+			: setTotalPages(res.data.totalPages - 1);
 		setOrders(res.data.data);
 	};
 	useEffect(() => {
@@ -101,27 +105,31 @@ function UserOrders() {
 				<div className="user-orders-content">
 					<h1>Pregled narudžbi</h1>
 
-					<div className="input-container search">
-						<input
-							type="text"
-							name="search"
-							id="search"
-							placeholder="Search orders by order number"
-							value={searchTermValue}
-							onChange={(e) => setSearchTermValue(e.target.value)}
-						/>
-
-						<Link
-							to={`/user/orders
-										?sort=orderNumber
-										&direction=${direction}
-										&page=${page}
-										&pageSize=${pageSize}
-										&search=${searchTermValue}`}
-						>
-							<AiOutlineSearch />
-						</Link>
-					</div>
+					<Formik enableReinitialize>
+						{() => (
+							<Form className="login-form">
+								<InputField
+									type={'text'}
+									name={'search'}
+									placeholder={'Search orders by order number'}
+									value={searchTermValue}
+									onChange={(e) => setSearchTermValue(e.target.value)}
+									icon={
+										<Link
+											to={`/user/orders
+													?sort=orderNumber
+													&direction=${direction}
+													&page=${page}
+													&pageSize=${pageSize}
+													&search=${searchTermValue}`}
+										>
+											<AiOutlineSearch />
+										</Link>
+									}
+								/>
+							</Form>
+						)}
+					</Formik>
 
 					<table className="table">
 						<thead className="table-head">
@@ -205,7 +213,7 @@ function UserOrders() {
 						</tbody>
 					</table>
 					<div className="pagination-controls">
-						{page != 0 && (
+						{page != 0 && totalPages != 0 && (
 							<Link
 								className="prev-btn"
 								to={`/user/orders
@@ -220,7 +228,7 @@ function UserOrders() {
 							</Link>
 						)}
 						<p className="current-page">{pageDisplay}</p>
-						{page != totalPages && (
+						{page != totalPages && totalPages != 0 && (
 							<Link
 								className="next-btn"
 								to={`/user/orders

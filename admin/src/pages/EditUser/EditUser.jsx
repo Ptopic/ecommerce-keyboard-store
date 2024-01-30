@@ -14,6 +14,7 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
+import InputField from '../../../../frontend/src/components/InputField/InputField';
 
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -101,79 +102,63 @@ function EditUser() {
 						handleEditUser(values, formikActions)
 					}
 				>
-					{(formik) => (
+					{({ errors, touched, values, setFieldValue }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<div className="input-container">
-									<Field
-										placeholder="First name *"
-										name="firstName"
-										autoCapitalize="off"
-										value={formik.values.firstName}
-									/>
-								</div>
-								{formik.errors.firstName && formik.touched.firstName ? (
-									<div className="error">{formik.errors.firstName}</div>
-								) : null}
-								<div className="input-container">
-									<Field
-										placeholder="Last name *"
-										name="lastName"
-										autoCapitalize="off"
-										value={formik.values.lastName}
-									/>
-								</div>
-								{formik.errors.lastName && formik.touched.lastName ? (
-									<div className="error">{formik.errors.lastName}</div>
-								) : null}
-								<div className="input-container">
-									<Field
-										placeholder="Username *"
-										name="username"
-										autoCapitalize="off"
-										value={formik.values.username}
-									/>
-								</div>
-								{formik.errors.username && formik.touched.username ? (
-									<div className="error">{formik.errors.username}</div>
-								) : null}
-								<div className="input-container">
-									<Field
-										placeholder="Email *"
-										type="email"
-										name="email"
-										autoCapitalize="off"
-										value={formik.values.email}
-									/>
-								</div>
-								{formik.errors.email && formik.touched.email ? (
-									<div className="error">{formik.errors.email}</div>
-								) : null}
-								<div className="input-container">
-									<Field
-										name="password"
-										placeholder="Password *"
-										type={passwordShow ? 'text' : 'password'}
-										autoCapitalize="off"
-									/>
-									<button type="button" onClick={() => togglePasswordShow()}>
-										{passwordShow ? (
-											<FaRegEyeSlash size={24} />
-										) : (
-											<FaRegEye size={24} />
-										)}
-									</button>
-								</div>
-								{formik.errors.password && formik.touched.password ? (
-									<div className="error">{formik.errors.password}</div>
-								) : null}
+								<InputField
+									type={'text'}
+									name={'firstName'}
+									placeholder={'First Name *'}
+									value={values.firstName}
+									onChange={(e) => setFieldValue('firstName', e.target.value)}
+									errors={errors.firstName}
+									touched={touched.firstName}
+								/>
+
+								<InputField
+									type={'text'}
+									name={'lastName'}
+									placeholder={'Last Name *'}
+									value={values.lastName}
+									onChange={(e) => setFieldValue('lastName', e.target.value)}
+									errors={errors.lastName}
+									touched={touched.lastName}
+								/>
+
+								<InputField
+									type={'text'}
+									name={'username'}
+									placeholder={'Username *'}
+									value={values.username}
+									onChange={(e) => setFieldValue('username', e.target.value)}
+									errors={errors.username}
+									touched={touched.username}
+								/>
+
+								<InputField
+									type={'email'}
+									name={'email'}
+									placeholder={'Email *'}
+									value={values.email}
+									onChange={(e) => setFieldValue('email', e.target.value)}
+									errors={errors.email}
+									touched={touched.email}
+								/>
+
+								<InputField
+									name={'password'}
+									placeholder={'Password'}
+									passwordShow={passwordShow}
+									togglePasswordShow={() => togglePasswordShow()}
+									value={values.password}
+									onChange={(e) => setFieldValue('password', e.target.value)}
+									errors={errors.password}
+									touched={touched.password}
+									required={false}
+								/>
+
 								<div className="select-container">
-									<Field
-										placeholder="Role *"
-										as="select"
-										name="isAdmin"
-										value={formik.values.isAdmin}
-									>
+									<Field placeholder="Role *" as="select" name="isAdmin">
 										<option disabled selected>
 											Select role
 										</option>
@@ -181,8 +166,8 @@ function EditUser() {
 										<option value={true}>Admin</option>
 									</Field>
 								</div>
-								{formik.errors.isAdmin && formik.touched.isAdmin ? (
-									<div className="error">{formik.errors.isAdmin}</div>
+								{errors.isAdmin && touched.isAdmin ? (
+									<div className="error">{errors.isAdmin}</div>
 								) : null}
 							</div>
 

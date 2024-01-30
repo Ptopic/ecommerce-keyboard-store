@@ -90,34 +90,35 @@ const Login = () => {
 					</button>
 				</div> */}
 				<Formik
+					enableReinitialize
 					initialValues={initialValues}
 					validationSchema={loginSchema}
 					onSubmit={(values, formikActions) =>
 						handleLogin(values, formikActions)
 					}
 				>
-					{({ errors, touched, setFieldValue }) => (
+					{({ errors, touched, values, setFieldValue }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
 								<InputField
 									type={'email'}
 									name={'email'}
 									placeholder={'Email *'}
-									label={'Email'}
+									value={values.email}
+									onChange={(e) => setFieldValue('email', e.target.value)}
+									errors={errors.email}
+									touched={touched.email}
 								/>
-								{errors.email && touched.email ? (
-									<div className="error">{errors.email}</div>
-								) : null}
 								<InputField
 									name={'password'}
 									placeholder={'Password *'}
-									label={'Password'}
 									passwordShow={passwordShow}
 									togglePasswordShow={() => togglePasswordShow()}
+									value={values.password}
+									onChange={(e) => setFieldValue('password', e.target.value)}
+									errors={errors.password}
+									touched={touched.password}
 								/>
-								{errors.password && touched.password ? (
-									<div className="error">{errors.password}</div>
-								) : null}
 							</div>
 							<Link to="/forgot-password">Forgot your password?</Link>
 

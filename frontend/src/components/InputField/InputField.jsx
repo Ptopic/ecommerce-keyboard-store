@@ -10,35 +10,49 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 function InputField({
 	name,
-	label,
 	type,
 	placeholder,
 	value,
+	onChange,
+	required,
 	width,
+	fullWidth,
 	passwordShow,
 	togglePasswordShow,
+	icon,
+	errors,
+	touched,
 }) {
 	return (
-		<div className="input-container">
-			<Field
-				type={type ? type : passwordShow ? 'text' : 'password'}
-				id={name}
-				name={name}
-				autoCapitalize="off"
-				className="input-field"
-				style={{ width: width }}
-				required
-				placeholder={placeholder}
-			/>
-			<label htmlFor={name} className="input-label">
-				{placeholder}
-			</label>
-			{passwordShow != null && (
-				<button type="button" onClick={() => togglePasswordShow()}>
-					{passwordShow ? <FaRegEyeSlash size={24} /> : <FaRegEye size={24} />}
-				</button>
-			)}
-		</div>
+		<>
+			<div className={`input-container ${fullWidth ? 'full' : ''}`}>
+				<Field
+					type={type ? type : passwordShow ? 'text' : 'password'}
+					id={name}
+					name={name}
+					autoCapitalize="off"
+					className="input-field"
+					required={required == false ? false : true}
+					placeholder={placeholder}
+					value={value}
+					onChange={onChange ? onChange : null}
+				/>
+				<label htmlFor={name} className="input-label">
+					{placeholder}
+				</label>
+				{passwordShow != null && (
+					<button type="button" onClick={() => togglePasswordShow()}>
+						{passwordShow ? (
+							<FaRegEyeSlash size={22} />
+						) : (
+							<FaRegEye size={22} />
+						)}
+					</button>
+				)}
+				{icon && icon}
+			</div>
+			{errors && touched ? <div className="error">{errors}</div> : null}
+		</>
 	);
 }
 

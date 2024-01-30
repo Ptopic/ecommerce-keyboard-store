@@ -23,6 +23,7 @@ function Cart() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const makePaymentRequest = async () => {
+		document.body.style.overflow = 'visible';
 		navigate('/checkout');
 		// close cart
 		dispatch(closeCart());

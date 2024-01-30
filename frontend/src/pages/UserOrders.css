@@ -121,25 +121,3 @@ th {
     border-radius: .4rem;
     font-size: 1.6rem;
 }
-
-.input-container.search {
-    width: 50%;
-    display: flex;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.input-container.search input {
-    width: 100%;
-    padding: 0rem;
-    border: none;
-    outline: none;
-    font-size: 1.4rem;
-}
-
-.input-container.search svg {
-    color: black;
-    font-size: 3rem;
-    display: flex;
-    align-items: center;
-}

@@ -30,6 +30,10 @@
 
 .user-content {}
 
+.user-content-left>.input-container {
+    margin-bottom: 10rem;
+}
+
 .user-content-left h1 {
     margin-bottom: 4rem;
     font-size: 3.2rem;

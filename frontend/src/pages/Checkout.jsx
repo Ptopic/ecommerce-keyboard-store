@@ -9,6 +9,7 @@ import * as Yup from 'yup';
 
 // Components
 import Navbar from '../components/Navbar/Navbar';
+import InputField from '../components/InputField/InputField';
 import Button from '../components/Button/Button';
 
 import { useNavigate } from 'react-router-dom';
@@ -185,7 +186,7 @@ function Checkout() {
 					goToCheckout(values, formikActions)
 				}
 			>
-				{({ errors, touched }) => (
+				{({ errors, touched, values, setFieldValue }) => (
 					<Form className="checkout-content">
 						<div className="checkout-content-left">
 							<h2>PODACI ZA DOSTAVU RAČUNA</h2>
@@ -203,155 +204,197 @@ function Checkout() {
 								<p>Trebam R1 Račun</p>
 							</div>
 
-							{/* ----- Mobile checkout forms ----- */}
+							{/* ----- Mobile details forms ----- */}
 							<div className="checkout-form-mobile">
-								<div className="checkout-input full email">
-									<Field
-										type="text"
-										name="email"
-										placeholder="Email *"
-										autoCapitalize="off"
-									/>
-									{errors.email && touched.email ? (
-										<div className="error">{errors.email}</div>
-									) : null}
-								</div>
+								<InputField
+									type={'text'}
+									name={'email'}
+									placeholder={'Email *'}
+									value={values.email}
+									onChange={(e) => setFieldValue('email', e.target.value)}
+									errors={errors.email}
+									touched={touched.email}
+								/>
 								{r1 && (
-									<div className="checkout-input">
-										<Field type="text" name="tvrtka" placeholder="Tvrtka *" />
-										{errors.tvrtka && touched.tvrtka ? (
-											<div className="error">{errors.tvrtka}</div>
-										) : null}
-									</div>
+									<>
+										<InputField
+											type={'text'}
+											name={'tvrtka'}
+											placeholder={'Tvrtka *'}
+											value={values.tvrtka}
+											onChange={(e) => setFieldValue('tvrtka', e.target.value)}
+											errors={errors.tvrtka}
+											touched={touched.tvrtka}
+										/>
+									</>
 								)}
 								{r1 && (
-									<div className="checkout-input">
-										<Field type="number" name="oib" placeholder="OIB *" />
-										{errors.oib && touched.oib ? (
-											<div className="error">{errors.oib}</div>
-										) : null}
-									</div>
+									<>
+										<InputField
+											type={'number'}
+											name={'oib'}
+											placeholder={'OIB *'}
+											value={values.oib}
+											onChange={(e) => setFieldValue('oib', e.target.value)}
+											errors={errors.oib}
+											touched={touched.oib}
+										/>
+									</>
 								)}
-								<div className="checkout-input">
-									<Field type="text" name="firstName" placeholder="Ime *" />
-									{errors.firstName && touched.firstName ? (
-										<div className="error">{errors.firstName}</div>
-									) : null}
-								</div>
-
-								<div className="checkout-input">
-									<Field type="text" name="lastName" placeholder="Prezime *" />
-									{errors.lastName && touched.lastName ? (
-										<div className="error">{errors.lastName}</div>
-									) : null}
-								</div>
-								<div className="checkout-input">
-									<Field type="text" name="adresa" placeholder="Adresa *" />
-									{errors.adresa && touched.adresa ? (
-										<div className="error">{errors.adresa}</div>
-									) : null}
-								</div>
-								<div className="checkout-input">
-									<Field type="text" name="mjesto" placeholder="Mjesto *" />
-									{errors.mjesto && touched.mjesto ? (
-										<div className="error">{errors.mjesto}</div>
-									) : null}
-								</div>
-								<div className="checkout-input">
-									<Field
-										type="text"
-										name="zip"
-										placeholder="Poštanski broj *"
-									/>
-									{errors.zip && touched.zip ? (
-										<div className="error">{errors.zip}</div>
-									) : null}
-								</div>
-								<div className="checkout-input">
-									<Field type="text" name="telefon" placeholder="Telefon *" />
-									{errors.telefon && touched.telefon ? (
-										<div className="error">{errors.telefon}</div>
-									) : null}
-								</div>
+								<InputField
+									type={'text'}
+									name={'firstName'}
+									placeholder={'First Name *'}
+									value={values.firstName}
+									onChange={(e) => setFieldValue('firstName', e.target.value)}
+									errors={errors.firstName}
+									touched={touched.firstName}
+								/>
+								<InputField
+									type={'text'}
+									name={'lastName'}
+									placeholder={'Last Name *'}
+									value={values.lastName}
+									onChange={(e) => setFieldValue('lastName', e.target.value)}
+									errors={errors.lastName}
+									touched={touched.lastName}
+								/>
+								<InputField
+									type={'text'}
+									name={'adresa'}
+									placeholder={'Adresa *'}
+									value={values.adresa}
+									onChange={(e) => setFieldValue('adresa', e.target.value)}
+									errors={errors.adresa}
+									touched={touched.adresa}
+								/>
+								<InputField
+									type={'text'}
+									name={'mjesto'}
+									placeholder={'Mjesto *'}
+									value={values.mjesto}
+									onChange={(e) => setFieldValue('mjesto', e.target.value)}
+									errors={errors.mjesto}
+									touched={touched.mjesto}
+								/>
+								<InputField
+									type={'text'}
+									name={'zip'}
+									placeholder={'Poštanski broj *'}
+									value={values.zip}
+									onChange={(e) => setFieldValue('zip', e.target.value)}
+									errors={errors.zip}
+									touched={touched.zip}
+								/>
+								<InputField
+									type={'text'}
+									name={'telefon'}
+									placeholder={'Telefon *'}
+									value={values.telefon}
+									onChange={(e) => setFieldValue('telefon', e.target.value)}
+									errors={errors.telefon}
+									touched={touched.telefon}
+								/>
 							</div>
 
-							{/* ----- Desktop checkout forms -----*/}
+							{/* ----- Desktop details forms -----*/}
 							<div className="checkout-form">
-								<div className="checkout-input full email">
-									<Field
-										type="text"
-										name="email"
-										placeholder="Email *"
-										autoCapitalize="off"
-									/>
-									{errors.email && touched.email ? (
-										<div className="error">{errors.email}</div>
-									) : null}
-								</div>
+								<InputField
+									type={'text'}
+									name={'email'}
+									placeholder={'Email *'}
+									value={values.email}
+									onChange={(e) => setFieldValue('email', e.target.value)}
+									errors={errors.email}
+									touched={touched.email}
+									fullWidth={true}
+								/>
 								<div className="checkout-form-left">
 									{r1 && (
-										<div className="checkout-input">
-											<Field type="text" name="tvrtka" placeholder="Tvrtka *" />
-											{errors.tvrtka && touched.tvrtka ? (
-												<div className="error">{errors.tvrtka}</div>
-											) : null}
-										</div>
+										<>
+											<InputField
+												type={'text'}
+												name={'tvrtka'}
+												placeholder={'Tvrtka *'}
+												value={values.tvrtka}
+												onChange={(e) =>
+													setFieldValue('tvrtka', e.target.value)
+												}
+												errors={errors.tvrtka}
+												touched={touched.tvrtka}
+											/>
+										</>
 									)}
-									<div className="checkout-input">
-										<Field type="text" name="firstName" placeholder="Ime *" />
-										{errors.firstName && touched.firstName ? (
-											<div className="error">{errors.firstName}</div>
-										) : null}
-									</div>
-									<div className="checkout-input">
-										<Field type="text" name="mjesto" placeholder="Mjesto *" />
-										{errors.mjesto && touched.mjesto ? (
-											<div className="error">{errors.mjesto}</div>
-										) : null}
-									</div>
-									<div className="checkout-input">
-										<Field type="text" name="adresa" placeholder="Adresa *" />
-										{errors.adresa && touched.adresa ? (
-											<div className="error">{errors.adresa}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'firstName'}
+										placeholder={'First Name *'}
+										value={values.firstName}
+										onChange={(e) => setFieldValue('firstName', e.target.value)}
+										errors={errors.firstName}
+										touched={touched.firstName}
+									/>
+									<InputField
+										type={'text'}
+										name={'mjesto'}
+										placeholder={'Mjesto *'}
+										value={values.mjesto}
+										onChange={(e) => setFieldValue('mjesto', e.target.value)}
+										errors={errors.mjesto}
+										touched={touched.mjesto}
+									/>
+									<InputField
+										type={'text'}
+										name={'adresa'}
+										placeholder={'Adresa *'}
+										value={values.adresa}
+										onChange={(e) => setFieldValue('adresa', e.target.value)}
+										errors={errors.adresa}
+										touched={touched.adresa}
+									/>
 								</div>
 
 								<div className="checkout-form-right">
 									{r1 && (
-										<div className="checkout-input">
-											<Field type="number" name="oib" placeholder="OIB *" />
-											{errors.oib && touched.oib ? (
-												<div className="error">{errors.oib}</div>
-											) : null}
-										</div>
+										<>
+											<InputField
+												type={'number'}
+												name={'oib'}
+												placeholder={'OIB *'}
+												value={values.oib}
+												onChange={(e) => setFieldValue('oib', e.target.value)}
+												errors={errors.oib}
+												touched={touched.oib}
+											/>
+										</>
 									)}
-									<div className="checkout-input">
-										<Field
-											type="text"
-											name="lastName"
-											placeholder="Prezime *"
-										/>
-										{errors.lastName && touched.lastName ? (
-											<div className="error">{errors.lastName}</div>
-										) : null}
-									</div>
-									<div className="checkout-input">
-										<Field
-											type="text"
-											name="zip"
-											placeholder="Poštanski broj *"
-										/>
-										{errors.zip && touched.zip ? (
-											<div className="error">{errors.zip}</div>
-										) : null}
-									</div>
-									<div className="checkout-input">
-										<Field type="text" name="telefon" placeholder="Telefon *" />
-										{errors.telefon && touched.telefon ? (
-											<div className="error">{errors.telefon}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'lastName'}
+										placeholder={'Prezime *'}
+										value={values.lastName}
+										onChange={(e) => setFieldValue('lastName', e.target.value)}
+										errors={errors.lastName}
+										touched={touched.lastName}
+									/>
+									<InputField
+										type={'number'}
+										name={'zip'}
+										placeholder={'Poštanski broj *'}
+										value={values.zip}
+										onChange={(e) => setFieldValue('zip', e.target.value)}
+										errors={errors.zip}
+										touched={touched.zip}
+									/>
+									<InputField
+										type={'text'}
+										name={'telefon'}
+										placeholder={'Telefon *'}
+										value={values.telefon}
+										onChange={(e) => setFieldValue('telefon', e.target.value)}
+										errors={errors.telefon}
+										touched={touched.telefon}
+									/>
 								</div>
 							</div>
 
@@ -372,149 +415,165 @@ function Checkout() {
 								<p>Podaci za dostavu jednaki su podacima za dostavu računa</p>
 							</div>
 
-							{/* ----- Mobile checkout form dostava ----- */}
+							{/* ----- Mobile details form dostava ----- */}
 							{dostava && (
 								<div className="checkout-form-mobile">
 									{r1 && (
-										<div className="checkout-input">
-											<Field
-												type="text"
-												name="tvrtka2"
-												placeholder="Tvrtka *"
+										<>
+											<InputField
+												type={'text'}
+												name={'tvrtka2'}
+												placeholder={'Tvrtka *'}
+												value={values.tvrtka2}
+												onChange={(e) =>
+													setFieldValue('tvrtka2', e.target.value)
+												}
+												errors={errors.tvrtka2}
+												touched={touched.tvrtka2}
 											/>
-											{errors.tvrtka2 && touched.tvrtka2 ? (
-												<div className="error">{errors.tvrtka2}</div>
-											) : null}
-										</div>
+										</>
 									)}
-									<div className="checkout-input">
-										<Field type="text" name="ime2" placeholder="Ime *" />
-										{errors.ime2 && touched.ime2 ? (
-											<div className="error">{errors.ime2}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'ime2'}
+										placeholder={'Ime *'}
+										value={values.ime2}
+										onChange={(e) => setFieldValue('ime2', e.target.value)}
+										errors={errors.ime2}
+										touched={touched.ime2}
+									/>
 
-									<div className="checkout-input">
-										<Field
-											type="text"
-											name="prezime2"
-											placeholder="Prezime *"
-										/>
-										{errors.prezime2 && touched.prezime2 ? (
-											<div className="error">{errors.prezime2}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'prezime2'}
+										placeholder={'Prezime *'}
+										value={values.prezime2}
+										onChange={(e) => setFieldValue('prezime2', e.target.value)}
+										errors={errors.prezime2}
+										touched={touched.prezime2}
+									/>
 
-									<div className="checkout-input">
-										<Field type="text" name="adresa2" placeholder="Adresa *" />
-										{errors.adresa2 && touched.adresa2 ? (
-											<div className="error">{errors.adresa2}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'adresa2'}
+										placeholder={'Adresa *'}
+										value={values.adresa2}
+										onChange={(e) => setFieldValue('adresa2', e.target.value)}
+										errors={errors.adresa2}
+										touched={touched.adresa2}
+									/>
 
-									<div className="checkout-input">
-										<Field type="text" name="mjesto2" placeholder="Mjesto *" />
-										{errors.mjesto2 && touched.mjesto2 ? (
-											<div className="error">{errors.mjesto2}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'mjesto2'}
+										placeholder={'Mjesto *'}
+										value={values.mjesto2}
+										onChange={(e) => setFieldValue('mjesto2', e.target.value)}
+										errors={errors.mjesto2}
+										touched={touched.mjesto2}
+									/>
 
-									<div className="checkout-input">
-										<Field
-											type="text"
-											name="zip2"
-											placeholder="Poštanski broj *"
-										/>
-										{errors.zip2 && touched.zip2 ? (
-											<div className="error">{errors.zip2}</div>
-										) : null}
-									</div>
-									<div className="checkout-input">
-										<Field
-											type="text"
-											name="telefon2"
-											placeholder="Telefon *"
-										/>
-										{errors.telefon2 && touched.telefon2 ? (
-											<div className="error">{errors.telefon2}</div>
-										) : null}
-									</div>
+									<InputField
+										type={'text'}
+										name={'zip2'}
+										placeholder={'Poštanski broj *'}
+										value={values.zip2}
+										onChange={(e) => setFieldValue('zip2', e.target.value)}
+										errors={errors.zip2}
+										touched={touched.zip2}
+									/>
+
+									<InputField
+										type={'text'}
+										name={'telefon2'}
+										placeholder={'Telefon *'}
+										value={values.telefon2}
+										onChange={(e) => setFieldValue('telefon2', e.target.value)}
+										errors={errors.telefon2}
+										touched={touched.telefon2}
+									/>
 								</div>
 							)}
-							{/* ----- Desktop checkout form dostava ----- */}
+							{/* ----- Desktop details form dostava ----- */}
 							{dostava && (
 								<div className="checkout-form">
 									{r1 && (
-										<div className="checkout-input full">
-											<Field
-												type="text"
-												name="tvrtka2"
-												placeholder="Tvrtka *"
+										<>
+											<InputField
+												type={'text'}
+												name={'tvrtka2'}
+												placeholder={'Tvrtka *'}
+												value={values.tvrtka2}
+												onChange={(e) =>
+													setFieldValue('tvrtka2', e.target.value)
+												}
+												errors={errors.tvrtka2}
+												touched={touched.tvrtka2}
+												fullWidth={true}
 											/>
-											{errors.tvrtka2 && touched.tvrtka2 ? (
-												<div className="error">{errors.tvrtka2}</div>
-											) : null}
-										</div>
+										</>
 									)}
 									<div className="checkout-form-left">
-										<div className="checkout-input">
-											<Field type="text" name="ime2" placeholder="Ime *" />
-											{errors.ime2 && touched.ime2 ? (
-												<div className="error">{errors.ime2}</div>
-											) : null}
-										</div>
-										<div className="checkout-input">
-											<Field
-												type="text"
-												name="mjesto2"
-												placeholder="Mjesto *"
-											/>
-											{errors.mjesto2 && touched.mjesto2 ? (
-												<div className="error">{errors.mjesto2}</div>
-											) : null}
-										</div>
-										<div className="checkout-input">
-											<Field
-												type="text"
-												name="adresa2"
-												placeholder="Adresa *"
-											/>
-											{errors.adresa2 && touched.adresa2 ? (
-												<div className="error">{errors.adresa2}</div>
-											) : null}
-										</div>
+										<InputField
+											type={'text'}
+											name={'ime2'}
+											placeholder={'Ime *'}
+											value={values.ime2}
+											onChange={(e) => setFieldValue('ime2', e.target.value)}
+											errors={errors.ime2}
+											touched={touched.ime2}
+										/>
+										<InputField
+											type={'text'}
+											name={'mjesto2'}
+											placeholder={'Mjesto *'}
+											value={values.mjesto2}
+											onChange={(e) => setFieldValue('mjesto2', e.target.value)}
+											errors={errors.mjesto2}
+											touched={touched.mjesto2}
+										/>
+										<InputField
+											type={'text'}
+											name={'adresa2'}
+											placeholder={'Adresa *'}
+											value={values.adresa2}
+											onChange={(e) => setFieldValue('adresa2', e.target.value)}
+											errors={errors.adresa2}
+											touched={touched.adresa2}
+										/>
 									</div>
 									<div className="checkout-form-right">
-										<div className="checkout-input">
-											<Field
-												type="text"
-												name="prezime2"
-												placeholder="Prezime *"
-											/>
-											{errors.prezime2 && touched.prezime2 ? (
-												<div className="error">{errors.prezime2}</div>
-											) : null}
-										</div>
-										<div className="checkout-input">
-											<Field
-												type="text"
-												name="zip2"
-												placeholder="Poštanski broj *"
-											/>
-											{errors.zip2 && touched.zip2 ? (
-												<div className="error">{errors.zip2}</div>
-											) : null}
-										</div>
-										<div className="checkout-input">
-											<Field
-												type="text"
-												name="telefon2"
-												placeholder="Telefon *"
-											/>
-											{errors.telefon2 && touched.telefon2 ? (
-												<div className="error">{errors.telefon2}</div>
-											) : null}
-										</div>
+										<InputField
+											type={'text'}
+											name={'prezime2'}
+											placeholder={'Prezime *'}
+											value={values.prezime2}
+											onChange={(e) =>
+												setFieldValue('prezime2', e.target.value)
+											}
+											errors={errors.prezime2}
+											touched={touched.prezime2}
+										/>
+										<InputField
+											type={'text'}
+											name={'zip2'}
+											placeholder={'Poštanski broj *'}
+											value={values.zip2}
+											onChange={(e) => setFieldValue('zip2', e.target.value)}
+											errors={errors.zip2}
+											touched={touched.zip2}
+										/>
+										<InputField
+											type={'text'}
+											name={'telefon2'}
+											placeholder={'Telefon *'}
+											value={values.telefon2}
+											onChange={(e) =>
+												setFieldValue('telefon2', e.target.value)
+											}
+											errors={errors.telefon2}
+											touched={touched.telefon2}
+										/>
 									</div>
 								</div>
 							)}
