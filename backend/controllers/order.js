@@ -86,7 +86,7 @@ exports.getUserOrder = async (req, res) => {
 	// Get total number of orders
 	let totalOrders;
 	// If search query is not empty, get total number of orders that match search query
-	if (search != '') {
+	if (search != '' && search != null) {
 		totalOrders = await Order.find({
 			userId: req.params.userId,
 			orderNumber: { $regex: search, $options: 'i' },

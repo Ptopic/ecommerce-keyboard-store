@@ -1,0 +1,46 @@
+.input-container {
+    outline: none;
+    padding: 2rem;
+    border: 1px solid black;
+    width: 100%;
+    margin-bottom: 1rem;
+    margin-top: 3rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-field {
+    outline: none;
+    font-size: 1.6rem;
+    border: none;
+    width: 100%;
+}
+
+.input-field:not(:focus)::placeholder {
+    color: transparent;
+}
+
+.input-label {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    user-select: none;
+    transition: all .2s ease;
+}
+
+.input-field:focus+.input-label,
+.input-field:not(:placeholder-shown)+.input-label {
+    top: -3rem;
+    left: 0;
+}
+
+.error {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: #ff3333;
+    margin-bottom: 1rem;
+}

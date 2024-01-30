@@ -12,6 +12,7 @@ const passportSetup = require('./passport');
 const { stripeWebHook } = require('./controllers/stripe');
 const userRoute = require('./routes/users');
 const authRoute = require('./routes/auth');
+const categoriesRoute = require('./routes/categories');
 const productsRoute = require('./routes/products');
 const cartRoute = require('./routes/cart');
 const ordersRoute = require('./routes/order');
@@ -39,6 +40,7 @@ app.use('/api/checkout', stripeRoute);
 
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
+app.use('/api/categories', categoriesRoute);
 app.use('/api/products', productsRoute);
 app.use('/api/cart', cartRoute);
 app.use('/api/orders', ordersRoute);

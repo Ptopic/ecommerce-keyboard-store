@@ -26,6 +26,7 @@ import apple from '../assets/socials/apple.png';
 import { toast, Toaster } from 'react-hot-toast';
 
 import { useNavigate } from 'react-router-dom';
+import InputField from '../components/InputField/InputField';
 
 const Login = () => {
 	const [passwordShow, setPasswordShow] = useState(false);
@@ -95,34 +96,25 @@ const Login = () => {
 						handleLogin(values, formikActions)
 					}
 				>
-					{({ errors, touched }) => (
+					{({ errors, touched, setFieldValue }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<div className="input-container">
-									<Field
-										name="email"
-										placeholder="Email *"
-										autoCapitalize="off"
-									/>
-								</div>
+								<InputField
+									type={'email'}
+									name={'email'}
+									placeholder={'Email *'}
+									label={'Email'}
+								/>
 								{errors.email && touched.email ? (
 									<div className="error">{errors.email}</div>
 								) : null}
-								<div className="input-container">
-									<Field
-										name="password"
-										placeholder="Password *"
-										type={passwordShow ? 'text' : 'password'}
-										autoCapitalize="off"
-									/>
-									<button type="button" onClick={() => togglePasswordShow()}>
-										{passwordShow ? (
-											<FaRegEyeSlash size={24} />
-										) : (
-											<FaRegEye size={24} />
-										)}
-									</button>
-								</div>
+								<InputField
+									name={'password'}
+									placeholder={'Password *'}
+									label={'Password'}
+									passwordShow={passwordShow}
+									togglePasswordShow={() => togglePasswordShow()}
+								/>
 								{errors.password && touched.password ? (
 									<div className="error">{errors.password}</div>
 								) : null}

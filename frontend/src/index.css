@@ -48,14 +48,6 @@ p {
     font-size: 1.6rem;
 }
 
-.error {
-    display: flex;
-    width: 100%;
-    align-items: flex-start;
-    justify-content: flex-start;
-    color: #ff3333;
-}
-
 .success {
     color: #4BB543
 }
