@@ -3,13 +3,14 @@ import Topbar from './components/topbar/Topbar';
 import './App.css';
 import Home from './pages/Home/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import UserList from './pages/UserList/UserList';
 import Login from './pages/Login/Login';
 
 import { useSelector } from 'react-redux';
 import Analytics from './pages/Analytics/Analytics';
+import UserList from './pages/userList/UserList';
 import NewUser from './pages/newUser/NewUser';
 import EditUser from './pages/EditUser/EditUser';
+import Categories from './pages/Categories/Categories';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
@@ -28,6 +29,7 @@ function App() {
 							<Route exact path="/users" element={<UserList />} />
 							<Route exact path="/users/add" element={<NewUser />} />
 							<Route exact path="/users/edit/:id" element={<EditUser />} />
+							<Route exact path="/categories" element={<Categories />} />
 						</Routes>
 					</div>
 				</>

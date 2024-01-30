@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './UserList.css';
+import React, { useState, useEffect } from 'react';
+import './Categories.css';
 
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -15,17 +15,16 @@ import { admin_request } from '../../api';
 
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
-import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-export default function UserList() {
+function Categories() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 
-	const [userIdToDelete, setUserIdToDelete] = useState(null);
+	const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
 	const [data, setData] = useState([]);
 	const [deleteModal, setDeleteModal] = useState({
 		open: false,
@@ -49,10 +48,10 @@ export default function UserList() {
 	const pageDisplay = Number(page) + 1;
 	const pageSize = 5;
 
-	const getUsersData = async () => {
+	const getCategoriesData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/user', {
+			const res = await admin_request(userToken).get('/categories', {
 				params: {
 					sort: sort,
 					direction: direction,
@@ -70,13 +69,13 @@ export default function UserList() {
 
 	useEffect(() => {
 		// On page load set active screen to Users to display in side bar
-		dispatch(setActiveScreen('Users'));
+		dispatch(setActiveScreen('Categories'));
 
-		getUsersData();
+		getCategoriesData();
 	}, []);
 
 	useEffect(() => {
-		getUsersData();
+		getCategoriesData();
 	}, [page, pageSize, searchTermValue, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
@@ -91,23 +90,22 @@ export default function UserList() {
 		}
 	};
 
-	const openDeleteModal = (textValue, userId) => {
-		setUserIdToDelete(userId);
+	const openDeleteModal = (textValue, categoryId) => {
+		setCategoryIdToDelete(categoryId);
 		setDeleteModal({ open: true, text: textValue });
 	};
 
 	const closeDeleteModal = () => {
-		setUserIdToDelete(null);
+		setCategoryToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 	};
 
-	const handleUserDelete = async () => {
-		await admin_request(userToken).delete(`/user/${userIdToDelete}`);
-		setUserIdToDelete(null);
+	const handleCategoryDelete = async () => {
+		await admin_request(userToken).delete(`/categories/${categoryIdToDelete}`);
+		setCategoryIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
-
 		// Reset all filters
-		navigate('/users');
+		navigate('/categories');
 
 		// Refresh page
 		navigate(0);
@@ -115,30 +113,30 @@ export default function UserList() {
 
 	return (
 		<>
-			<div className="user-list">
+			<div className="categories-list">
 				<div className="input-container search">
 					<input
 						type="text"
 						name="search"
 						id="search"
-						placeholder="Search users by email"
+						placeholder="Search categories by name"
 						value={searchTermValue}
 						onChange={(e) => setSearchTermValue(e.target.value)}
 					/>
 
 					<Link
-						to={`/users
-							?direction=${direction}
-							&page=${page}
-							&pageSize=${pageSize}
-							&search=${searchTermValue}`}
+						to={`/categories
+                            ?direction=${direction}
+                            &page=${page}
+                            &pageSize=${pageSize}
+                            &search=${searchTermValue}`}
 					>
 						<AiOutlineSearch />
 					</Link>
 				</div>
 				<div className="add-new-container">
-					<Link to={'/users/add'} className="add-btn">
-						Add new User
+					<Link to={'/categories/add'} className="add-btn">
+						Add new Category
 					</Link>
 				</div>
 				<table className="table">
@@ -149,68 +147,20 @@ export default function UserList() {
 							</th>
 							<th>
 								<a
-									href={`/users
-										?sort=firstName
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+									href={`/categories
+										?sort=name
 										&page=${page}
 										&pageSize=${pageSize}
-										&search=${searchTermValue}`}
+										&search=${searchTermValue}
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
 								>
 									<div className="seperator"></div>
-									<h1>First Name</h1>
-									{filterDirectionIcons('firstName')}
+									<h1>Name</h1>
+									{filterDirectionIcons('name')}
 								</a>
 							</th>
 							<th>
-								<a
-									href={`/users
-										?sort=lastName
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}
-										&page=${page}
-										&pageSize=${pageSize}
-										&search=${searchTermValue}`}
-								>
-									<div className="seperator"></div>
-									<h1>Last Name</h1>
-									{filterDirectionIcons('lastName')}
-								</a>
-							</th>
-							<th>
-								<a href="">
-									<div className="seperator"></div>
-									Username
-								</a>
-							</th>
-							<th>
-								<a
-									href={`/users
-										?sort=email
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}
-										&page=${page}
-										&pageSize=${pageSize}
-										&search=${searchTermValue}`}
-								>
-									<div className="seperator"></div>
-									<h1>Email</h1>
-									{filterDirectionIcons('email')}
-								</a>
-							</th>
-							<th>
-								<a
-									href={`/users
-										?sort=isAdmin
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}
-										&page=${page}
-										&pageSize=${pageSize}
-										&search=${searchTermValue}`}
-								>
-									<div className="seperator"></div>
-									<h1>Role</h1>
-									{filterDirectionIcons('roles')}
-								</a>
-							</th>
-							<th>
-								<a href="">
+								<a>
 									<div className="seperator"></div>Actions
 								</a>
 							</th>
@@ -218,48 +168,25 @@ export default function UserList() {
 					</thead>
 
 					<tbody className="table-content">
-						{data.map((user) => {
+						{data.map((category) => {
 							return (
 								<tr className="table-content-row">
-									<td>{user._id.toString().substring(0, 5) + '...'}</td>
-									<td>{user.firstName}</td>
-									<td>{user.lastName}</td>
-									<td>{user.username}</td>
-									<td>
-										<a href={`mailto:' + ${user.email}`}>{user.email}</a>
-									</td>
-									<td>
-										<span
-											className={user.isAdmin ? 'admin-user' : 'librarian-user'}
-										>
-											{user.isAdmin ? 'Admin' : 'User'}
-										</span>
-									</td>
+									<td>{category._id.toString().substring(0, 5) + '...'}</td>
+									<td>{category.name}</td>
 									<td className="actions-row">
-										{/* <Link
-											to={`/users/${user._id}`}
-											className="action-btn"
-											role="button"
-											title="User Details"
-										>
-											<BsFillPersonLinesFill />
-										</Link> */}
 										<Link
-											to={`/users/edit/${user._id}`}
+											to={`/categories/edit/${category._id}`}
 											className="action-btn"
-											title="Edit User"
+											title="Edit Category"
 										>
 											<FaPen />
 										</Link>
 										<button
 											type="button"
 											className="delete-btn"
-											title="Delete User"
+											title="Delete Category"
 											onClick={() =>
-												openDeleteModal(
-													`${user.firstName} ${user.lastName}`,
-													user._id
-												)
+												openDeleteModal(`${category.name}`, category._id)
 											}
 										>
 											<FaTrash />
@@ -274,13 +201,11 @@ export default function UserList() {
 					{page != 0 && totalPages != 0 && (
 						<Link
 							className="prev-btn"
-							to={`/users
-								?page=${Number(page) - 1}
-								&pageSize=${pageSize}
-								${sort != null ? '&sort=' + sort : ''}
-								${direction != null ? '&direction=' + direction : ''}
-								${searchTermValue != null ? '&search=' + searchTermValue : ''}
-								`}
+							to={`/categories?page=${Number(page) - 1}&pageSize=${pageSize}${
+								sort != null ? '&sort=' + sort : ''
+							}${direction != null ? '&direction=' + direction : ''}
+									${searchTermValue != null ? '&search=' + searchTermValue : ''}
+                            `}
 						>
 							<FaChevronLeft />
 						</Link>
@@ -289,13 +214,11 @@ export default function UserList() {
 					{page != totalPages && totalPages != 0 && (
 						<Link
 							className="next-btn"
-							to={`/users
-								?page=${Number(page) + 1}
-								&pageSize=${pageSize}
-								${sort != null ? '&sort=' + sort : ''}
-								${direction != null ? '&direction=' + direction : ''}
-								${searchTermValue != null ? '&search=' + searchTermValue : ''}
-								`}
+							to={`/categories?page=${Number(page) + 1}&pageSize=${pageSize}${
+								sort != null ? '&sort=' + sort : ''
+							}${direction != null ? '&direction=' + direction : ''}
+							${searchTermValue != null ? '&search=' + searchTermValue : ''}
+							`}
 						>
 							<FaChevronRight />
 						</Link>
@@ -305,11 +228,13 @@ export default function UserList() {
 			{deleteModal.open && (
 				<DeleteModal
 					text={deleteModal.text}
-					type={'User'}
-					handleDelete={handleUserDelete}
+					type={'Category'}
+					handleDelete={handleCategoryDelete}
 					closeDeleteModal={closeDeleteModal}
 				/>
 			)}
 		</>
 	);
 }
+
+export default Categories;
