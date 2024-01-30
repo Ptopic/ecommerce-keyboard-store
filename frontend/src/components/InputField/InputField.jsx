@@ -25,7 +25,10 @@ function InputField({
 }) {
 	return (
 		<>
-			<div className={`input-container ${fullWidth ? 'full' : ''}`}>
+			<div
+				className={`input-container ${fullWidth ? 'full' : ''}`}
+				style={{ width: fullWidth ? '100%' : width }}
+			>
 				<Field
 					type={type ? type : passwordShow ? 'text' : 'password'}
 					id={name}

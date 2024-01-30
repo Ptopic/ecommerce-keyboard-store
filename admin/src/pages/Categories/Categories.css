@@ -76,10 +76,6 @@
    padding: 1rem 1rem 1rem 0;
 }
 
-/* .table-head tr>th:not(:last-child) {
-   border-right: 1.5px solid var(--bg1000);
- } */
-
 .table-head tr>th>a {
    display: flex;
    align-items: center;
@@ -126,30 +122,6 @@ th {
    background: var(--bg800);
 }
 
-.admin-user {
-   background-color: var(--error-bg);
-   border-radius: .4rem;
-   padding: 1rem;
-   text-align: center;
-   color: var(--error-text);
-}
-
-.librarian-user {
-   background-color: var(--secondary400);
-   border-radius: .4rem;
-   padding: 1rem;
-   text-align: center;
-   color: var(--secondary600);
-}
-
-.member-user {
-   background-color: var(--bg800);
-   border-radius: .4rem;
-   padding: 1rem;
-   text-align: center;
-   color: black;
-}
-
 .action-btn {
    background-color: var(--bg800);
    border-radius: .4rem;
@@ -192,20 +164,4 @@ th {
 
 .actions-row>a:not(:last-child) {
    margin-right: 1rem;
-}
-
-.enabled-user>div {
-   background-color: var(--sucess-bg);
-   border-radius: .4rem;
-   padding: 1rem;
-   text-align: center;
-   color: var(--sucess-text);
-}
-
-.disabled-user>div {
-   background-color: var(--error-bg);
-   border-radius: .4rem;
-   padding: 1rem;
-   text-align: center;
-   color: var(--error-text);
 }

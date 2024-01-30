@@ -107,23 +107,23 @@ function UserOrders() {
 
 					<Formik enableReinitialize>
 						{() => (
-							<Form className="login-form">
+							<Form>
 								<InputField
 									type={'text'}
 									name={'search'}
 									placeholder={'Search orders by order number'}
 									value={searchTermValue}
 									onChange={(e) => setSearchTermValue(e.target.value)}
+									width={'50%'}
 									icon={
 										<Link
 											to={`/user/orders
-													?sort=orderNumber
 													&direction=${direction}
 													&page=${page}
 													&pageSize=${pageSize}
 													&search=${searchTermValue}`}
 										>
-											<AiOutlineSearch />
+											<AiOutlineSearch size={32} />
 										</Link>
 									}
 								/>

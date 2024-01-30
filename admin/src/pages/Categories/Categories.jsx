@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 // Components
 import DeleteModal from '../../components/DeleteModal/DeleteModal';
+import InputField from '../../../../frontend/src/components/InputField/InputField';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,6 +19,10 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
+
+// Formik
+import { Formik, Form, Field, useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function Categories() {
 	const navigate = useNavigate();
@@ -114,26 +119,31 @@ function Categories() {
 	return (
 		<>
 			<div className="categories-list">
-				<div className="input-container search">
-					<input
-						type="text"
-						name="search"
-						id="search"
-						placeholder="Search categories by name"
-						value={searchTermValue}
-						onChange={(e) => setSearchTermValue(e.target.value)}
-					/>
-
-					<Link
-						to={`/categories
-                            ?direction=${direction}
-                            &page=${page}
-                            &pageSize=${pageSize}
-                            &search=${searchTermValue}`}
-					>
-						<AiOutlineSearch />
-					</Link>
-				</div>
+				<Formik enableReinitialize>
+					{() => (
+						<Form>
+							<InputField
+								type={'text'}
+								name={'search'}
+								placeholder={'Search categories by name'}
+								value={searchTermValue}
+								onChange={(e) => setSearchTermValue(e.target.value)}
+								width={'50%'}
+								icon={
+									<Link
+										to={`/categories
+													&direction=${direction}
+													&page=${page}
+													&pageSize=${pageSize}
+													&search=${searchTermValue}`}
+									>
+										<AiOutlineSearch size={32} />
+									</Link>
+								}
+							/>
+						</Form>
+					)}
+				</Formik>
 				<div className="add-new-container">
 					<Link to={'/categories/add'} className="add-btn">
 						Add new Category

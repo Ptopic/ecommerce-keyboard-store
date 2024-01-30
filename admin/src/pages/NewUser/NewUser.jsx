@@ -54,7 +54,6 @@ function NewUser() {
 			const res = await admin_request(userToken).post('/user/add', {
 				...values,
 			});
-			console.log(res);
 			toast.success('User added successfully');
 			formikActions.resetForm();
 			setIsLoading(false);
@@ -83,8 +82,8 @@ function NewUser() {
 					}
 				>
 					{({ errors, touched, values, setFieldValue }) => (
-						<Form className="login-form">
-							<div className="login-form-inputs">
+						<Form>
+							<div>
 								<InputField
 									type={'text'}
 									name={'firstName'}
@@ -150,7 +149,7 @@ function NewUser() {
 								) : null}
 							</div>
 
-							<div className="login-form-submit">
+							<div>
 								<Button
 									type="submit"
 									isLoading={isLoading}

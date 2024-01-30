@@ -74,7 +74,7 @@ function EditUser() {
 			navigate('/users');
 		} catch (error) {
 			console.log(error);
-			// toast.error(error.response.data.error);
+			toast.error(error.response.data.error);
 			setIsLoading(false);
 		}
 	};

@@ -8,9 +8,11 @@ import Login from './pages/Login/Login';
 import { useSelector } from 'react-redux';
 import Analytics from './pages/Analytics/Analytics';
 import UserList from './pages/userList/UserList';
-import NewUser from './pages/newUser/NewUser';
+import NewUser from './pages/newUser/newUser';
 import EditUser from './pages/EditUser/EditUser';
 import Categories from './pages/Categories/Categories';
+import NewCategory from './pages/NewCategory/NewCategory';
+import EditCategory from './pages/EditCategory/EditCategory';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
@@ -30,6 +32,12 @@ function App() {
 							<Route exact path="/users/add" element={<NewUser />} />
 							<Route exact path="/users/edit/:id" element={<EditUser />} />
 							<Route exact path="/categories" element={<Categories />} />
+							<Route exact path="/categories/add" element={<NewCategory />} />
+							<Route
+								exact
+								path="/categories/edit/:id"
+								element={<EditCategory />}
+							/>
 						</Routes>
 					</div>
 				</>
