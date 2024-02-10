@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // Styles
 import './EditCategory.css';
+import '../../styles/forms.css';
 
 // Formik
 import { Formik, Form, Field, useFormik } from 'formik';
@@ -16,10 +17,15 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import Button from '../../../../frontend/src/components/Button/Button';
 import InputField from '../../../../frontend/src/components/InputField/InputField';
 
+import AddFieldModal from '../../components/AddFieldModal/AddFieldModal';
+
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { admin_request } from '../../api';
+
+// Icons
+import { FaTrash } from 'react-icons/fa';
 
 function EditCategory() {
 	const navigate = useNavigate();
@@ -29,23 +35,36 @@ function EditCategory() {
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
 
-	const [passwordShow, setPasswordShow] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [categoryData, setCategoryData] = useState(null);
+
+	const [latestIndex, setLatestIndex] = useState(0);
+	const [name, setName] = useState('');
+
+	const [addFieldModalVisible, setAddFieldModalVisible] = useState(false);
+	const [selectedFields, setSelectedFields] = useState([]);
 
 	const newCategorySchema = Yup.object().shape({
 		name: Yup.string().required('Category name is required'),
 	});
 
 	const initialValues = {
-		name: categoryData?.name,
+		name: name,
+		fields: selectedFields,
 	};
 
 	const fetchCategoryById = async () => {
 		try {
 			const res = await admin_request(userToken).get('/categories/' + id);
+			let fields = res.data.data.fields;
 			setCategoryData(res.data.data);
+			setName(res.data.data.name);
+			setSelectedFields(fields);
+
+			// Set latest index to latest field id
+
+			setLatestIndex(fields.length);
 		} catch (error) {
 			console.log(error.response.data.error);
 		}
@@ -56,6 +75,7 @@ function EditCategory() {
 		try {
 			const res = await admin_request(userToken).put('/categories/' + id, {
 				...values,
+				selectedFields,
 			});
 			formikActions.resetForm();
 			setIsLoading(false);
@@ -67,8 +87,18 @@ function EditCategory() {
 		}
 	};
 
-	const togglePasswordShow = () => {
-		setPasswordShow(!passwordShow);
+	const openAddFieldModal = () => {
+		document.body.style.overflow = 'hidden';
+		setAddFieldModalVisible(true);
+	};
+
+	const closeAddFieldModal = () => {
+		document.body.style.overflow = 'visible';
+		setAddFieldModalVisible(false);
+	};
+
+	const removeSelectedItem = (id) => {
+		setSelectedFields(selectedFields.filter((filter) => filter.id != id));
 	};
 
 	// Fetch category by id on page load
@@ -77,11 +107,13 @@ function EditCategory() {
 	}, []);
 
 	return (
-		<div className="edit-category">
+		<div className="form">
 			<Toaster />
 			<h1>Edit Category</h1>
 
 			<div className="box">
+				<h2>Category Details:</h2>
+				<div className="seperator-line"></div>
 				<Formik
 					enableReinitialize
 					initialValues={initialValues}
@@ -91,17 +123,63 @@ function EditCategory() {
 					}
 				>
 					{({ errors, touched, values, setFieldValue }) => (
-						<Form>
+						<Form className="form-container">
 							<div>
 								<InputField
 									type={'text'}
 									name={'name'}
 									placeholder={'Category Name *'}
 									value={values.name}
-									onChange={(e) => setFieldValue('name', e.target.value)}
+									onChange={(e) => {
+										setFieldValue('name', e.target.value);
+										setName(e.target.value);
+									}}
 									errors={errors.name}
 									touched={touched.name}
 								/>
+							</div>
+
+							<div className="additional-info">
+								<h2>Fields For Filtering:</h2>
+								<div className="seperator-line"></div>
+							</div>
+
+							<div className="filter-fields-container">
+								<button
+									className="add-field-btn"
+									type="button"
+									onClick={() => openAddFieldModal()}
+								>
+									+
+								</button>
+
+								<div className="filter-fields">
+									{selectedFields.length > 0 &&
+										selectedFields.map((field) => {
+											return (
+												<div className="filter-field" key={field.id}>
+													<h2>{field.name}</h2>
+													<button
+														className="delete-btn"
+														type="button"
+														onClick={() => removeSelectedItem(field.id)}
+													>
+														<FaTrash />
+													</button>
+												</div>
+											);
+										})}
+								</div>
+
+								{addFieldModalVisible && (
+									<AddFieldModal
+										closeModal={closeAddFieldModal}
+										selectedFields={selectedFields}
+										setSelectedFields={setSelectedFields}
+										latestIndex={latestIndex}
+										setLatestIndex={setLatestIndex}
+									/>
+								)}
 							</div>
 
 							<div className="login-form-submit">
@@ -109,7 +187,7 @@ function EditCategory() {
 									type="submit"
 									isLoading={isLoading}
 									width="100%"
-									text="Edit User"
+									text="Edit Category"
 								/>
 							</div>
 						</Form>

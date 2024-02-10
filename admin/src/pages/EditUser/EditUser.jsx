@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 // Styles
-import './EditUser.css';
+import '../../styles/forms.css';
 
 // Formik
 import { Formik, Form, Field, useFormik } from 'formik';
@@ -89,11 +89,13 @@ function EditUser() {
 	}, []);
 
 	return (
-		<div className="edit-user">
+		<div className="form">
 			<Toaster />
 			<h1>Edit User</h1>
 
 			<div className="box">
+				<h2>User Details:</h2>
+				<div className="seperator-line"></div>
 				<Formik
 					enableReinitialize
 					initialValues={initialValues}
@@ -103,27 +105,37 @@ function EditUser() {
 					}
 				>
 					{({ errors, touched, values, setFieldValue }) => (
-						<Form className="login-form">
-							<div className="login-form-inputs">
-								<InputField
-									type={'text'}
-									name={'firstName'}
-									placeholder={'First Name *'}
-									value={values.firstName}
-									onChange={(e) => setFieldValue('firstName', e.target.value)}
-									errors={errors.firstName}
-									touched={touched.firstName}
-								/>
+						<Form>
+							<div className="form-container">
+								<div className="row">
+									<div>
+										<InputField
+											type={'text'}
+											name={'firstName'}
+											placeholder={'First Name *'}
+											value={values.firstName}
+											onChange={(e) =>
+												setFieldValue('firstName', e.target.value)
+											}
+											errors={errors.firstName}
+											touched={touched.firstName}
+										/>
+									</div>
 
-								<InputField
-									type={'text'}
-									name={'lastName'}
-									placeholder={'Last Name *'}
-									value={values.lastName}
-									onChange={(e) => setFieldValue('lastName', e.target.value)}
-									errors={errors.lastName}
-									touched={touched.lastName}
-								/>
+									<div>
+										<InputField
+											type={'text'}
+											name={'lastName'}
+											placeholder={'Last Name *'}
+											value={values.lastName}
+											onChange={(e) =>
+												setFieldValue('lastName', e.target.value)
+											}
+											errors={errors.lastName}
+											touched={touched.lastName}
+										/>
+									</div>
+								</div>
 
 								<InputField
 									type={'text'}

@@ -281,7 +281,7 @@ export default function UserList() {
 					</tbody>
 				</table>
 				<div className="pagination-controls">
-					{page != 0 && totalPages != 0 && (
+					{page != 0 && totalPages > 0 && (
 						<Link
 							className="prev-btn"
 							to={`/users
@@ -296,7 +296,7 @@ export default function UserList() {
 						</Link>
 					)}
 					<p className="current-page">{pageDisplay}</p>
-					{page != totalPages && totalPages != 0 && (
+					{page != totalPages && totalPages > 0 && (
 						<Link
 							className="next-btn"
 							to={`/users

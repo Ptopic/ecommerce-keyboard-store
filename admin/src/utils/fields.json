@@ -1,0 +1,9 @@
+{
+	"fields": [
+		{ "name": "Manufacturer" },
+		{ "name": "Price" },
+		{ "name": "Series" },
+		{ "name": "Socket" },
+		{ "name": "Number Of Cores" }
+	]
+}

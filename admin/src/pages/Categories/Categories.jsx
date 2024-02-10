@@ -65,6 +65,7 @@ function Categories() {
 					search: searchTermValue,
 				},
 			});
+			console.log(res.data.totalPages);
 			setTotalPages(res.data.totalPages - 1);
 			setData(res.data.data);
 		} catch (err) {
@@ -101,7 +102,7 @@ function Categories() {
 	};
 
 	const closeDeleteModal = () => {
-		setCategoryToDelete(null);
+		setCategoryIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 	};
 
@@ -208,7 +209,7 @@ function Categories() {
 					</tbody>
 				</table>
 				<div className="pagination-controls">
-					{page != 0 && totalPages != 0 && (
+					{page != 0 && totalPages > 0 && (
 						<Link
 							className="prev-btn"
 							to={`/categories?page=${Number(page) - 1}&pageSize=${pageSize}${
@@ -221,7 +222,7 @@ function Categories() {
 						</Link>
 					)}
 					<p className="current-page">{pageDisplay}</p>
-					{page != totalPages && totalPages != 0 && (
+					{page != totalPages && totalPages > 0 && (
 						<Link
 							className="next-btn"
 							to={`/categories?page=${Number(page) + 1}&pageSize=${pageSize}${

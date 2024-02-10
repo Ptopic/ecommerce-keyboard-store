@@ -1,0 +1,105 @@
+.modal-overlay {
+   background-color: rgba(0, 0, 0, 0.6);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100dvh;
+   z-index: 2000;
+}
+
+.add-field-modal {
+   background-color: white;
+   padding: 4rem;
+   border-radius: 1.6rem;
+   font-size: 1.6rem;
+   width: 50%;
+   height: 80%;
+   position: fixed;
+}
+
+.field-modal-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.field-modal-header h1 {
+   font-size: 3.6rem;
+   margin-bottom: 1.2rem;
+}
+
+.field-modal-header button {
+   border: none;
+   background-color: var(--error-bg);
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   padding: 1rem;
+   color: var(--error-text);
+}
+
+.field-modal-header button>svg {
+   font-size: 2rem;
+}
+
+.field-modal-body {
+   margin-bottom: 1rem;
+}
+
+.add-new-field-container {
+   display: flex;
+   flex-direction: row;
+   align-items: flex-end;
+   gap: 2rem;
+}
+
+.add-new-field-container button {
+   border: none;
+   outline: none;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background: var(--black);
+   color: white;
+   font-size: 2.4rem;
+   padding: 1rem 2rem;
+   border-radius: .8rem;
+}
+
+.yes-btn {
+   background-color: var(--error-bg);
+   border-radius: .4rem;
+   padding: 1rem 1.6rem;
+   color: var(--error-text);
+   border: 0.4px solid var(--error-text);
+   margin-right: 1rem;
+   text-decoration: none;
+}
+
+.no-btn {
+   font-size: 1.6rem;
+   text-decoration: none;
+   border-radius: .4rem;
+   padding: 1rem 1.6rem;
+   border: 0.4px solid black;
+   color: black;
+}
+
+.fields-list-container {
+   position: absolute;
+   height: 60%;
+   padding: 1rem 0;
+   width: calc(100% - 8rem);
+   overflow: auto;
+}
+
+.fields-list {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+   gap: 2rem;
+   overflow-y: scroll;
+   max-height: 100%;
+}

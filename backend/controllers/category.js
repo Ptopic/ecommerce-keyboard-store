@@ -73,9 +73,11 @@ exports.getCategoryById = async (req, res) => {
 };
 
 exports.createCategory = async (req, res) => {
-	const { name } = req.body;
+	const { name, selectedFields } = req.body;
 
-	const newCategory = new Category({ name });
+	const newCategory = new Category({ name: name, fields: [...selectedFields] });
+
+	console.log(newCategory);
 	try {
 		const savedCategory = await newCategory.save();
 		return res.status(200).send({ success: true, data: savedCategory });
