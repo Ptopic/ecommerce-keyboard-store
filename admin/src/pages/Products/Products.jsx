@@ -66,6 +66,7 @@ const Products = () => {
 					search: searchTermValue,
 				},
 			});
+			console.log(res.data.data);
 			setTotalPages(res.data.totalPages - 1);
 			setData(res.data.data);
 		} catch (err) {
@@ -97,17 +98,20 @@ const Products = () => {
 	};
 
 	const openDeleteModal = (textValue, categoryId) => {
-		setCategoryIdToDelete(categoryId);
+		setProductIdToDelete(categoryId);
 		setDeleteModal({ open: true, text: textValue });
 	};
 
 	const closeDeleteModal = () => {
-		setCategoryIdToDelete(null);
+		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 	};
 
 	const handleProductDelete = async () => {
-		await admin_request(userToken).delete(`/products/${productIdToDelete}`);
+		const res = await admin_request(userToken).delete(
+			`/products/${productIdToDelete}`
+		);
+		console.log(res);
 		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
@@ -225,11 +229,23 @@ const Products = () => {
 							return (
 								<tr className="table-content-row">
 									<td>{product._id.toString().substring(0, 5) + '...'}</td>
-									<td>{product.title}</td>
+									<td>
+										<div className="product-title-and-image">
+											{product.images.length > 0 && (
+												<img
+													src={product.images[0].url}
+													alt="product image"
+													className="product-image"
+													loading="lazy"
+												/>
+											)}
+											{product.title}
+										</div>
+									</td>
 									<td>{product.category}</td>
 									<td>{product.price}</td>
 									<td>{product.stock}</td>
-									<td className="actions-row">
+									<td className="actions-row products">
 										<Link
 											to={`/products/edit/${product._id}`}
 											className="action-btn"
@@ -242,7 +258,7 @@ const Products = () => {
 											className="delete-btn"
 											title="Delete Product"
 											onClick={() =>
-												openDeleteModal(`${product.name}`, product._id)
+												openDeleteModal(`${product.title}`, product._id)
 											}
 										>
 											<FaTrash />

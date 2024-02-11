@@ -13,6 +13,7 @@ const {
 	getProduct,
 	getAllProducts,
 } = require('../controllers/products');
+const { upload } = require('../middleware/upload');
 
 // Create product (admin only)
 router.post('/', verifyTokenAndAdmin, createProduct);

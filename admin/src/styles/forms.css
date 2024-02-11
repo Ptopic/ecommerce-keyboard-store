@@ -112,3 +112,34 @@ h1 {
 .filter-field:hover {
    cursor: pointer;
 }
+
+.quill {
+   margin: 2rem 0;
+}
+
+.description-container p {
+   margin-top: 2rem;
+   margin-bottom: -1rem;
+}
+
+.file-container p {
+   margin-top: 2rem;
+   margin-bottom: -2rem;
+}
+
+
+.file-input-container {
+   outline: none;
+   padding: 1rem 1.4rem;
+   border: 1px solid black;
+   width: 100%;
+   margin-top: 3rem;
+   position: relative;
+   display: flex;
+   align-items: start;
+   justify-content: start;
+}
+
+input[type="file"] {
+   width: 100%;
+}

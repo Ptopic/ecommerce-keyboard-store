@@ -14,6 +14,9 @@ import { useSelector } from 'react-redux';
 import Button from '../../../../frontend/src/components/Button/Button';
 import InputField from '../../../../frontend/src/components/InputField/InputField';
 
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link } from 'react-router-dom';
@@ -26,41 +29,88 @@ const NewProduct = () => {
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 
+	const [title, setTitle] = useState('');
+	const [description, setDescription] = useState('');
+	const [details, setDetails] = useState('');
+	const [price, setPrice] = useState('');
+	const [stock, setStock] = useState('');
+
+	const [files, setFiles] = useState([]);
+
 	const [activeFields, setActiveFields] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
 
+	const modules = {
+		toolbar: [
+			[{ header: [1, 2, false] }],
+			['bold', 'italic', 'underline', 'strike', 'blockquote'],
+			[
+				{ list: 'ordered' },
+				{ list: 'bullet' },
+				{ indent: '-1' },
+				{ indent: '+1' },
+			],
+			['link', 'image'],
+			['clean'],
+		],
+	};
+
+	const formats = [
+		'header',
+		'bold',
+		'italic',
+		'underline',
+		'strike',
+		'blockquote',
+		'list',
+		'bullet',
+		'indent',
+		'link',
+		'image',
+	];
+
 	const newUserSchema = Yup.object().shape({
-		title: Yup.string().required('Title is required'),
-		description: Yup.string().required('Description is required'),
-		images: Yup.string().required('Images is required'),
-		category: Yup.string().required('Category is required'),
-		details: Yup.string().required('Details is required'),
-		price: Yup.number().required('Price is required'),
-		stock: Yup.number().required('Stock is required'),
+		title: Yup.string(),
+		category: Yup.string(),
+		price: Yup.number(),
+		stock: Yup.number(),
 	});
 
-	const initialValues = {
-		title: '',
-		description: '',
-		images: '',
-		category: 'Select category',
-		details: '',
-		price: 0,
-		stock: 0,
-	};
+	const initialValues =
+		activeFields.length > 0
+			? {
+					title: title,
+					description: description,
+					category: selectedCategory,
+					details: details,
+					price: price,
+					stock: stock,
+					...activeFields,
+			  }
+			: {
+					title: title,
+					description: '',
+					category:
+						selectedCategory != '' ? selectedCategory : 'Select category',
+					price: price,
+					stock: stock,
+			  };
 
 	const handleAddNewProduct = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			const res = await admin_request(userToken).post('/products/add', {
+			console.log(values);
+			const res = await admin_request(userToken).post('/products', {
 				...values,
+				image: files,
 			});
+			console.log(res);
 			toast.success('Product added successfully');
 			formikActions.resetForm();
 			setIsLoading(false);
 		} catch (error) {
-			toast.error(error.response.data.error);
+			toast.error('Something went wrong');
 			setIsLoading(false);
 		}
 	};
@@ -79,21 +129,38 @@ const NewProduct = () => {
 		getAllCategories();
 	}, []);
 
+	const handleImageUpload = (e) => {
+		const file = e.target.files[0];
+		setFiles(file);
+
+		transformFile(file);
+	};
+
+	const transformFile = (file) => {
+		const reader = new FileReader();
+
+		if (file) {
+			reader.readAsDataURL(file);
+			reader.onloadend = () => {
+				setFiles(reader.result);
+			};
+		}
+	};
+
 	useEffect(() => {
 		// Find selected category in category data
 		let curCategory;
 		categories.forEach((category) => {
 			if (category['name'] == selectedCategory) {
 				curCategory = category;
-				console.log(category);
 			}
 		});
 		// Set fieldDetails to category details
 		if (curCategory != null) {
-			setActiveFields(curCategory.fields);
+			// Format active fields
+			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
+			setActiveFields(namesOfActiveFields);
 		}
-
-		// Display field details accordingly in ui to add data
 	}, [selectedCategory]);
 
 	return (
@@ -102,7 +169,7 @@ const NewProduct = () => {
 			<h1>Add new Product</h1>
 
 			<div className="box">
-				<h2>Product Details:</h2>
+				<h2>Product Information:</h2>
 				<div className="seperator-line"></div>
 				<Formik
 					enableReinitialize
@@ -120,7 +187,10 @@ const NewProduct = () => {
 									name={'title'}
 									placeholder={'Title *'}
 									value={values.title}
-									onChange={(e) => setFieldValue('title', e.target.value)}
+									onChange={(e) => {
+										setTitle(e.target.value);
+										setFieldValue('title', e.target.value);
+									}}
 									errors={errors.title}
 									touched={touched.title}
 								/>
@@ -131,7 +201,10 @@ const NewProduct = () => {
 											name={'price'}
 											placeholder={'Price *'}
 											value={values.price}
-											onChange={(e) => setFieldValue('price', e.target.value)}
+											onChange={(e) => {
+												setPrice(e.target.value);
+												setFieldValue('price', e.target.value);
+											}}
 											errors={errors.price}
 											touched={touched.price}
 										/>
@@ -143,9 +216,41 @@ const NewProduct = () => {
 											name={'stock'}
 											placeholder={'Stock *'}
 											value={values.stock}
-											onChange={(e) => setFieldValue('stock', e.target.value)}
+											onChange={(e) => {
+												setStock(e.target.value);
+												setFieldValue('stock', e.target.value);
+											}}
 											errors={errors.stock}
 											touched={touched.stock}
+										/>
+									</div>
+								</div>
+
+								<div className="description-container">
+									<p>Description</p>
+									<ReactQuill
+										name="description"
+										theme="snow"
+										modules={modules}
+										formats={formats}
+										value={values.description || ''}
+										onChange={(newValue) => {
+											setDescription(newValue);
+											setFieldValue('description', newValue);
+										}}
+									/>
+								</div>
+
+								<div className="file-container">
+									<p>File</p>
+									<div className="file-input-container">
+										<input
+											type="file"
+											name="files"
+											onChange={(e) => {
+												setFieldValue('files', e.target.files[0]);
+												handleImageUpload(e);
+											}}
 										/>
 									</div>
 								</div>
@@ -162,9 +267,11 @@ const NewProduct = () => {
 										}}
 									>
 										<option disabled>Select category</option>
-										{categories.map((category) => {
+										{categories.map((category, id) => {
 											return (
-												<option value={category.name}>{category.name}</option>
+												<option value={category.name} key={id}>
+													{category.name}
+												</option>
 											);
 										})}
 									</Field>
@@ -173,6 +280,29 @@ const NewProduct = () => {
 									<div className="error">{errors.category}</div>
 								) : null}
 							</div>
+
+							{activeFields.length > 0 && (
+								<div className="product-details">
+									<div className="additional-info">
+										<h2>Product Details:</h2>
+										<div className="seperator-line"></div>
+									</div>
+
+									{activeFields.map((el) => {
+										return (
+											<InputField
+												type={'text'}
+												name={el}
+												placeholder={el + ' *'}
+												value={values.el}
+												onChange={(e) => setFieldValue(el, e.target.value)}
+												errors={errors.el}
+												touched={touched.el}
+											/>
+										);
+									})}
+								</div>
+							)}
 
 							<div>
 								<Button

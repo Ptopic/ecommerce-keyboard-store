@@ -26,7 +26,7 @@ mongoose
 	.then(() => console.log('db connected'))
 	.catch((err) => console.log(err));
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 app.post('/api/checkout/webhook', express.raw({ type: '*/*' }), stripeWebHook);
 app.use(
@@ -34,8 +34,8 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(bodyParser.json());
-app.use(express.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use('/api/checkout', stripeRoute);
 
 app.use('/api/user', userRoute);

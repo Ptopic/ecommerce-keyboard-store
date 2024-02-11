@@ -1,11 +1,47 @@
 const Product = require('../models/Product');
+const upload = require('../middleware/upload');
+const cloudinary = require('cloudinary').v2;
+
+//Imporing file system library
+const fs = require('fs');
+const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
 exports.createProduct = async (req, res) => {
-	const newProduct = new Product(req.body);
+	const { title, description, image, category, details, price, stock } =
+		req.body;
 
 	try {
-		const savedProduct = await newProduct.save();
-		return res.status(200).send({ success: true, data: savedProduct });
+		if (image) {
+			const uploadRes = await uploadToCloudinary(image, 'shop');
+
+			console.log(uploadRes);
+
+			const newProduct = new Product({
+				title: title,
+				description: description,
+				images: [uploadRes],
+				category: category,
+				details: details,
+				price: price,
+				stock: stock,
+			});
+
+			const savedProduct = await newProduct.save();
+			return res.status(200).send({ success: true, data: savedProduct });
+		} else {
+			const newProduct = new Product({
+				title: title,
+				description: description,
+				images: [],
+				category: category,
+				details: details,
+				price: price,
+				stock: stock,
+			});
+
+			const savedProduct = await newProduct.save();
+			return res.status(200).send({ success: true, data: savedProduct });
+		}
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}
@@ -27,8 +63,19 @@ exports.updateProduct = async (req, res) => {
 };
 
 exports.deleteProduct = async (req, res) => {
+	const { id } = req.params;
+
+	// Get product
+	const productFromDb = await Product.findById(id);
+	const productImages = productFromDb.images;
+
 	try {
-		await Product.findByIdAndDelete(req.params.id);
+		// Delete image from cloudinary
+		for (let image of productImages) {
+			await removeFromCloudinary(image.public_id);
+		}
+
+		await Product.findByIdAndDelete(id);
 		return res
 			.status(200)
 			.send({ success: true, data: 'Product has been deleted' });
@@ -38,8 +85,10 @@ exports.deleteProduct = async (req, res) => {
 };
 
 exports.getProduct = async (req, res) => {
+	const { id } = req.params;
+
 	try {
-		const product = await Product.findById(req.params.id);
+		const product = await Product.findById(id);
 		return res.status(200).send({ success: true, data: product });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
