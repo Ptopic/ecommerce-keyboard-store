@@ -8,11 +8,13 @@ import Login from './pages/Login/Login';
 import { useSelector } from 'react-redux';
 import Analytics from './pages/Analytics/Analytics';
 import UserList from './pages/userList/UserList';
-import NewUser from './pages/newUser/newUser';
+import NewUser from './pages/NewUser/NewUser';
 import EditUser from './pages/EditUser/EditUser';
 import Categories from './pages/Categories/Categories';
 import NewCategory from './pages/NewCategory/NewCategory';
 import EditCategory from './pages/EditCategory/EditCategory';
+import Products from './pages/Products/Products';
+import NewProduct from './pages/NewProduct/NewProduct';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
@@ -38,6 +40,8 @@ function App() {
 								path="/categories/edit/:id"
 								element={<EditCategory />}
 							/>
+							<Route exact path="/products" element={<Products />} />
+							<Route excat path="/products/add" element={<NewProduct />} />
 						</Routes>
 					</div>
 				</>

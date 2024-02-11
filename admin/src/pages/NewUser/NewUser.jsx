@@ -9,9 +9,6 @@ import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
 
-// Icons
-import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
-
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
 import InputField from '../../../../frontend/src/components/InputField/InputField';
@@ -45,7 +42,7 @@ function NewUser() {
 		firstName: '',
 		lastName: '',
 		username: '',
-		isAdmin: false,
+		isAdmin: 'Select role',
 	};
 
 	const handleAddNewUser = async (values, formikActions) => {
@@ -148,10 +145,9 @@ function NewUser() {
 								/>
 
 								<div className="select-container">
+									<p>Select role:</p>
 									<Field placeholder="Role *" as="select" name="isAdmin">
-										<option disabled selected>
-											Select role
-										</option>
+										<option disabled>Select role</option>
 										<option value={false}>User</option>
 										<option value={true}>Admin</option>
 									</Field>

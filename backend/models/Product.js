@@ -10,25 +10,16 @@ const productSchema = new mongoose.Schema(
 			type: String,
 			requried: true,
 		},
-		image: {
+		images: {
 			type: Array,
 			requried: true,
 		},
-		categories: {
-			type: Array,
+		category: {
+			type: String,
 			requried: true,
 		},
-		size: {
-			type: Array,
-		},
-		material: {
-			type: Array,
-		},
-		type: {
-			type: Array,
-		},
-		color: {
-			type: Array,
+		details: {
+			type: Object,
 		},
 		price: {
 			type: Number,
@@ -38,7 +29,19 @@ const productSchema = new mongoose.Schema(
 			type: Number,
 			default: 10,
 		},
-		inStock: { type: Boolean, default: true },
+		// size: {
+		// 	type: Array,
+		// },
+		// material: {
+		// 	type: Array,
+		// },
+		// type: {
+		// 	type: Array,
+		// },
+		// color: {
+		// 	type: Array,
+		// },
+		// inStock: { type: Boolean, default: true },
 	},
 	{ timestamps: true }
 );

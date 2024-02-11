@@ -170,10 +170,9 @@ function EditUser() {
 								/>
 
 								<div className="select-container">
+									<p>Select role:</p>
 									<Field placeholder="Role *" as="select" name="isAdmin">
-										<option disabled selected>
-											Select role
-										</option>
+										<option disabled>Select role</option>
 										<option value={false}>User</option>
 										<option value={true}>Admin</option>
 									</Field>

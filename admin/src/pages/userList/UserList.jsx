@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './UserList.css';
+import '../../styles/tables.css';
 
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 

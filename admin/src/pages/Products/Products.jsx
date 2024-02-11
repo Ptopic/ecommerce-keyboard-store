@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Categories.css';
+import './Products.css';
 import '../../styles/tables.css';
 
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -25,12 +25,12 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { Formik, Form, Field, useFormik } from 'formik';
 import * as Yup from 'yup';
 
-function Categories() {
+const Products = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 
-	const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
+	const [productIdToDelete, setProductIdToDelete] = useState(null);
 	const [data, setData] = useState([]);
 	const [deleteModal, setDeleteModal] = useState({
 		open: false,
@@ -54,10 +54,10 @@ function Categories() {
 	const pageDisplay = Number(page) + 1;
 	const pageSize = 5;
 
-	const getCategoriesData = async () => {
+	const getProductsData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/categories', {
+			const res = await admin_request(userToken).get('/products', {
 				params: {
 					sort: sort,
 					direction: direction,
@@ -66,7 +66,6 @@ function Categories() {
 					search: searchTermValue,
 				},
 			});
-			console.log(res.data.totalPages);
 			setTotalPages(res.data.totalPages - 1);
 			setData(res.data.data);
 		} catch (err) {
@@ -76,13 +75,13 @@ function Categories() {
 
 	useEffect(() => {
 		// On page load set active screen to Users to display in side bar
-		dispatch(setActiveScreen('Categories'));
+		dispatch(setActiveScreen('Products'));
 
-		getCategoriesData();
+		getProductsData();
 	}, []);
 
 	useEffect(() => {
-		getCategoriesData();
+		getProductsData();
 	}, [page, pageSize, searchTermValue, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
@@ -107,12 +106,12 @@ function Categories() {
 		setDeleteModal({ open: false, text: '' });
 	};
 
-	const handleCategoryDelete = async () => {
-		await admin_request(userToken).delete(`/categories/${categoryIdToDelete}`);
-		setCategoryIdToDelete(null);
+	const handleProductDelete = async () => {
+		await admin_request(userToken).delete(`/products/${productIdToDelete}`);
+		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
-		navigate('/categories');
+		navigate('/products');
 
 		// Refresh page
 		navigate(0);
@@ -120,20 +119,20 @@ function Categories() {
 
 	return (
 		<>
-			<div className="categories-list">
+			<div className="products-list">
 				<Formik enableReinitialize>
 					{() => (
 						<Form>
 							<InputField
 								type={'text'}
 								name={'search'}
-								placeholder={'Search categories by name'}
+								placeholder={'Search products by title'}
 								value={searchTermValue}
 								onChange={(e) => setSearchTermValue(e.target.value)}
 								width={'50%'}
 								icon={
 									<Link
-										to={`/categories
+										to={`/products
 													&direction=${direction}
 													&page=${page}
 													&pageSize=${pageSize}
@@ -147,8 +146,8 @@ function Categories() {
 					)}
 				</Formik>
 				<div className="add-new-container">
-					<Link to={'/categories/add'} className="add-btn">
-						Add new Category
+					<Link to={'/products/add'} className="add-btn">
+						Add new Product
 					</Link>
 				</div>
 				<table className="table">
@@ -159,16 +158,58 @@ function Categories() {
 							</th>
 							<th>
 								<a
-									href={`/categories
-										?sort=name
+									href={`/products
+										?sort=title
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
 								>
 									<div className="seperator"></div>
-									<h1>Name</h1>
-									{filterDirectionIcons('name')}
+									<h1>Title</h1>
+									{filterDirectionIcons('title')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/products
+										?sort=category
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
+								>
+									<div className="seperator"></div>
+									<h1>Category</h1>
+									{filterDirectionIcons('category')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/products
+										?sort=price
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
+								>
+									<div className="seperator"></div>
+									<h1>Price</h1>
+									{filterDirectionIcons('price')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/products
+										?sort=stock
+										&page=${page}
+										&pageSize=${pageSize}
+										&search=${searchTermValue}
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
+								>
+									<div className="seperator"></div>
+									<h1>Stock</h1>
+									{filterDirectionIcons('stock')}
 								</a>
 							</th>
 							<th>
@@ -180,25 +221,28 @@ function Categories() {
 					</thead>
 
 					<tbody className="table-content">
-						{data.map((category) => {
+						{data.map((product) => {
 							return (
 								<tr className="table-content-row">
-									<td>{category._id.toString().substring(0, 5) + '...'}</td>
-									<td>{category.name}</td>
+									<td>{product._id.toString().substring(0, 5) + '...'}</td>
+									<td>{product.title}</td>
+									<td>{product.category}</td>
+									<td>{product.price}</td>
+									<td>{product.stock}</td>
 									<td className="actions-row">
 										<Link
-											to={`/categories/edit/${category._id}`}
+											to={`/products/edit/${product._id}`}
 											className="action-btn"
-											title="Edit Category"
+											title="Edit Product"
 										>
 											<FaPen />
 										</Link>
 										<button
 											type="button"
 											className="delete-btn"
-											title="Delete Category"
+											title="Delete Product"
 											onClick={() =>
-												openDeleteModal(`${category.name}`, category._id)
+												openDeleteModal(`${product.name}`, product._id)
 											}
 										>
 											<FaTrash />
@@ -213,7 +257,7 @@ function Categories() {
 					{page != 0 && totalPages > 0 && (
 						<Link
 							className="prev-btn"
-							to={`/categories?page=${Number(page) - 1}&pageSize=${pageSize}${
+							to={`/products?page=${Number(page) - 1}&pageSize=${pageSize}${
 								sort != null ? '&sort=' + sort : ''
 							}${direction != null ? '&direction=' + direction : ''}
 									${searchTermValue != null ? '&search=' + searchTermValue : ''}
@@ -226,7 +270,7 @@ function Categories() {
 					{page != totalPages && totalPages > 0 && (
 						<Link
 							className="next-btn"
-							to={`/categories?page=${Number(page) + 1}&pageSize=${pageSize}${
+							to={`/products?page=${Number(page) + 1}&pageSize=${pageSize}${
 								sort != null ? '&sort=' + sort : ''
 							}${direction != null ? '&direction=' + direction : ''}
 							${searchTermValue != null ? '&search=' + searchTermValue : ''}
@@ -240,13 +284,13 @@ function Categories() {
 			{deleteModal.open && (
 				<DeleteModal
 					text={deleteModal.text}
-					type={'Category'}
-					handleDelete={handleCategoryDelete}
+					type={'Product'}
+					handleDelete={handleProductDelete}
 					closeDeleteModal={closeDeleteModal}
 				/>
 			)}
 		</>
 	);
-}
+};
 
-export default Categories;
+export default Products;

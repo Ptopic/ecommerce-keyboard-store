@@ -64,188 +64,62 @@ exports.searchProducts = async (req, res) => {
 };
 
 exports.getAllProducts = async (req, res) => {
-	const qsort = req.query.sort;
-	const qCategory = req.query.category;
-	const page = req.query.page;
+	const { sort, direction, page, pageSize, search } = req.query;
 
-	const minPrice = req.query.min;
-	const maxPrice = req.query.max;
-	const color = req.query.color;
-	const material = req.query.material;
+	// Get total number of orders
+	let totalProducts;
+	// If search query is not empty, get total number of orders that match search query
+	if (search != '' && search != null) {
+		totalProducts = await Product.find({
+			name: { $regex: search, $options: 'i' },
+		}).count();
+	} else {
+		totalProducts = await Product.find().count();
+	}
+
+	// Calculate number of pages based on page size
+	const totalPages = Math.ceil(totalProducts / pageSize);
+
 	try {
 		let products;
-		// Refactor this
-		if (qCategory && qsort && (color || material) && minPrice && maxPrice) {
-			if (color) {
-				if (qsort === 'newest') {
-					products = await Product.find({
-						color: color,
-						categories: qCategory,
-						price: { $gte: minPrice, $lte: maxPrice },
-					})
-						.sort({ createdAt: -1 })
-						.limit(10)
-						.skip(10 * page);
-				} else if (qsort === 'asc') {
-					products = await Product.find({
-						color: color,
-						categories: qCategory,
-						price: { $gte: minPrice, $lte: maxPrice },
-					})
-						.sort({ price: 1 })
-						.limit(10)
-						.skip(10 * page);
-				} else {
-					products = await Product.find({
-						color: color,
-						categories: qCategory,
-						price: { $gte: minPrice, $lte: maxPrice },
-					})
-						.sort({ price: -1 })
-						.limit(10)
-						.skip(10 * page);
-				}
-			} else {
-				if (qsort === 'newest') {
-					products = await Product.find({
-						material: material,
-						categories: qCategory,
-						price: { $gte: minPrice, $lte: maxPrice },
-					})
-						.sort({ createdAt: -1 })
-						.limit(10)
-						.skip(10 * page);
-				} else if (qsort === 'asc') {
-					products = await Product.find({
-						material: material,
-						categories: qCategory,
-						price: { $gte: minPrice, $lte: maxPrice },
-					})
-						.sort({ price: 1 })
-						.limit(10)
-						.skip(10 * page);
-				} else {
-					products = await Product.find({
-						material: material,
-						categories: qCategory,
-						price: { $gte: minPrice, $lte: maxPrice },
-					})
-						.sort({ price: -1 })
-						.limit(10)
-						.skip(10 * page);
-				}
-			}
-		} else if (qCategory && qsort && minPrice && maxPrice) {
-			if (qsort === 'newest') {
-				products = await Product.find({
-					categories: qCategory,
-					price: { $gte: minPrice, $lte: maxPrice },
-				})
-					.sort({ createdAt: -1 })
-					.limit(10)
-					.skip(10 * page);
-			} else if (qsort === 'asc') {
-				products = await Product.find({
-					categories: qCategory,
-					price: { $gte: minPrice, $lte: maxPrice },
-				})
-					.sort({ price: 1 })
-					.limit(10)
-					.skip(10 * page);
-			} else {
-				products = await Product.find({
-					categories: qCategory,
-					price: { $gte: minPrice, $lte: maxPrice },
-				})
-					.sort({ price: -1 })
-					.limit(10)
-					.skip(10 * page);
-			}
-		} else if (qCategory && qsort && (color || material)) {
-			if (color) {
-				if (qsort === 'newest') {
-					products = await Product.find({
-						color: color,
-						categories: qCategory,
-					})
-						.sort({ createdAt: -1 })
-						.limit(10)
-						.skip(10 * page);
-				} else if (qsort === 'asc') {
-					products = await Product.find({
-						color: color,
-						categories: qCategory,
-					})
-						.sort({ price: 1 })
-						.limit(10)
-						.skip(10 * page);
-				} else {
-					products = await Product.find({
-						color: color,
-						categories: qCategory,
-					})
-						.sort({ price: -1 })
-						.limit(10)
-						.skip(10 * page);
-				}
-			} else {
-				if (qsort === 'newest') {
-					products = await Product.find({
-						material: material,
-						categories: qCategory,
-					})
-						.sort({ createdAt: -1 })
-						.limit(10)
-						.skip(10 * page);
-				} else if (qsort === 'asc') {
-					products = await Product.find({
-						material: material,
-						categories: qCategory,
-					})
-						.sort({ price: 1 })
-						.limit(10)
-						.skip(10 * page);
-				} else {
-					products = await Product.find({
-						material: material,
-						categories: qCategory,
-					})
-						.sort({ price: -1 })
-						.limit(10)
-						.skip(10 * page);
-				}
-			}
-		} else if (qsort && qCategory) {
-			if (qsort === 'newest') {
-				products = await Product.find({
-					categories: qCategory,
-				})
-					.sort({ createdAt: -1 })
-					.limit(10)
-					.skip(10 * page);
-			} else if (qsort === 'asc') {
-				products = await Product.find({
-					categories: qCategory,
-				})
-					.sort({ price: 1 })
-					.limit(10)
-					.skip(10 * page);
-			} else {
-				products = await Product.find({
-					categories: qCategory,
-				})
-					.sort({ price: -1 })
-					.limit(10)
-					.skip(10 * page);
-			}
-		} else {
+		if (page && pageSize && sort && direction && search != '') {
+			products = await Product.find({
+				name: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize && search != '') {
+			products = await Product.find({
+				name: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction && search != '') {
+			products = await Product.find({
+				name: { $regex: search, $options: 'i' },
+			}).sort([[sort, direction]]);
+		} else if (page && pageSize && sort && direction) {
 			products = await Product.find()
-				.limit(10)
-				.skip(10 * page);
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize) {
+			products = await Product.find()
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction) {
+			products = await Product.find().sort([[sort, direction]]);
+		} else {
+			products = await Product.find();
 		}
-		return res.status(200).send({ success: true, data: products });
+		return res.status(200).send({
+			success: true,
+			data: products,
+			totalProducts: totalProducts,
+			totalPages: totalPages,
+		});
 	} catch (err) {
-		console.log(err);
 		return res.status(500).send({ success: false, error: err });
 	}
 };

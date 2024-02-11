@@ -1,0 +1,162 @@
+.btn-add {
+   font-size: 1.4rem;
+   background-color: var(--bg700);
+   justify-content: center;
+   padding: .8rem 1.2rem;
+   border-radius: .4rem;
+   border: 1px solid var(--bg1000);
+   text-decoration: none;
+   color: black;
+   margin-right: 2rem;
+   font-size: 1.6rem;
+}
+
+.btn-details {
+   font-size: 1.4rem;
+   background-color: var(--bg700);
+   justify-content: center;
+   padding: .8rem 1.2rem;
+   border-radius: .4rem;
+   border: 1px solid var(--bg1000);
+   text-decoration: none;
+   color: black;
+   font-size: 1.6rem;
+}
+
+.action-buttons {
+   display: flex;
+   box-sizing: border-box;
+   margin: 2rem 0;
+}
+
+.add-new-container {
+   display: flex;
+   margin: 2rem 0;
+}
+
+.add-btn {
+   padding: .6rem 2.2rem;
+   border: none;
+   outline: none;
+   background: black;
+   color: white;
+   text-decoration: none;
+}
+
+
+.table {
+   font-size: 1.8rem;
+   border: 1.5px solid var(--bg1000);
+   border-radius: .4rem;
+   border-collapse: collapse;
+   width: 100%;
+   box-sizing: border-box;
+   overflow: scroll;
+}
+
+.seperator {
+   width: 1px;
+   height: 20px;
+   background: var(--bg1000);
+   margin-right: 1rem;
+}
+
+.table-head tr>th:first-child {
+   padding-left: 1rem;
+}
+
+.table-head tr>th {
+   text-align: start;
+   border-bottom: 1.5px solid var(--bg1000);
+   padding: 1rem 1rem 1rem 0;
+}
+
+.table-head tr>th>a {
+   display: flex;
+   align-items: center;
+   text-decoration: none;
+   color: black;
+}
+
+.table-head tr>th>a>h1 {
+   font-weight: 1000;
+   font-size: 1.6rem;
+   margin-right: 1rem;
+}
+
+.id {
+   padding-left: 1rem;
+   text-align: start;
+}
+
+.table-content tr>td,
+th {
+   padding: 1rem;
+}
+
+.table-content tr td:first-child {
+   padding-left: 1rem;
+}
+
+.table-content tr>td {
+   font-size: 1.6rem;
+   text-align: start;
+}
+
+.table-content tr>td>a {
+   color: var(--secondary500);
+   text-decoration: none;
+}
+
+.table-content-row {
+   box-sizing: border-box;
+   border: 1.5px solid var(--bg1000);
+}
+
+.table-content-row:hover {
+   background: var(--bg800);
+}
+
+.action-btn {
+   background-color: var(--bg800);
+   border-radius: .4rem;
+   padding: 1rem;
+   text-align: center;
+   color: black;
+   border: 1px solid black;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 40px;
+   height: 40px;
+}
+
+.action-btn>svg {
+   color: black;
+}
+
+.delete-btn {
+   background-color: var(--error-bg);
+   border-radius: .4rem;
+   padding: 1rem;
+   text-align: center;
+   color: var(--error-text);
+   border: 1px solid var(--error-text);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 40px;
+   height: 40px;
+}
+
+.delete-btn>svg {
+   color: var(--error-text);
+}
+
+.actions-row {
+   display: flex;
+}
+
+.actions-row>a:not(:last-child) {
+   margin-right: 1rem;
+}
