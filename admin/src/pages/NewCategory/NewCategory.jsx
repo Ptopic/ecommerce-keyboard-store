@@ -17,6 +17,8 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import Button from '../../../../frontend/src/components/Button/Button';
 import InputField from '../../../../frontend/src/components/InputField/InputField';
 
+import AddFieldModal from '../../components/AddFieldModal/AddFieldModal';
+
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link } from 'react-router-dom';
@@ -24,7 +26,6 @@ import { admin_request } from '../../api';
 
 // Icons
 import { FaTrash } from 'react-icons/fa';
-import AddFieldModal from '../../components/AddFieldModal/AddFieldModal';
 
 function NewCategory() {
 	const user = useSelector((state) => state.user);
@@ -56,7 +57,11 @@ function NewCategory() {
 			});
 			console.log(res);
 			toast.success('Category added successfully');
-			formikActions.resetForm();
+
+			// Reset form
+			setName('');
+			setSelectedFields([]);
+
 			setIsLoading(false);
 		} catch (error) {
 			toast.error(error.response.data.error);
