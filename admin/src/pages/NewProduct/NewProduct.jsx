@@ -21,6 +21,7 @@ import { toast, Toaster } from 'react-hot-toast';
 
 import { Link } from 'react-router-dom';
 import { admin_request } from '../../api';
+import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
 const NewProduct = () => {
 	const user = useSelector((state) => state.user);
@@ -129,22 +130,8 @@ const NewProduct = () => {
 		getAllCategories();
 	}, []);
 
-	const handleImageUpload = (e) => {
-		const file = e.target.files[0];
-		setFiles(file);
-
-		transformFile(file);
-	};
-
-	const transformFile = (file) => {
-		const reader = new FileReader();
-
-		if (file) {
-			reader.readAsDataURL(file);
-			reader.onloadend = () => {
-				setFiles(reader.result);
-			};
-		}
+	const dragAndDropOnChange = (e) => {
+		setFieldValue('files', e.target.files[0]);
 	};
 
 	useEffect(() => {
@@ -243,7 +230,11 @@ const NewProduct = () => {
 
 								<div className="file-container">
 									<p>File</p>
-									<div className="file-input-container">
+									<DragAndDrop
+										onChange={dragAndDropOnChange}
+										setFiles={setFiles}
+									/>
+									{/* <div className="file-input-container">
 										<input
 											type="file"
 											name="files"
@@ -252,7 +243,7 @@ const NewProduct = () => {
 												handleImageUpload(e);
 											}}
 										/>
-									</div>
+									</div> */}
 								</div>
 
 								<div className="select-container">
