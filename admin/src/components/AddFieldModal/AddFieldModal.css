@@ -31,7 +31,7 @@
    margin-bottom: 1.2rem;
 }
 
-.field-modal-header button {
+.close-btn {
    border: none;
    background-color: var(--error-bg);
    border-radius: 50%;
@@ -39,10 +39,16 @@
    align-items: center;
    padding: 1rem;
    color: var(--error-text);
+   transition: .4s all ease;
 }
 
-.field-modal-header button>svg {
-   font-size: 2rem;
+.close-btn>svg {
+   font-size: 3rem;
+}
+
+.close-btn:hover {
+   background-color: var(--primary200);
+   transition: .4s all ease;
 }
 
 .field-modal-body {

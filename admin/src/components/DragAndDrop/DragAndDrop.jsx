@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './DragAndDrop.css';
 
+// Icons
+import { IoClose } from 'react-icons/io5';
+
 const DragAndDrop = ({ onChange, setFiles }) => {
 	let dropArea = useRef(null);
 
 	const [curFiles, setCurFiles] = useState([]);
+	const [displayFiles, setDisplayFiles] = useState([]);
 
 	// Drag events
 	const handleDragEnter = (e) => {
@@ -42,7 +46,6 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 		let dt = e.dataTransfer;
 		let files = dt.files;
 
-		handleFilesSelect(files);
 		transformFiles(files);
 	}
 
@@ -50,52 +53,35 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 	const handleManualUpload = (e) => {
 		let files = e.target.files;
 
-		handleFilesSelect(files);
 		transformFiles(files);
 	};
 
 	const transformFiles = async (files) => {
-		let transformedFiles = [...curFiles];
-
 		if (files) {
-			for (let file of files) {
-				const reader = new FileReader();
-				reader.readAsDataURL(file);
-				reader.onloadend = () => {
-					transformedFiles.push(reader.result);
-				};
-			}
-			setCurFiles(transformedFiles);
+			let transformedFiles = await Promise.all(
+				Array.from(files).map(async (file) => {
+					const reader = new FileReader();
+					reader.readAsDataURL(file);
+					return new Promise((resolve) => {
+						reader.onloadend = () => {
+							resolve(reader.result);
+						};
+					});
+				})
+			);
+			setCurFiles((prevFiles) => [...prevFiles, ...transformedFiles]);
 		}
 	};
 
-	useEffect(() => {
-		console.log(curFiles);
-		setFiles(curFiles);
-	}, [curFiles]);
-
-	function handleFilesSelect(files) {
-		[...files].forEach(previewFile);
-	}
-
-	// --- Generate uploaded file preview ---
-	function previewFile(file) {
-		let reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onloadend = function () {
-			let img = document.createElement('img');
-			img.src = reader.result;
-			document.getElementById('gallery').appendChild(img);
-		};
-	}
-
-	// Handle acctual image upload
-	const handleImageUpload = (e) => {
-		const file = e.target.files[0];
-		setFiles(file);
-
-		transformFile(file);
+	const removeUploadedImage = (e, id) => {
+		const filteredArray = curFiles.filter((item, index) => index != id);
+		setCurFiles(filteredArray);
 	};
+
+	useEffect(() => {
+		setFiles(curFiles);
+		console.log(curFiles);
+	}, [curFiles]);
 
 	return (
 		<div
@@ -118,7 +104,22 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 				</label>
 			</div>
 
-			<div id="gallery"></div>
+			<div id="gallery">
+				{curFiles.map((file, id) => {
+					return (
+						<div className="uploaded-image" key={id}>
+							<button
+								type="button"
+								className="close-img-btn"
+								onClick={(e) => removeUploadedImage(e, id)}
+							>
+								<IoClose />
+							</button>
+							<img src={file} alt="uploaded image" />
+						</div>
+					);
+				})}
+			</div>
 		</div>
 	);
 };

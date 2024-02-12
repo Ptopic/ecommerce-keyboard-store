@@ -21,6 +21,7 @@ p {
 
 #gallery {
    margin-top: 10px;
+   display: flex;
 }
 
 #gallery img {
@@ -28,6 +29,11 @@ p {
    margin-bottom: 10px;
    margin-right: 10px;
    vertical-align: middle;
+}
+
+.uploaded-image {
+   position: relative;
+   margin-right: 2rem;
 }
 
 .button {
@@ -47,4 +53,27 @@ p {
 
 #fileElement {
    display: none;
+}
+
+.close-img-btn {
+   position: absolute;
+   border: none;
+   background-color: var(--error-bg);
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   padding: 1rem;
+   right: 0;
+   top: -1rem;
+   color: var(--error-text);
+   transition: .4s all ease;
+}
+
+.close-img-btn>svg {
+   font-size: 2rem;
+}
+
+.close-img-btn:hover {
+   background-color: var(--primary200);
+   transition: .4s all ease;
 }

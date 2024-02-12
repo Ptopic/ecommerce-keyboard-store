@@ -30,15 +30,16 @@ const NewProduct = () => {
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 
+	const [formActiveFields, setFormActiveFields] = useState([]);
+	const [activeFields, setActiveFields] = useState([]);
+
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
-	const [details, setDetails] = useState('');
+
 	const [price, setPrice] = useState('');
 	const [stock, setStock] = useState('');
 
 	const [files, setFiles] = useState([]);
-
-	const [activeFields, setActiveFields] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -72,10 +73,14 @@ const NewProduct = () => {
 	];
 
 	const newUserSchema = Yup.object().shape({
-		title: Yup.string(),
-		category: Yup.string(),
-		price: Yup.number(),
-		stock: Yup.number(),
+		title: Yup.string().required('Title is required'),
+		description: Yup.string(),
+		category: Yup.string()
+			.required('Category is required')
+			.notOneOf(['Select category'], 'Please select a category'),
+		price: Yup.number().required('Price is required'),
+		stock: Yup.number().required('Stock is required'),
+		files: Yup.array().required('Files are required'),
 	});
 
 	const initialValues =
@@ -84,10 +89,9 @@ const NewProduct = () => {
 					title: title,
 					description: description,
 					category: selectedCategory,
-					details: details,
 					price: price,
 					stock: stock,
-					...activeFields,
+					...formActiveFields,
 			  }
 			: {
 					title: title,
@@ -96,23 +100,34 @@ const NewProduct = () => {
 						selectedCategory != '' ? selectedCategory : 'Select category',
 					price: price,
 					stock: stock,
+					files: files,
 			  };
 
 	const handleAddNewProduct = async (values, formikActions) => {
-		setIsLoading(true);
-		try {
-			const res = await admin_request(userToken).post('/products', {
-				...values,
-				images: files,
-			});
-			console.log(res);
-			toast.success('Product added successfully');
-			formikActions.resetForm();
-			setIsLoading(false);
-		} catch (error) {
-			toast.error('Something went wrong');
-			setIsLoading(false);
-		}
+		console.log(values);
+
+		console.log(formActiveFields);
+
+		// // Map active field values to object
+		// let details = {};
+
+		// for (let activeField of activeFields) {
+		// 	console.log(activeField);
+		// }
+		// setIsLoading(true);
+		// try {
+		// 	const res = await admin_request(userToken).post('/products', {
+		// 		...values,
+		// 		images: files,
+		// 	});
+		// 	console.log(res);
+		// 	toast.success('Product added successfully');
+		// 	formikActions.resetForm();
+		// 	setIsLoading(false);
+		// } catch (error) {
+		// 	toast.error('Something went wrong');
+		// 	setIsLoading(false);
+		// }
 	};
 
 	const getAllCategories = async () => {
@@ -145,6 +160,16 @@ const NewProduct = () => {
 		if (curCategory != null) {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
+
+			let object = {};
+
+			// Map names of active fields as object
+			for (let i = 0; i < namesOfActiveFields.length; i++) {
+				object[namesOfActiveFields[i]] = '';
+			}
+
+			setFormActiveFields(object);
+
 			setActiveFields(namesOfActiveFields);
 		}
 	}, [selectedCategory]);
@@ -219,7 +244,7 @@ const NewProduct = () => {
 										theme="snow"
 										modules={modules}
 										formats={formats}
-										value={description || ''}
+										value={description}
 										onChange={(newValue) => {
 											setDescription(newValue);
 											setFieldValue('description', newValue);
@@ -228,11 +253,14 @@ const NewProduct = () => {
 								</div>
 
 								<div className="file-container">
-									<p>File</p>
+									<p>Files</p>
 									<DragAndDrop
 										onChange={dragAndDropOnChange}
 										setFiles={setFiles}
 									/>
+									{files.length == 0 ? (
+										<div className="error">Files are required</div>
+									) : null}
 								</div>
 
 								<div className="select-container">
@@ -268,14 +296,20 @@ const NewProduct = () => {
 										<div className="seperator-line"></div>
 									</div>
 
-									{activeFields.map((el) => {
+									{activeFields.map((el, index) => {
+										console.log(Object.keys(formActiveFields)[index]);
 										return (
 											<InputField
 												type={'text'}
 												name={el}
 												placeholder={el + ' *'}
 												value={values.el}
-												onChange={(e) => setFieldValue(el, e.target.value)}
+												onChange={(e) =>
+													setFieldValue(
+														String(Object.keys(formActiveFields)[index]),
+														e.target.value
+													)
+												}
 												errors={errors.el}
 												touched={touched.el}
 											/>
