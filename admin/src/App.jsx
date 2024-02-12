@@ -16,6 +16,8 @@ import EditCategory from './pages/EditCategory/EditCategory';
 import Products from './pages/Products/Products';
 import NewProduct from './pages/NewProduct/NewProduct';
 
+import NotFound from './pages/NotFound/NotFound';
+
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
 	let admin = user?.data?.isAdmin;
@@ -42,12 +44,14 @@ function App() {
 							/>
 							<Route exact path="/products" element={<Products />} />
 							<Route excat path="/products/add" element={<NewProduct />} />
+							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</div>
 				</>
 			) : (
 				<Routes>
 					<Route exact path="/" element={<Login />} />
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			)}
 		</Router>

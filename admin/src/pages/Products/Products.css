@@ -3,11 +3,25 @@
    padding: 2rem;
 }
 
+.title-and-variants {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   width: 100%;
+}
+
 .product-title-and-image {
    display: flex;
    align-items: center;
-   width: 500px;
+   width: 600px;
    word-break: break-all;
+}
+
+.title-and-variants a {
+   background: black;
+   color: white;
+   text-decoration: none;
+   padding: 1rem 1.4rem;
 }
 
 .product-image {

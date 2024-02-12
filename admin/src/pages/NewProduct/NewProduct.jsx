@@ -281,10 +281,17 @@ const NewProduct = () => {
 								) : null}
 							</div>
 
+							<div className="additional-info">
+								<h2>Product Variants (Optional):</h2>
+								<div className="seperator-line"></div>
+							</div>
+
+							<div className="variants-container"></div>
+
 							{activeFields.length > 0 && (
 								<div className="product-details">
 									<div className="additional-info">
-										<h2>Product Details:</h2>
+										<h2>Product Details (Optional):</h2>
 										<div className="seperator-line"></div>
 									</div>
 

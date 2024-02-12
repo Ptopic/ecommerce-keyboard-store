@@ -229,7 +229,7 @@ const Products = () => {
 							return (
 								<tr className="table-content-row">
 									<td>{product._id.toString().substring(0, 5) + '...'}</td>
-									<td>
+									<td style={{ width: '600px' }}>
 										<div className="product-title-and-image">
 											{product.images.length > 0 && (
 												<img
@@ -239,7 +239,12 @@ const Products = () => {
 													loading="lazy"
 												/>
 											)}
-											{product.title}
+											<div className="title-and-variants">
+												{product.title}
+												<Link to={`/products/${product._id}/variants`}>
+													Variants
+												</Link>
+											</div>
 										</div>
 									</td>
 									<td>{product.category}</td>

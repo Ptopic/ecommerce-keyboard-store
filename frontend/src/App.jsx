@@ -26,6 +26,7 @@ import UserDetails from './pages/UserDetails';
 import UserOrders from './pages/UserOrders';
 import UserChangePassword from './pages/UserChangePassword';
 import UserRegisterThanks from './pages/UserRegisterThanks';
+import NotFound from './pages/NotFound';
 
 const App = () => {
 	const [stripePromise, setStripePromise] = useState(null);
@@ -124,6 +125,8 @@ const App = () => {
 						element={<Payment stripePromise={stripePromise} />}
 					/>
 					<Route exact path="/order/:id" element={<Order />} />
+
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Router>
 		</ThemeProvider>

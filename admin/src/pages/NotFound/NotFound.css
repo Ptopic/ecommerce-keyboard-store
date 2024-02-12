@@ -1,0 +1,22 @@
+.not-found {
+   position: fixed;
+   top: 0;
+   left: 0;
+   z-index: 2000;
+   width: 100%;
+   background: white;
+}
+
+.not-found-container {
+   text-align: center;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   width: 100%;
+   height: 100dvh;
+}
+
+.not-found-container h1 {
+   font-size: 50px;
+}
