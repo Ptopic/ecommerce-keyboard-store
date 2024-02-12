@@ -13,7 +13,7 @@
 <br>
 » Database -> mongodb
 
-<h1>How to run? </h1>
+<h1>How to run app? </h1>
 
 <h2>Backend: </h2>
 

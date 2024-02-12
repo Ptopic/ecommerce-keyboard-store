@@ -12,12 +12,9 @@ exports.createProduct = async (req, res) => {
 
 	try {
 		if (images) {
-			console.log(images);
 			let imagesArray = [];
 			for (let image of images) {
 				const uploadRes = await uploadToCloudinary(image, 'shop');
-
-				console.log(uploadRes);
 
 				imagesArray.push(uploadRes);
 			}
@@ -105,7 +102,6 @@ exports.searchProducts = async (req, res) => {
 	let termString = String(term);
 
 	try {
-		console.log(term);
 		// Search for product that contains term in title
 		let products = await Product.find({
 			title: { $regex: termString, $options: 'i' },

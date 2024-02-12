@@ -101,7 +101,6 @@ const NewProduct = () => {
 	const handleAddNewProduct = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			console.log(values);
 			const res = await admin_request(userToken).post('/products', {
 				...values,
 				images: files,
@@ -220,7 +219,7 @@ const NewProduct = () => {
 										theme="snow"
 										modules={modules}
 										formats={formats}
-										value={values.description || ''}
+										value={description || ''}
 										onChange={(newValue) => {
 											setDescription(newValue);
 											setFieldValue('description', newValue);
@@ -234,20 +233,10 @@ const NewProduct = () => {
 										onChange={dragAndDropOnChange}
 										setFiles={setFiles}
 									/>
-									{/* <div className="file-input-container">
-										<input
-											type="file"
-											name="files"
-											onChange={(e) => {
-												setFieldValue('files', e.target.files[0]);
-												handleImageUpload(e);
-											}}
-										/>
-									</div> */}
 								</div>
 
 								<div className="select-container">
-									<p>Select category:</p>
+									<p>Select category</p>
 									<Field
 										placeholder="Category *"
 										as="select"
