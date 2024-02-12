@@ -43,6 +43,7 @@ const Product = () => {
 			const res = await request.get('/products/find/' + id);
 			const data = res.data;
 			setProduct(data.data);
+			console.log(res.data.data);
 		} catch (err) {
 			console.log(err);
 		}
@@ -56,7 +57,7 @@ const Product = () => {
 			);
 
 			const products = wishlist.data.data.products;
-			console.log(products);
+
 			// Loop thru products to find id of current product
 			for (let i = 0; i < products.length; i++) {
 				if (products[i]._id == id) {
@@ -212,7 +213,7 @@ const Product = () => {
 			{imageZoomModalOpen && (
 				<div className="image-zoom-modal">
 					<div className="image-zoom-modal-container">
-						<img src={imageZoom} alt="" />
+						<img src={imageZoom} alt="zoomed image" />
 						<div
 							className="image-zoom-close-overlay"
 							onClick={() => setImageZoomModalOpen(false)}
@@ -226,16 +227,19 @@ const Product = () => {
 				<div className="product-page-image-container">
 					<div
 						className="product-image header"
-						onClick={() => zoomInImage(product.image?.[0])}
+						onClick={() => zoomInImage(product.images?.[0].url)}
 					>
-						<img src={product.image?.[0]} />
+						<img src={product.images?.[0].url} />
 						<div className="image-overlay">
 							<BiSearchAlt size={36} />
 						</div>
 					</div>
-					{product.image?.slice(1).map((image) => (
-						<div className="product-image" onClick={() => zoomInImage(image)}>
-							<img src={image} />
+					{product.images?.slice(1).map((image) => (
+						<div
+							className="product-image"
+							onClick={() => zoomInImage(image.url)}
+						>
+							<img src={image.url} />
 							<div className="image-overlay">
 								<BiSearchAlt size={36} />
 							</div>
@@ -315,7 +319,7 @@ const Product = () => {
 							/>
 						</div>
 					</div>
-					<p>{product.description}</p>
+					<div dangerouslySetInnerHTML={{ __html: product.description }}></div>
 				</div>
 			</div>
 			<Footer />

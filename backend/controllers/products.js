@@ -7,11 +7,18 @@ const fs = require('fs');
 const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
 exports.createProduct = async (req, res) => {
-	const { title, description, images, category, details, price, stock } =
+	const { title, description, images, category, price, stock, activeFields } =
 		req.body;
 
 	try {
 		if (images) {
+			// Map active fields to details object
+			let details = {};
+
+			for (let field of activeFields) {
+				details[field] = req.body[field];
+			}
+
 			let imagesArray = [];
 			for (let image of images) {
 				const uploadRes = await uploadToCloudinary(image, 'shop');
@@ -31,6 +38,13 @@ exports.createProduct = async (req, res) => {
 			const savedProduct = await newProduct.save();
 			return res.status(200).send({ success: true, data: savedProduct });
 		} else {
+			// Map active fields to details object
+			let details = {};
+
+			for (let field of activeFields) {
+				details[field] = req.body[field];
+			}
+
 			const newProduct = new Product({
 				title: title,
 				description: description,

@@ -32,11 +32,7 @@ const NewProduct = () => {
 
 	const [activeFields, setActiveFields] = useState([]);
 
-	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
-
-	const [price, setPrice] = useState('');
-	const [stock, setStock] = useState('');
 
 	const [files, setFiles] = useState([]);
 
@@ -71,37 +67,6 @@ const NewProduct = () => {
 		'image',
 	];
 
-	// const newUserSchema = Yup.object().shape({
-	// 	title: Yup.string().required('Title is required'),
-	// 	description: Yup.string(),
-	// 	category: Yup.string()
-	// 		.required('Category is required')
-	// 		.notOneOf(['Select category'], 'Please select a category'),
-	// 	price: Yup.number().required('Price is required'),
-	// 	stock: Yup.number().required('Stock is required'),
-	// 	files: Yup.array().required('Files are required'),
-	// });
-
-	// const initialValues =
-	// 	activeFields.length > 0
-	// 		? {
-	// 				title: title,
-	// 				description: description,
-	// 				category: selectedCategory,
-	// 				price: price,
-	// 				stock: stock,
-	// 				...activeFields,
-	// 		  }
-	// 		: {
-	// 				title: title,
-	// 				description: '',
-	// 				category:
-	// 					selectedCategory != '' ? selectedCategory : 'Select category',
-	// 				price: price,
-	// 				stock: stock,
-	// 				files: files,
-	// 		  };
-
 	const handleAddNewProduct = async (values, formikActions) => {
 		console.log(values);
 
@@ -110,6 +75,7 @@ const NewProduct = () => {
 			const res = await admin_request(userToken).post('/products', {
 				...values,
 				images: files,
+				activeFields: activeFields,
 			});
 			console.log(res);
 			toast.success('Product added successfully');
@@ -228,7 +194,6 @@ const NewProduct = () => {
 									placeholder={'Title *'}
 									value={values.title}
 									onChange={(e) => {
-										setTitle(e.target.value);
 										setFieldValue('title', e.target.value);
 									}}
 									errors={errors.title}
@@ -242,7 +207,6 @@ const NewProduct = () => {
 											placeholder={'Price *'}
 											value={values.price}
 											onChange={(e) => {
-												setPrice(e.target.value);
 												setFieldValue('price', e.target.value);
 											}}
 											errors={errors.price}
@@ -257,7 +221,6 @@ const NewProduct = () => {
 											placeholder={'Stock *'}
 											value={values.stock}
 											onChange={(e) => {
-												setStock(e.target.value);
 												setFieldValue('stock', e.target.value);
 											}}
 											errors={errors.stock}
