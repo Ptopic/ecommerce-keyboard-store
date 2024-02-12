@@ -7,19 +7,24 @@ const fs = require('fs');
 const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
 exports.createProduct = async (req, res) => {
-	const { title, description, image, category, details, price, stock } =
+	const { title, description, images, category, details, price, stock } =
 		req.body;
 
 	try {
-		if (image) {
-			const uploadRes = await uploadToCloudinary(image, 'shop');
+		if (images) {
+			console.log(images);
+			let imagesArray = [];
+			for (let image of images) {
+				const uploadRes = await uploadToCloudinary(image, 'shop');
 
-			console.log(uploadRes);
+				console.log(uploadRes);
 
+				imagesArray.push(uploadRes);
+			}
 			const newProduct = new Product({
 				title: title,
 				description: description,
-				images: [uploadRes],
+				images: imagesArray,
 				category: category,
 				details: details,
 				price: price,

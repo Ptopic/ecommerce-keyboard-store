@@ -4,6 +4,8 @@ import './DragAndDrop.css';
 const DragAndDrop = ({ onChange, setFiles }) => {
 	let dropArea = useRef(null);
 
+	const [curFiles, setCurFiles] = useState([]);
+
 	// Drag events
 	const handleDragEnter = (e) => {
 		e.preventDefault();
@@ -41,7 +43,7 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 		let files = dt.files;
 
 		handleFilesSelect(files);
-		transformFile(files[0]);
+		transformFiles(files);
 	}
 
 	// --- Handle form submit event ---
@@ -49,19 +51,28 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 		let files = e.target.files;
 
 		handleFilesSelect(files);
-		transformFile(files[0]);
+		transformFiles(files);
 	};
 
-	const transformFile = (file) => {
-		const reader = new FileReader();
+	const transformFiles = async (files) => {
+		let transformedFiles = [...curFiles];
 
-		if (file) {
-			reader.readAsDataURL(file);
-			reader.onloadend = () => {
-				setFiles(reader.result);
-			};
+		if (files) {
+			for (let file of files) {
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onloadend = () => {
+					transformedFiles.push(reader.result);
+				};
+			}
+			setCurFiles(transformedFiles);
 		}
 	};
+
+	useEffect(() => {
+		console.log(curFiles);
+		setFiles(curFiles);
+	}, [curFiles]);
 
 	function handleFilesSelect(files) {
 		[...files].forEach(previewFile);

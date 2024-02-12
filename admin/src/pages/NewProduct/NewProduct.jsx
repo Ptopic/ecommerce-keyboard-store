@@ -104,7 +104,7 @@ const NewProduct = () => {
 			console.log(values);
 			const res = await admin_request(userToken).post('/products', {
 				...values,
-				image: files,
+				images: files,
 			});
 			console.log(res);
 			toast.success('Product added successfully');
