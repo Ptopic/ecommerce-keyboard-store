@@ -30,7 +30,6 @@ const NewProduct = () => {
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 
-	const [formActiveFields, setFormActiveFields] = useState([]);
 	const [activeFields, setActiveFields] = useState([]);
 
 	const [title, setTitle] = useState('');
@@ -72,62 +71,54 @@ const NewProduct = () => {
 		'image',
 	];
 
-	const newUserSchema = Yup.object().shape({
-		title: Yup.string().required('Title is required'),
-		description: Yup.string(),
-		category: Yup.string()
-			.required('Category is required')
-			.notOneOf(['Select category'], 'Please select a category'),
-		price: Yup.number().required('Price is required'),
-		stock: Yup.number().required('Stock is required'),
-		files: Yup.array().required('Files are required'),
-	});
+	// const newUserSchema = Yup.object().shape({
+	// 	title: Yup.string().required('Title is required'),
+	// 	description: Yup.string(),
+	// 	category: Yup.string()
+	// 		.required('Category is required')
+	// 		.notOneOf(['Select category'], 'Please select a category'),
+	// 	price: Yup.number().required('Price is required'),
+	// 	stock: Yup.number().required('Stock is required'),
+	// 	files: Yup.array().required('Files are required'),
+	// });
 
-	const initialValues =
-		activeFields.length > 0
-			? {
-					title: title,
-					description: description,
-					category: selectedCategory,
-					price: price,
-					stock: stock,
-					...formActiveFields,
-			  }
-			: {
-					title: title,
-					description: '',
-					category:
-						selectedCategory != '' ? selectedCategory : 'Select category',
-					price: price,
-					stock: stock,
-					files: files,
-			  };
+	// const initialValues =
+	// 	activeFields.length > 0
+	// 		? {
+	// 				title: title,
+	// 				description: description,
+	// 				category: selectedCategory,
+	// 				price: price,
+	// 				stock: stock,
+	// 				...activeFields,
+	// 		  }
+	// 		: {
+	// 				title: title,
+	// 				description: '',
+	// 				category:
+	// 					selectedCategory != '' ? selectedCategory : 'Select category',
+	// 				price: price,
+	// 				stock: stock,
+	// 				files: files,
+	// 		  };
 
 	const handleAddNewProduct = async (values, formikActions) => {
 		console.log(values);
 
-		console.log(formActiveFields);
-
-		// // Map active field values to object
-		// let details = {};
-
-		// for (let activeField of activeFields) {
-		// 	console.log(activeField);
-		// }
-		// setIsLoading(true);
-		// try {
-		// 	const res = await admin_request(userToken).post('/products', {
-		// 		...values,
-		// 		images: files,
-		// 	});
-		// 	console.log(res);
-		// 	toast.success('Product added successfully');
-		// 	formikActions.resetForm();
-		// 	setIsLoading(false);
-		// } catch (error) {
-		// 	toast.error('Something went wrong');
-		// 	setIsLoading(false);
-		// }
+		setIsLoading(true);
+		try {
+			const res = await admin_request(userToken).post('/products', {
+				...values,
+				images: files,
+			});
+			console.log(res);
+			toast.success('Product added successfully');
+			formikActions.resetForm();
+			setIsLoading(false);
+		} catch (error) {
+			toast.error('Something went wrong');
+			setIsLoading(false);
+		}
 	};
 
 	const getAllCategories = async () => {
@@ -162,17 +153,55 @@ const NewProduct = () => {
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
 			let object = {};
+			let validationObject = {};
 
 			// Map names of active fields as object
 			for (let i = 0; i < namesOfActiveFields.length; i++) {
 				object[namesOfActiveFields[i]] = '';
+				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
 			}
-
-			setFormActiveFields(object);
 
 			setActiveFields(namesOfActiveFields);
 		}
 	}, [selectedCategory]);
+
+	const getActiveFieldsValidationSchema = () => {
+		let schema = {};
+		activeFields.forEach((field) => {
+			schema[field] = Yup.string().required(`${field} is required`);
+		});
+		return schema;
+	};
+
+	const newProductSchema = Yup.object().shape({
+		title: Yup.string().required('Title is required'),
+		description: Yup.string(),
+		category: Yup.string()
+			.required('Category is required')
+			.notOneOf(['Select category'], 'Please select a category'),
+		price: Yup.number().required('Price is required'),
+		stock: Yup.number().required('Stock is required'),
+		files: Yup.array().required('Files are required'),
+		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
+	});
+
+	const getInitialValuesForActiveFields = () => {
+		let initialValues = {};
+		activeFields.forEach((field) => {
+			initialValues[field] = '';
+		});
+		return initialValues;
+	};
+
+	const initialValues = {
+		title: '',
+		description: '',
+		category: 'Select category',
+		price: '',
+		stock: '',
+		files: [],
+		...getInitialValuesForActiveFields(),
+	};
 
 	return (
 		<div className="form">
@@ -183,9 +212,9 @@ const NewProduct = () => {
 				<h2>Product Information:</h2>
 				<div className="seperator-line"></div>
 				<Formik
-					enableReinitialize
+					enableReinitialize={false}
 					initialValues={initialValues}
-					validationSchema={newUserSchema}
+					validationSchema={newProductSchema}
 					onSubmit={(values, formikActions) =>
 						handleAddNewProduct(values, formikActions)
 					}
@@ -296,25 +325,18 @@ const NewProduct = () => {
 										<div className="seperator-line"></div>
 									</div>
 
-									{activeFields.map((el, index) => {
-										console.log(Object.keys(formActiveFields)[index]);
-										return (
-											<InputField
-												type={'text'}
-												name={el}
-												placeholder={el + ' *'}
-												value={values.el}
-												onChange={(e) =>
-													setFieldValue(
-														String(Object.keys(formActiveFields)[index]),
-														e.target.value
-													)
-												}
-												errors={errors.el}
-												touched={touched.el}
-											/>
-										);
-									})}
+									{activeFields.map((field, index) => (
+										<InputField
+											key={index}
+											type="text"
+											name={field}
+											placeholder={field}
+											value={values[field]}
+											onChange={(e) => setFieldValue(field, e.target.value)}
+											errors={errors[field]}
+											touched={touched[field]}
+										/>
+									))}
 								</div>
 							)}
 

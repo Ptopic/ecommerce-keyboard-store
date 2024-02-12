@@ -33,7 +33,9 @@ function NewUser() {
 		firstName: Yup.string().required('First name is required'),
 		lastName: Yup.string().required('Last name is required'),
 		username: Yup.string().required('Username is required'),
-		isAdmin: Yup.boolean().required('isAdmin is required'),
+		isAdmin: Yup.boolean()
+			.required('isAdmin is required')
+			.notOneOf(['Select role'], 'Please select a role'),
 	});
 
 	const initialValues = {
