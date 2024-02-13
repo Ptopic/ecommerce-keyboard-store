@@ -1,0 +1,32 @@
+.row-variants {
+   display: grid;
+   grid-template-columns: .8fr 4fr .5fr;
+   gap: 2rem;
+}
+
+.dropdown-container p {
+   position: relative;
+   top: .4rem;
+   font-size: 1.6rem;
+   margin-bottom: .6rem;
+   font-family: 'Poppins', sans-serif;
+}
+
+.dropdown {
+   outline: none;
+   padding: 1rem 1.4rem;
+   border: 1px solid black;
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.dropdown-select-field {
+   outline: none;
+   border: none;
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-self: center;
+}

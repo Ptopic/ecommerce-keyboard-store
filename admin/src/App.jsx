@@ -17,6 +17,7 @@ import Products from './pages/Products/Products';
 import NewProduct from './pages/NewProduct/NewProduct';
 
 import NotFound from './pages/NotFound/NotFound';
+import ProductVariants from './pages/ProductVariants/ProductVariants';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
@@ -43,7 +44,12 @@ function App() {
 								element={<EditCategory />}
 							/>
 							<Route exact path="/products" element={<Products />} />
-							<Route excat path="/products/add" element={<NewProduct />} />
+							<Route exact path="/products/add" element={<NewProduct />} />
+							<Route
+								exact
+								path="/products/:id/variants"
+								element={<ProductVariants />}
+							/>
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</div>
