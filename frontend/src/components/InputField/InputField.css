@@ -22,6 +22,10 @@
     margin-top: 3rem;
 }
 
+.input-container.disabled {
+    opacity: 0.5;
+}
+
 .input-field {
     outline: none;
     border: none;
@@ -33,6 +37,10 @@
 
 .input-field:not(:focus)::placeholder {
     color: transparent;
+}
+
+.input-field:disabled {
+    background: none;
 }
 
 .input-label {

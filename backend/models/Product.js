@@ -29,6 +29,18 @@ const productSchema = new mongoose.Schema(
 			type: Number,
 			default: 10,
 		},
+		colors: {
+			type: Array,
+		},
+		sizes: {
+			type: Array,
+		},
+		materials: {
+			type: Array,
+		},
+		variationNames: {
+			type: Array,
+		},
 		// size: {
 		// 	type: Array,
 		// },

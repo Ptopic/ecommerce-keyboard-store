@@ -22,11 +22,14 @@ function InputField({
 	icon,
 	errors,
 	touched,
+	disabled,
 }) {
 	return (
 		<>
 			<div
-				className={`input-container ${fullWidth ? 'full' : ''}`}
+				className={`input-container ${fullWidth ? 'full' : ''} ${
+					disabled ? 'disabled' : ''
+				}`}
 				style={{ width: fullWidth ? '100%' : width }}
 			>
 				<Field
@@ -39,6 +42,7 @@ function InputField({
 					placeholder={placeholder}
 					value={value}
 					onChange={onChange ? onChange : null}
+					disabled={disabled}
 				/>
 				<label htmlFor={name} className="input-label">
 					{placeholder}

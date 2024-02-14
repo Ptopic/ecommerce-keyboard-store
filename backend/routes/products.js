@@ -12,6 +12,8 @@ const {
 	searchProducts,
 	getProduct,
 	getAllProducts,
+	getAllProductVariations,
+	createOrUpdateProductVariants,
 } = require('../controllers/products');
 const { upload } = require('../middleware/upload');
 
@@ -32,4 +34,10 @@ router.get('/find/:id', getProduct);
 
 // Get all products
 router.get('/', getAllProducts);
+
+// ---------- Product variants ----------
+
+router.get('/variants/:id', verifyTokenAndAdmin, getAllProductVariations);
+
+router.post('/variants', verifyTokenAndAdmin, createOrUpdateProductVariants);
 module.exports = router;

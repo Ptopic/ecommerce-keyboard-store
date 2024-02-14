@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const ProductVariation = require('../models/ProductVariation');
 const upload = require('../middleware/upload');
 const cloudinary = require('cloudinary').v2;
 
@@ -64,14 +65,39 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
+	const { colors, sizes, materials, names } = req.body;
 	try {
-		const updatedProduct = await Product.findByIdAndUpdate(
-			req.params.id,
-			{
-				$set: req.body,
-			},
-			{ new: true }
-		);
+		let updatedProduct;
+		if (colors || sizes || materials) {
+			// Loop thru names array and join it with -
+			let combinationNamesArray = [];
+			for (let name of names) {
+				let nameValue = name.length == 1 ? name : name.join('-');
+				combinationNamesArray.push(nameValue);
+			}
+			updatedProduct = await Product.findByIdAndUpdate(
+				req.params.id,
+				{
+					$set: {
+						...req.body,
+						colors: colors,
+						sizes: sizes,
+						materials: materials,
+						variationNames: combinationNamesArray,
+					},
+				},
+				{ new: true }
+			);
+		} else {
+			updatedProduct = await Product.findByIdAndUpdate(
+				req.params.id,
+				{
+					$set: req.body,
+				},
+				{ new: true }
+			);
+		}
+
 		return res.status(200).send({ success: true, data: updatedProduct });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
@@ -186,4 +212,53 @@ exports.getAllProducts = async (req, res) => {
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}
+};
+
+// -------------------- Product variants --------------------
+
+exports.getAllProductVariations = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const productVariations = await ProductVariation.find({ productId: id });
+
+		return res.status(200).send({
+			success: true,
+			data: productVariations,
+		});
+	} catch (error) {
+		return res.status(500).send({ success: false, error: error });
+	}
+};
+
+exports.createOrUpdateProductVariants = async (req, res) => {
+	const { variations, productId, names } = req.body;
+
+	try {
+		// Delete all previous variations because of state change
+		await ProductVariation.deleteMany({ productId: productId });
+
+		for (let i = 0; i < variations.length; i++) {
+			let nameValue = names[i].length == 1 ? names[i] : names[i].join('-');
+			const result = await ProductVariation.findOneAndUpdate(
+				{ productId: productId, name: nameValue },
+				{
+					$set: {
+						productId: productId,
+						price: variations[i].price,
+						stock: variations[i].price,
+						images: variations[i].images,
+						name: nameValue,
+					},
+				},
+				{ upsert: true, new: true }
+			);
+		}
+	} catch (error) {
+		return res.status(500).send({ success: false, error: error });
+	}
+
+	return res.status(200).send({
+		success: true,
+		data: 'Product variations created.',
+	});
 };

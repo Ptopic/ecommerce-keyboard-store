@@ -50,6 +50,8 @@ const ProductVariants = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	// Variants
+	const [oldVariants, setOldVariants] = useState([]);
+
 	const [sizes, setSizes] = useState([]);
 	const [colors, setColors] = useState([]);
 	const [materials, setMaterials] = useState([]);
@@ -70,11 +72,29 @@ const ProductVariants = () => {
 		optionName: Yup.string().required('Option name is required'),
 	});
 
-	// Get product info by id
+	// Get product by id
 	const getProductById = async () => {
 		try {
 			const res = await admin_request(userToken).get('/products/find/' + id);
-			setProduct(res.data.data);
+			let productRes = res.data.data;
+			setProduct(productRes);
+
+			setColors(productRes.colors);
+			setSizes(productRes.sizes);
+			setMaterials(productRes.materials);
+		} catch (error) {
+			toast.error('Something went wrong');
+		}
+	};
+
+	// Get previous product variations
+	const getProductVariationsByProductId = async () => {
+		try {
+			const res = await admin_request(userToken).get(
+				'/products/variants/' + id
+			);
+			let variationsRes = res.data.data;
+			setOldVariants(variationsRes);
 		} catch (error) {
 			toast.error('Something went wrong');
 		}
@@ -82,6 +102,7 @@ const ProductVariants = () => {
 
 	useEffect(() => {
 		getProductById();
+		getProductVariationsByProductId();
 	}, []);
 
 	const handleOptionNameChange = (e, setFieldValue) => {
@@ -129,7 +150,8 @@ const ProductVariants = () => {
 	};
 
 	// Render elements if any of the veriant changes (get permutation of them)
-	useEffect(() => {
+
+	const getAllPossibleCombinations = () => {
 		let array = [];
 		if (sizes.length > 0 && colors.length > 0 && materials.length > 0) {
 			let firstHalf = sizes.flatMap((a) => colors.map((b) => a + '-' + b));
@@ -158,8 +180,6 @@ const ProductVariants = () => {
 			array = [...materials];
 		}
 
-		// TODO Save to variants collection with product id (backend)
-
 		// Set splitted compinations to display
 		let displayCombinations = [];
 		for (let el of array) {
@@ -174,10 +194,14 @@ const ProductVariants = () => {
 			filteredDisplayCombinations.push(cleanedArray);
 		});
 
-		setCombinations(filteredDisplayCombinations);
+		return filteredDisplayCombinations;
+	};
+
+	useEffect(() => {
+		setCombinations(getAllPossibleCombinations());
 	}, [colors, sizes, materials]);
 
-	// ----- Variations form stuff -----
+	// ------------------------- Variations form stuff ------------------------------
 
 	const handleVariationsValidation = Yup.object().shape({
 		variations: Yup.array().of(
@@ -191,13 +215,24 @@ const ProductVariants = () => {
 
 	const formatVariationsInitialValues = () => {
 		let array = [];
-		combinations.forEach((el) => {
-			let object = {};
-			object['price'] = 0;
-			object['stock'] = 0;
-			object['images'] = [];
-			array.push(object);
-		});
+		if (oldVariants) {
+			console.log(oldVariants[0]);
+			combinations.forEach((el, i) => {
+				let object = {};
+				object['price'] = oldVariants[i]?.price;
+				object['stock'] = oldVariants[i]?.stock;
+				object['images'] = oldVariants[i]?.images;
+				array.push(object);
+			});
+		} else {
+			combinations.forEach((el, i) => {
+				let object = {};
+				object['price'] = 0;
+				object['stock'] = 0;
+				object['images'] = [];
+				array.push(object);
+			});
+		}
 
 		return array;
 	};
@@ -206,9 +241,37 @@ const ProductVariants = () => {
 		variations: formatVariationsInitialValues(),
 	};
 
-	const updateVariants = (values, formikActions) => {
-		// console.log(values);
-		console.log(values);
+	const updateVariants = async (values, formikActions) => {
+		console.log(combinations);
+		setIsLoading(true);
+		try {
+			console.log(values);
+			const res = await admin_request(userToken).post('/products/variants', {
+				variations: values.variations,
+				productId: id,
+				names: combinations,
+			});
+			console.log(res);
+
+			// Update product colors sizes and materials
+			const resUpdateProduct = await admin_request(userToken).put(
+				'/products/' + id,
+				{
+					colors: colors,
+					sizes: sizes,
+					materials: materials,
+					names: combinations,
+				}
+			);
+			console.log(resUpdateProduct);
+
+			toast.success('Product variants updated successfully');
+
+			setIsLoading(false);
+		} catch (error) {
+			toast.error('Something went wrong');
+			setIsLoading(false);
+		}
 	};
 
 	// Open images upload modal
@@ -273,10 +336,13 @@ const ProductVariants = () => {
 											errors={errors.optionValues}
 											touched={touched.optionValues}
 											required={false}
+											disabled={
+												values.optionName == 'Select Option' ? true : false
+											}
 										/>
 									</div>
 									<div className="variants-add-btn-container">
-										<input type="submit" value="Add" />
+										<input type="submit" value="Update" />
 									</div>
 								</div>
 							</div>
