@@ -86,6 +86,10 @@ const DragAndDrop = ({
 	};
 
 	useEffect(() => {
+		setCurFiles(currentImages);
+	}, [currentImages]);
+
+	useEffect(() => {
 		if (setFieldValue) {
 			setFieldValue(field, curFiles);
 		} else {

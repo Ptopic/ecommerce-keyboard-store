@@ -17,7 +17,7 @@ exports.createProduct = async (req, res) => {
 			let details = {};
 
 			for (let field of activeFields) {
-				details[field] = req.body[field];
+				details[field] = String(req.body[field]).toLowerCase();
 			}
 
 			let imagesArray = [];

@@ -257,6 +257,7 @@ const NewProduct = () => {
 									<DragAndDrop
 										onChange={dragAndDropOnChange}
 										setFiles={setFiles}
+										currentImages={files}
 									/>
 									{files?.length == 0 ? (
 										<div className="error">Files are required</div>
