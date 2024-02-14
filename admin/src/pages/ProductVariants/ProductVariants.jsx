@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import './ProductVariants.css';
 import '../../styles/forms.css';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
@@ -18,8 +18,27 @@ import { toast, Toaster } from 'react-hot-toast';
 import { Link, useLocation } from 'react-router-dom';
 import { admin_request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
+import VariantImagesModal from '../../components/VariantImagesModal/VariantImagesModal';
+
+const VariationsFormikContext = () => {
+	const { values, submitForm, setFieldValue } = useFormikContext();
+
+	// // TEST remove later
+	// useEffect(() => {
+	// 	// variationsFormRef?.current?.values.variations[imagesModalId] = files;
+	// 	// console.log(
+	// 	// 	variationsFormRef.current.setFieldValue(
+	// 	// 		`variations[${imagesModalId}].images`,
+	// 	// 		files
+	// 	// 	)
+	// 	// );
+	// 	console.log(values);
+	// }, [values, submitForm]);
+};
 
 const ProductVariants = () => {
+	const variationsFormRef = useRef(null);
+
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
 
@@ -37,6 +56,11 @@ const ProductVariants = () => {
 
 	const [combinations, setCombinations] = useState([]);
 
+	const [imagesModalVisible, setImagesModalVisible] = useState(false);
+	const [imagesModalId, setImagesModalId] = useState(null);
+
+	const [files, setFiles] = useState([]);
+
 	const initialValues = {
 		optionName: 'Select Option',
 		optionValues: '',
@@ -51,7 +75,6 @@ const ProductVariants = () => {
 		try {
 			const res = await admin_request(userToken).get('/products/find/' + id);
 			setProduct(res.data.data);
-			console.log(res.data.data);
 		} catch (error) {
 			toast.error('Something went wrong');
 		}
@@ -102,7 +125,6 @@ const ProductVariants = () => {
 			toast.error('Wrong value selected');
 		}
 
-		formikActions.resetForm();
 		setIsLoading(false);
 	};
 
@@ -145,8 +167,14 @@ const ProductVariants = () => {
 			displayCombinations.push(el.split('-'));
 		}
 
-		console.log(displayCombinations);
-		setCombinations(displayCombinations);
+		// Filter if some values are empty
+		let filteredDisplayCombinations = [];
+		displayCombinations.forEach((combination) => {
+			let cleanedArray = combination.filter((el) => el !== '');
+			filteredDisplayCombinations.push(cleanedArray);
+		});
+
+		setCombinations(filteredDisplayCombinations);
 	}, [colors, sizes, materials]);
 
 	// ----- Variations form stuff -----
@@ -154,35 +182,39 @@ const ProductVariants = () => {
 	const handleVariationsValidation = Yup.object().shape({
 		variations: Yup.array().of(
 			Yup.object().shape({
-				price: Yup.number().required('Price is required'),
-				stock: Yup.number().required('Stock is required'),
+				price: Yup.number(),
+				stock: Yup.number(),
 				images: Yup.array(),
 			})
 		),
 	});
 
-	// {
-	// 	price: 2,
-	// 	stock: 22,
-	// 	images: [],
-	// },
-
 	const formatVariationsInitialValues = () => {
 		let array = [];
-		for (let el of combinations) {
+		combinations.forEach((el) => {
 			let object = {};
-			object['price'] = 2;
-			object['stock'] = 22;
+			object['price'] = 0;
+			object['stock'] = 0;
 			object['images'] = [];
 			array.push(object);
-		}
+		});
 
-		console.log(array);
 		return array;
 	};
 
 	const variationsFormInitialValues = {
-		variations: [...formatVariationsInitialValues()],
+		variations: formatVariationsInitialValues(),
+	};
+
+	const updateVariants = (values, formikActions) => {
+		// console.log(values);
+		console.log(values);
+	};
+
+	// Open images upload modal
+	const openImagesModal = (i) => {
+		setImagesModalVisible(true);
+		setImagesModalId(i);
 	};
 
 	return (
@@ -192,7 +224,7 @@ const ProductVariants = () => {
 
 			<div className="box">
 				<Formik
-					enableReinitialize={false}
+					enableReinitialize={true}
 					initialValues={initialValues}
 					validationSchema={newProductVariantSchema}
 					onSubmit={(values, formikActions) =>
@@ -243,8 +275,8 @@ const ProductVariants = () => {
 											required={false}
 										/>
 									</div>
-									<div>
-										<Button type="submit" isLoading={isLoading} text="Add" />
+									<div className="variants-add-btn-container">
+										<input type="submit" value="Add" />
 									</div>
 								</div>
 							</div>
@@ -274,43 +306,111 @@ const ProductVariants = () => {
 
 							<div className="table-variations-body">
 								<Formik
-									enableReinitialize={false}
+									enableReinitialize={true}
 									initialValues={variationsFormInitialValues}
 									validationSchema={handleVariationsValidation}
+									innerRef={(f) => (variationsFormRef.current = f)}
 									onSubmit={(values, formikActions) =>
 										updateVariants(values, formikActions)
 									}
 								>
 									{({ errors, touched, values, setFieldValue }) => (
 										<Form>
-											{values.variations.map((combination, i) => {
-												console.log(combination);
+											{combinations.map((combination, i) => {
 												return (
-													<div className="tr">
-														<div className="td">
-															{combinations[i][0]} {combinations[i][1]}
-															{combinations[i][2]}
+													<div className="tr" key={i}>
+														<div
+															className={`td variants ${
+																combination.length === 1 ? 'single' : ''
+															}`}
+														>
+															<p className="color">{combinations[i][1]}</p>
+															<p className="size">{combinations[i][0]}</p>
+															<p className="material">{combinations[i][2]}</p>
 														</div>
 														<div className="td">
 															<InputField
-																type={'text'}
-																name={'optionValues'}
-																placeholder={
-																	'Option values (seperate values by a comma) *'
-																}
-																value={values.optionValues}
+																type="number"
+																name={`variations[${i}].price`}
+																placeholder="Price *"
+																value={values.variations[i]?.price || ''}
 																onChange={(e) => {
-																	setFieldValue('optionValues', e.target.value);
+																	setFieldValue(
+																		`variations[${i}].price`,
+																		e.target.value
+																	);
 																}}
-																width={'100%'}
-																errors={errors.optionValues}
-																touched={touched.optionValues}
-																required={false}
+																width="100%"
+																errors={
+																	errors.variations &&
+																	errors.variations[i] &&
+																	errors.variations[i].price
+																}
+																touched={
+																	touched.variations &&
+																	touched.variations[i] &&
+																	touched.variations[i].price
+																}
+																required={true}
 															/>
+														</div>
+														<div className="td">
+															<InputField
+																type="number"
+																name={`variations[${i}].stock`}
+																placeholder="Stock *"
+																value={values.variations[i]?.stock || ''}
+																onChange={(e) => {
+																	setFieldValue(
+																		`variations[${i}].stock`,
+																		e.target.value
+																	);
+																}}
+																width="100%"
+																errors={
+																	errors.variations &&
+																	errors.variations[i] &&
+																	errors.variations[i].stock
+																}
+																touched={
+																	touched.variations &&
+																	touched.variations[i] &&
+																	touched.variations[i].stock
+																}
+																required={true}
+															/>
+														</div>
+														{imagesModalVisible && (
+															<VariantImagesModal
+																id={imagesModalId}
+																currentImages={
+																	values.variations[imagesModalId].images
+																}
+																field={`variations[${imagesModalId}].images`}
+																setFieldValue={setFieldValue}
+																setImagesModalVisible={setImagesModalVisible}
+															/>
+														)}
+														<div className="td images">
+															<button
+																type="button"
+																onClick={() => openImagesModal(i)}
+															>
+																Images
+															</button>
 														</div>
 													</div>
 												);
 											})}
+											<div className="tr submit">
+												<Button
+													type="submit"
+													isLoading={isLoading}
+													width="100%"
+													text="Save Variants"
+												/>
+											</div>
+											<VariationsFormikContext />
 										</Form>
 									)}
 								</Formik>

@@ -2,6 +2,22 @@
    display: grid;
    grid-template-columns: .8fr 4fr .5fr;
    gap: 2rem;
+   margin-bottom: 2rem;
+}
+
+.variants-add-btn-container {
+   display: flex;
+   align-items: end;
+   justify-content: start;
+}
+
+.variants-add-btn-container input[type="submit"] {
+   border: none;
+   outline: none;
+   background: black;
+   color: white;
+   padding: 1.2rem 2rem;
+   font-size: 1.8rem;
 }
 
 .dropdown-container p {
@@ -29,4 +45,65 @@
    display: flex;
    align-items: center;
    justify-self: center;
+}
+
+/* Table */
+
+.table-variations-head .tr {
+   display: grid;
+   grid-template-columns: 1fr 3fr 3fr 1fr;
+   border-bottom: 1.5px solid var(--bg1000);
+   padding-bottom: 1rem;
+   margin-bottom: 1rem;
+   gap: 2rem;
+}
+
+.table-variations-body .tr {
+   display: grid;
+   grid-template-columns: 1fr 3fr 3fr 1fr;
+   gap: 2rem;
+}
+
+.table-variations-body .tr .td {
+   display: flex;
+   align-items: center;
+}
+
+.table-variations-body .tr .td.variants {
+   margin-top: 3rem;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+.td.variants.single {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.size {
+   font-size: 2rem;
+   font-weight: 700;
+}
+
+.table-variations-body .tr.submit {
+   margin-top: 6rem;
+   display: grid;
+   grid-template-columns: 1fr 3fr 3fr 1fr;
+   gap: 2rem;
+}
+
+.table-variations-body .tr.submit>button {
+   grid-column: 4/4;
+}
+
+.td.images button {
+   margin-top: 3rem;
+   border: none;
+   outline: none;
+   background: black;
+   color: white;
+   padding: 1.2rem 2rem;
+   font-size: 1.8rem;
 }

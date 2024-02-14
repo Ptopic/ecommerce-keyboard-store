@@ -4,6 +4,7 @@ import './AddFieldModal.css';
 
 // Icons
 import { IoClose } from 'react-icons/io5';
+
 import InputField from '../../../../frontend/src/components/InputField/InputField';
 
 // Data

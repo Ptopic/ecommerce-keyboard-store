@@ -68,22 +68,30 @@ const NewProduct = () => {
 	];
 
 	const handleAddNewProduct = async (values, formikActions) => {
-		console.log(values);
+		if (files?.length != 0) {
+			console.log(values);
 
-		setIsLoading(true);
-		try {
-			const res = await admin_request(userToken).post('/products', {
-				...values,
-				images: files,
-				activeFields: activeFields,
-			});
-			console.log(res);
-			toast.success('Product added successfully');
-			formikActions.resetForm();
-			setIsLoading(false);
-		} catch (error) {
-			toast.error('Something went wrong');
-			setIsLoading(false);
+			setIsLoading(true);
+			try {
+				const res = await admin_request(userToken).post('/products', {
+					...values,
+					images: files,
+					activeFields: activeFields,
+				});
+
+				console.log(files);
+				console.log(res);
+				toast.success('Product added successfully');
+				formikActions.resetForm();
+				setIsLoading(false);
+				setDescription('');
+				setFiles([]);
+			} catch (error) {
+				toast.error('Something went wrong');
+				setIsLoading(false);
+				setDescription('');
+				setFiles([]);
+			}
 		}
 	};
 
@@ -250,7 +258,7 @@ const NewProduct = () => {
 										onChange={dragAndDropOnChange}
 										setFiles={setFiles}
 									/>
-									{files.length == 0 ? (
+									{files?.length == 0 ? (
 										<div className="error">Files are required</div>
 									) : null}
 								</div>

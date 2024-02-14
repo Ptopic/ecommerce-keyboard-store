@@ -4,10 +4,16 @@ import './DragAndDrop.css';
 // Icons
 import { IoClose } from 'react-icons/io5';
 
-const DragAndDrop = ({ onChange, setFiles }) => {
+const DragAndDrop = ({
+	onChange,
+	field,
+	setFieldValue,
+	currentImages,
+	setFiles,
+}) => {
 	let dropArea = useRef(null);
 
-	const [curFiles, setCurFiles] = useState([]);
+	const [curFiles, setCurFiles] = useState(currentImages ? currentImages : []);
 	const [displayFiles, setDisplayFiles] = useState([]);
 
 	// Drag events
@@ -49,7 +55,6 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 		transformFiles(files);
 	}
 
-	// --- Handle form submit event ---
 	const handleManualUpload = (e) => {
 		let files = e.target.files;
 
@@ -69,6 +74,8 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 					});
 				})
 			);
+
+			console.log(transformedFiles);
 			setCurFiles((prevFiles) => [...prevFiles, ...transformedFiles]);
 		}
 	};
@@ -79,7 +86,11 @@ const DragAndDrop = ({ onChange, setFiles }) => {
 	};
 
 	useEffect(() => {
-		setFiles(curFiles);
+		if (setFieldValue) {
+			setFieldValue(field, curFiles);
+		} else {
+			setFiles(curFiles);
+		}
 		console.log(curFiles);
 	}, [curFiles]);
 
