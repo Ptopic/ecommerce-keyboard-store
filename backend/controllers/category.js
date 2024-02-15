@@ -1,4 +1,5 @@
 const Category = require('../models/Category');
+const Product = require('../models/Product');
 
 exports.getAllCategories = async (req, res) => {
 	const { sort, direction, page, pageSize, search } = req.query;
@@ -101,9 +102,24 @@ exports.editCategory = async (req, res) => {
 	}
 };
 
+// TODO delete all products when category is deleted
+
 exports.deleteCategory = async (req, res) => {
 	try {
-		await Category.findByIdAndDelete(req.params.id);
+		const category = await Category.findById(req.params.id);
+
+		if (!category) {
+			return res
+				.status(404)
+				.send({ success: false, error: 'Category not found' });
+		}
+
+		// Delete all products containing category
+		console.log(category.name);
+		await Product.deleteMany({ category: category.name });
+
+		await category.deleteOne();
+
 		return res
 			.status(200)
 			.send({ success: true, message: 'Category has been deleted' });

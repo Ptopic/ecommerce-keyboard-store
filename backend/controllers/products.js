@@ -105,7 +105,6 @@ exports.updateProduct = async (req, res) => {
 	}
 };
 
-// TODO delete all product variant when product is deleted
 exports.deleteProduct = async (req, res) => {
 	const { id } = req.params;
 
