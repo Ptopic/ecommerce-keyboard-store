@@ -26,6 +26,7 @@ exports.createProduct = async (req, res) => {
 
 				imagesArray.push(uploadRes);
 			}
+
 			const newProduct = new Product({
 				title: title,
 				description: description,
@@ -104,12 +105,34 @@ exports.updateProduct = async (req, res) => {
 	}
 };
 
+// TODO delete all product variant when product is deleted
 exports.deleteProduct = async (req, res) => {
 	const { id } = req.params;
 
 	// Get product
 	const productFromDb = await Product.findById(id);
+
+	if (!productFromDb) {
+		return res.status(404).send({ success: false, error: 'Product not found' });
+	}
+
 	const productImages = productFromDb.images;
+
+	// Remove product variation images from cloudinary
+	const productVariations = await ProductVariation.find({ productId: id });
+
+	for (let produtVariation of productVariations) {
+		if (produtVariation.images.length > 0) {
+			for (let image of productImages) {
+				await removeFromCloudinary(image.public_id);
+			}
+		}
+	}
+
+	// Delete all previous variations of product
+	for (let variation of productVariations) {
+		await variation.deleteOne();
+	}
 
 	try {
 		// Delete image from cloudinary
@@ -238,6 +261,14 @@ exports.createOrUpdateProductVariants = async (req, res) => {
 		await ProductVariation.deleteMany({ productId: productId });
 
 		for (let i = 0; i < variations.length; i++) {
+			// Upload product varitaion images to cloudinary
+			let imagesArray = [];
+			for (let image of variations[i].images) {
+				const uploadRes = await uploadToCloudinary(image, 'shop');
+
+				imagesArray.push(uploadRes);
+			}
+
 			let nameValue = names[i].length == 1 ? names[i] : names[i].join('-');
 			const result = await ProductVariation.findOneAndUpdate(
 				{ productId: productId, name: nameValue },
@@ -246,7 +277,7 @@ exports.createOrUpdateProductVariants = async (req, res) => {
 						productId: productId,
 						price: variations[i].price,
 						stock: variations[i].price,
-						images: variations[i].images,
+						images: imagesArray,
 						name: nameValue,
 					},
 				},
