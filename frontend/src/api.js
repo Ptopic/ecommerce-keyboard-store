@@ -17,3 +17,17 @@ export const userRequest = axios.create({
 	baseURL: BASE_URL,
 	headers: { token: TOKEN },
 });
+
+export const user_request = (tokenVal) => {
+	if (tokenVal) {
+		return axios.create({
+			baseURL: BASE_URL,
+			headers: { token: tokenVal },
+		});
+	} else {
+		return axios.create({
+			baseURL: BASE_URL,
+			headers: { token: TOKEN },
+		});
+	}
+};

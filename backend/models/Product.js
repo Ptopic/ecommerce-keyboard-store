@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+var SchemaTypes = mongoose.Schema.Types;
 const productSchema = new mongoose.Schema(
 	{
 		title: {

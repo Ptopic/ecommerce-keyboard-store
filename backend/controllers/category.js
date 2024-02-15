@@ -81,8 +81,6 @@ exports.createCategory = async (req, res) => {
 	// Check if category already exists
 	const foundCategory = await Category.find({ name: name });
 
-	console.log(foundCategory);
-
 	if (foundCategory.length > 0) {
 		return res.status(500).send({
 			success: false,

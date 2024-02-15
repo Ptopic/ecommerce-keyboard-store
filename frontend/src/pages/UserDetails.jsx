@@ -18,13 +18,16 @@ import { Link } from 'react-router-dom';
 // Redux
 import { setUserData } from '../redux/userRedux';
 import { useSelector, useDispatch } from 'react-redux';
-import { userRequest } from '../api';
+import { user_request, userRequest } from '../api';
 
 import { toast, Toaster } from 'react-hot-toast';
 
 function UserDetails() {
 	const dispatch = useDispatch();
 	let user = useSelector((state) => state.user.currentUser);
+
+	const [token, setToken] = useState(user != null ? user.token : '');
+
 	user = user.data;
 
 	const [r1, setR1] = useState(user.tvrtka !== '' ? true : false);
@@ -154,7 +157,7 @@ function UserDetails() {
 
 		// Api call to update users info
 		try {
-			const res = await userRequest.put('/user/changeUserInfo', {
+			const res = await user_request(token).put('/user/changeUserInfo', {
 				userId: user._id,
 				...values,
 				shippingInfo,
@@ -170,6 +173,7 @@ function UserDetails() {
 
 			setIsProcessing(false);
 		} catch (error) {
+			console.log(error);
 			toast.error(error.response.data.error);
 			setIsProcessing(false);
 		}

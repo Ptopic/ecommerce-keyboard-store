@@ -20,6 +20,7 @@ import { toast, Toaster } from 'react-hot-toast';
 
 // Styles
 import './Login.css';
+import InputField from '../components/InputField/InputField';
 
 function ForgotPassword() {
 	const [passwordShow, setPasswordShow] = useState(false);
@@ -115,27 +116,19 @@ function ForgotPassword() {
 						handleForgotPassword(values, formikActions)
 					}
 				>
-					{({ errors, touched }) => (
+					{({ values, errors, touched, setFieldValue }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<div className="input-container">
-									<Field
-										name="password"
-										placeholder="Password *"
-										type={passwordShow ? 'text' : 'password'}
-										autoCapitalize="off"
-									/>
-									<button type="button" onClick={() => togglePasswordShow()}>
-										{passwordShow ? (
-											<FaRegEyeSlash size={24} />
-										) : (
-											<FaRegEye size={24} />
-										)}
-									</button>
-								</div>
-								{errors.password && touched.password ? (
-									<div className="error">{errors.password}</div>
-								) : null}
+								<InputField
+									name={'password'}
+									placeholder={'Password *'}
+									passwordShow={passwordShow}
+									togglePasswordShow={() => togglePasswordShow()}
+									value={values.password}
+									onChange={(e) => setFieldValue('password', e.target.value)}
+									errors={errors.password}
+									touched={touched.password}
+								/>
 							</div>
 							<Link to="/login">Remembered your password? Login</Link>
 

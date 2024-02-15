@@ -17,7 +17,13 @@
    word-break: break-all;
 }
 
-.title-and-variants a {
+.variants-container {
+   display: flex;
+   align-items: center;
+   width: 100px;
+}
+
+.variants-btn {
    background: black;
    color: white;
    text-decoration: none;

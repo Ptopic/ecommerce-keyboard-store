@@ -175,13 +175,8 @@ const Navbar = () => {
 						>
 							<NavbarLink link={'/'} text="Home" closeFunction={closeNavbar} />
 							<NavbarLink
-								link={'/products?new=newest&name=New+Arrivals'}
-								text="New Arrivals"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/best?name=Best+Sellers'}
-								text="Best Sellers"
+								link={'/products/all'}
+								text="All Products"
 								closeFunction={closeNavbar}
 							/>
 							<NavbarLink
@@ -189,41 +184,7 @@ const Navbar = () => {
 								text="Keyboards"
 								closeFunction={closeNavbar}
 							/>
-							<NavbarLink
-								link={'/products/macropad?name=Macropads'}
-								text="MacroPads"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/pcb?name=PCBs+And+Plates'}
-								text="PCB & Plates"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/keycaps?name=Keycaps'}
-								text="Keycaps"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/switches?name=Switches'}
-								text="Switches"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/cables?name=Cables'}
-								text="Cables"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/deskmats?name=Deskmats'}
-								text="Deskmats"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/tools?name=Tools'}
-								text="Tools"
-								closeFunction={closeNavbar}
-							/>
+
 							<NavbarLink
 								link={'/about'}
 								text="About Us"

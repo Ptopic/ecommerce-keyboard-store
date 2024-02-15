@@ -86,7 +86,7 @@ function Cart() {
 								{cart.products.map((product, i) => (
 									<div className="cart-product">
 										<div className="cart-product-left">
-											<img src={product.image} alt="product img" />
+											<img src={product.images[0].url} alt="product img" />
 										</div>
 										<div className="cart-product-center">
 											<Link

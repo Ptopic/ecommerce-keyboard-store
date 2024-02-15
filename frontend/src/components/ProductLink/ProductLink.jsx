@@ -5,10 +5,16 @@ const ProductLink = ({ item }) => {
 	return (
 		<div className="product-link-container">
 			<Link to={`/product/${item._id}`}>
-				<img src={item.image[0]} />
+				<img src={item.images[0].url} />
 				<div className="product-link-info">
 					<div className="product-link-name">
 						<p className="info-name">{item.title}</p>
+					</div>
+					<div className="product-link-description">
+						<p
+							className="info-description"
+							dangerouslySetInnerHTML={{ __html: item.description }}
+						></p>
 					</div>
 				</div>
 			</Link>

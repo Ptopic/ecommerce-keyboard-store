@@ -4,8 +4,10 @@ const ProductVariation = require('../models/ProductVariation');
 const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
 exports.createProduct = async (req, res) => {
-	const { title, description, images, category, price, stock, activeFields } =
+	let { title, description, images, category, price, stock, activeFields } =
 		req.body;
+
+	price = parseFloat(price).toFixed(2);
 
 	try {
 		if (images) {
@@ -179,7 +181,7 @@ exports.getAllProducts = async (req, res) => {
 	// If search query is not empty, get total number of orders that match search query
 	if (search != '' && search != null) {
 		totalProducts = await Product.find({
-			name: { $regex: search, $options: 'i' },
+			title: { $regex: search, $options: 'i' },
 		}).count();
 	} else {
 		totalProducts = await Product.find().count();
@@ -190,33 +192,44 @@ exports.getAllProducts = async (req, res) => {
 
 	try {
 		let products;
-		if (page && pageSize && sort && direction && search != '') {
+		if (
+			page != null &&
+			pageSize != null &&
+			sort != null &&
+			direction != null &&
+			search != ''
+		) {
 			products = await Product.find({
-				name: { $regex: search, $options: 'i' },
+				title: { $regex: search, $options: 'i' },
 			})
 				.limit(pageSize)
 				.skip(pageSize * page)
 				.sort([[sort, direction]]);
-		} else if (page && pageSize && search != '') {
+		} else if (page && pageSize && search != '' && search != null) {
 			products = await Product.find({
-				name: { $regex: search, $options: 'i' },
+				title: { $regex: search, $options: 'i' },
 			})
 				.limit(pageSize)
 				.skip(pageSize * page);
-		} else if (sort && direction && search != '') {
+		} else if (sort != null && direction != null && search != '') {
 			products = await Product.find({
-				name: { $regex: search, $options: 'i' },
+				title: { $regex: search, $options: 'i' },
 			}).sort([[sort, direction]]);
-		} else if (page && pageSize && sort && direction) {
+		} else if (
+			page != null &&
+			pageSize != null &&
+			sort != null &&
+			direction != null
+		) {
 			products = await Product.find()
 				.limit(pageSize)
 				.skip(pageSize * page)
 				.sort([[sort, direction]]);
-		} else if (page && pageSize) {
+		} else if (page != null && pageSize != null) {
 			products = await Product.find()
 				.limit(pageSize)
 				.skip(pageSize * page);
-		} else if (sort && direction) {
+		} else if (sort != null && direction != null) {
 			products = await Product.find().sort([[sort, direction]]);
 		} else {
 			products = await Product.find();

@@ -14,8 +14,8 @@ import Spinner from '../components/Spinner/Spinner';
 let minPrice = 0;
 let maxPrice = 0;
 
-const ProductList = () => {
-	const [page, setPage] = useState(1);
+const AllProductList = () => {
+	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	const [loading, setLoading] = useState(true);
 
@@ -89,166 +89,19 @@ const ProductList = () => {
 		try {
 			let data;
 			setLoading(true);
-			if ((defaultColor || defaultMaterial) && min && max) {
-				if (defaultColor != 'All' && defaultColor != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&color=${defaultColor}&min=${min}&max=${max}`
-					);
-					data = res.data;
-				} else if (defaultMaterial != 'All' && defaultMaterial != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&material=${defaultMaterial}&min=${min}&max=${max}`
-					);
-					data = res.data;
-				} else {
-					console.log('all');
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&min=${min}&max=${max}`
-					);
-					data = res.data;
-				}
-			} else if (
-				(defaultColor || defaultMaterial) &&
-				defaultStock &&
-				min &&
-				max
-			) {
-			} else if (defaultColor || defaultMaterial) {
-				if (defaultColor != 'All' && defaultColor != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&color=${defaultColor}`
-					);
-					data = res.data;
-				} else if (defaultMaterial != 'All' && defaultMaterial != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&material=${defaultMaterial}`
-					);
-					data = res.data;
-				} else {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}`
-					);
-					data = res.data;
-				}
-			} else if (min && max) {
-				const res = await request.get(
-					`/products?category=${category}&sort=${sort}`
-				);
-				data = res.data;
-			} else {
-				const res = await request.get(
-					`/products?category=${category}&sort=${sort}`
-				);
-				data = res.data;
-			}
+			const res = await request.get(`/products`, {
+				params: {
+					page: page,
+					pageSize: 10,
+				},
+			});
+			data = res.data;
 			setLoading(false);
-			if (products.length == 0) {
-				generateFilters(data);
-			}
+			// if (products.length == 0) {
+			// 	generateFilters(data);
+			// }
 			setProducts(data.data);
 			setPage((prevPage) => prevPage + 1);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const fetchMoreData = async () => {
-		try {
-			let data;
-			if (sort && defaultColor != null && defaultMaterial != null) {
-				if (defaultColor) {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
-						);
-						data = res.data;
-					}
-				} else if (defaultStock) {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
-						);
-						data = res.data;
-					}
-				} else if (defaultColor && defaultStock) {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
-						);
-						data = res.data;
-					}
-				} else {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
-						);
-						data = res.data;
-					}
-				}
-			} else if (sort) {
-				if (sort == 'newest') {
-					const res = await request.get(
-						`/products?category=${category}&page=${page}&sort=${sort}`
-					);
-					data = res.data;
-				} else if (sort === 'asc') {
-					const res = await request.get(
-						`/products?category=${category}&page=${page}&sort=${sort}`
-					);
-					data = res.data;
-				} else if (sort === 'desc') {
-					const res = await request.get(
-						`/products?category=${category}&page=${page}&sort=${sort}`
-					);
-					data = res.data;
-				}
-			}
-			if (data.data.length == 0) {
-				setHasMore(false);
-			} else {
-				setProducts((prev) => [...prev, ...data.data]);
-				setPage((prevPage) => prevPage + 1);
-			}
 		} catch (err) {
 			console.log(err);
 		}
@@ -258,27 +111,6 @@ const ProductList = () => {
 		setPage(1);
 		setHasMore(true);
 	};
-
-	const onIntersection = (entries) => {
-		const firstEntry = entries[0];
-		if (firstEntry.isIntersecting && hasMore) {
-			fetchMoreData();
-			console.log('intersecting');
-		}
-	};
-
-	useEffect(() => {
-		const observer = new IntersectionObserver(onIntersection);
-		if (observer && loadRef.current) {
-			observer.observe(loadRef.current);
-		}
-
-		return () => {
-			if (observer) {
-				observer.disconnect();
-			}
-		};
-	}, [products]);
 
 	useEffect(() => {
 		getInitialProducts();
@@ -403,10 +235,24 @@ const ProductList = () => {
 
 			{/* Desktop layout */}
 			<div className="products-container">
-				<div className="products-title">
-					<h1>{name}</h1>
-				</div>
 				<div className="products-content">
+					<div className="sort-container">
+						<h1>All Products</h1>
+						<button
+							className="filters-btn-mobile"
+							onClick={() => setMobileFiltersOpen(true)}
+						>
+							Filter by
+						</button>
+						<select
+							onChange={(e) => setSort(e.target.value)}
+							className="newest"
+						>
+							<option value="newest">Newest</option>
+							<option value="asc">Price (asc)</option>
+							<option value="desc">Price (desc)</option>
+						</select>
+					</div>
 					<div className="products-sort-container">
 						<div className="filters-container">
 							{material.length > 0 && (
@@ -481,22 +327,6 @@ const ProductList = () => {
 							</div>
 						) : (
 							<>
-								<div className="sort-container">
-									<button
-										className="filters-btn-mobile"
-										onClick={() => setMobileFiltersOpen(true)}
-									>
-										Filter by
-									</button>
-									<select
-										onChange={(e) => setSort(e.target.value)}
-										className="newest"
-									>
-										<option value="newest">Newest</option>
-										<option value="asc">Price (asc)</option>
-										<option value="desc">Price (desc)</option>
-									</select>
-								</div>
 								<Products products={products} />
 								<div className="has-more-spinner">
 									{!loading && hasMore ? (
@@ -515,4 +345,4 @@ const ProductList = () => {
 	);
 };
 
-export default ProductList;
+export default AllProductList;

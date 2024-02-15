@@ -83,7 +83,7 @@ function SearchModal({ toggleSearchOpen }) {
 										className="found-items-item"
 										onClick={() => searchItemHandler(item)}
 									>
-										<img src={item.image[0]} alt="" />
+										<img src={item.images[0].url} alt="" />
 
 										<h2>{item.title}</h2>
 

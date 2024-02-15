@@ -165,7 +165,7 @@ const Product = () => {
 			setIsLoading(false);
 			return;
 		}
-		if (!color && product.color.length > 0) {
+		if (!color && product?.color?.length > 0) {
 			toast.error('Please select a color');
 			setIsLoading(false);
 		}

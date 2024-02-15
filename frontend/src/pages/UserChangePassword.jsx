@@ -20,7 +20,7 @@ import InputField from '../components/InputField/InputField';
 import Button from '../components/Button/Button';
 
 import { Link } from 'react-router-dom';
-import { userRequest } from '../api';
+import { user_request, userRequest } from '../api';
 
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -34,7 +34,7 @@ function UserChangePassword() {
 	const passwordSchema = Yup.object().shape({
 		currentPassword: Yup.string()
 			.min(5, 'Too Short!')
-			.required('Password is required'),
+			.required('Current Password is required'),
 		newPassword: Yup.string()
 			.min(5, 'Too Short!')
 			.required('Password is required'),
@@ -56,7 +56,7 @@ function UserChangePassword() {
 	const handleChangePassword = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			const res = await userRequest.put('/user/changePassword', {
+			const res = await user_request(user.token).put('/user/changePassword', {
 				userId: user.data._id,
 				...values,
 			});
@@ -95,7 +95,7 @@ function UserChangePassword() {
 							handleChangePassword(values, formikActions)
 						}
 					>
-						{({ errors, touched }) => (
+						{({ errors, touched, setFieldValue }) => (
 							<Form className="login-form" style={{ width: '100%' }}>
 								<div className="login-form-inputs">
 									<InputField
@@ -103,6 +103,9 @@ function UserChangePassword() {
 										placeholder={'Current Password *'}
 										passwordShow={passwordShow}
 										togglePasswordShow={() => togglePasswordShow()}
+										onChange={(e) =>
+											setFieldValue('currentPassword', e.target.value)
+										}
 										errors={errors.currentPassword}
 										touched={touched.currentPassword}
 									/>
@@ -112,6 +115,9 @@ function UserChangePassword() {
 										placeholder={'New Password *'}
 										passwordShow={newPasswordShow}
 										togglePasswordShow={() => toggleNewPasswordShow()}
+										onChange={(e) =>
+											setFieldValue('newPassword', e.target.value)
+										}
 										errors={errors.newPassword}
 										touched={touched.newPassword}
 									/>

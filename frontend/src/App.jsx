@@ -27,6 +27,7 @@ import UserOrders from './pages/UserOrders';
 import UserChangePassword from './pages/UserChangePassword';
 import UserRegisterThanks from './pages/UserRegisterThanks';
 import NotFound from './pages/NotFound';
+import AllProductList from './pages/AllProductList';
 
 const App = () => {
 	const [stripePromise, setStripePromise] = useState(null);
@@ -64,6 +65,7 @@ const App = () => {
 				<Routes>
 					<Route exact path="/" element={<Home />} />
 					<Route exact path="/products" element={<ProductList />} />
+					<Route exact path="/products/all" element={<AllProductList />} />
 					<Route exact path="/products/:category" element={<ProductList />} />
 					<Route exact path="/product/:id" element={<Product />} />
 					<Route

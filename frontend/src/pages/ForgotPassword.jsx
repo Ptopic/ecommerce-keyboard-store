@@ -15,6 +15,7 @@ import Button from '../components/Button/Button';
 
 // Styles
 import './Login.css';
+import InputField from '../components/InputField/InputField';
 
 function ForgotPassword() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -61,20 +62,18 @@ function ForgotPassword() {
 						handleForgotPassword(values, formikActions)
 					}
 				>
-					{({ errors, touched }) => (
+					{({ values, errors, touched, setFieldValue }) => (
 						<Form className="login-form">
 							<div className="login-form-inputs">
-								<div className="input-container">
-									<Field
-										name="email"
-										type="email"
-										placeholder="Email"
-										autoCapitalize="off"
-									/>
-								</div>
-								{errors.email && touched.email ? (
-									<div className="error">{errors.email}</div>
-								) : null}
+								<InputField
+									type={'email'}
+									name={'email'}
+									placeholder={'Email *'}
+									value={values.email}
+									onChange={(e) => setFieldValue('email', e.target.value)}
+									errors={errors.email}
+									touched={touched.email}
+								/>
 							</div>
 							<Link to="/login">Remembered your password? Login</Link>
 

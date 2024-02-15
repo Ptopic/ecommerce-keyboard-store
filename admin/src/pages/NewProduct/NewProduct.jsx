@@ -210,7 +210,7 @@ const NewProduct = () => {
 								<div className="row">
 									<div>
 										<InputField
-											type={'number'}
+											type={'text'}
 											name={'price'}
 											placeholder={'Price *'}
 											value={values.price}

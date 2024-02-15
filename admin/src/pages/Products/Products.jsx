@@ -175,6 +175,12 @@ const Products = () => {
 								</a>
 							</th>
 							<th>
+								<a href="">
+									<div className="seperator"></div>
+									<h1>Variants</h1>
+								</a>
+							</th>
+							<th>
 								<a
 									href={`/products
 										?sort=category
@@ -239,12 +245,17 @@ const Products = () => {
 													loading="lazy"
 												/>
 											)}
-											<div className="title-and-variants">
-												{product.title}
-												<Link to={`/products/${product._id}/variants`}>
-													Variants
-												</Link>
-											</div>
+											<div className="title-and-variants">{product.title}</div>
+										</div>
+									</td>
+									<td className="variants-container">
+										<div className="variants">
+											<Link
+												to={`/products/${product._id}/variants`}
+												className="variants-btn"
+											>
+												Variants
+											</Link>
 										</div>
 									</td>
 									<td>{product.category}</td>
