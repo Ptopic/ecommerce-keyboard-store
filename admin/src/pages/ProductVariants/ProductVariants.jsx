@@ -215,13 +215,13 @@ const ProductVariants = () => {
 
 	const formatVariationsInitialValues = () => {
 		let array = [];
-		if (oldVariants) {
+		if (oldVariants.length > 0) {
 			console.log(oldVariants[0]);
 			combinations.forEach((el, i) => {
 				let object = {};
 				object['price'] = oldVariants[i]?.price;
 				object['stock'] = oldVariants[i]?.stock;
-				object['images'] = oldVariants[i]?.images;
+				object['images'] = oldVariants[i]?.images.map((image) => image.url);
 				array.push(object);
 			});
 		} else {

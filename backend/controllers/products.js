@@ -1,10 +1,6 @@
 const Product = require('../models/Product');
 const ProductVariation = require('../models/ProductVariation');
-const upload = require('../middleware/upload');
-const cloudinary = require('cloudinary').v2;
 
-//Imporing file system library
-const fs = require('fs');
 const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
 exports.createProduct = async (req, res) => {
@@ -268,7 +264,9 @@ exports.createOrUpdateProductVariants = async (req, res) => {
 				imagesArray.push(uploadRes);
 			}
 
-			let nameValue = names[i].length == 1 ? names[i] : names[i].join('-');
+			console.log(names[i]);
+			let nameValue =
+				names[i].length == 1 ? String(names[i]) : names[i].join('-');
 			const result = await ProductVariation.findOneAndUpdate(
 				{ productId: productId, name: nameValue },
 				{
@@ -284,6 +282,7 @@ exports.createOrUpdateProductVariants = async (req, res) => {
 			);
 		}
 	} catch (error) {
+		console.log(error);
 		return res.status(500).send({ success: false, error: error });
 	}
 
