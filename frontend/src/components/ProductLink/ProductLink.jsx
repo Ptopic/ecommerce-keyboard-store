@@ -13,7 +13,7 @@ const ProductLink = ({ item }) => {
 					<div className="product-link-description">
 						<p
 							className="info-description"
-							dangerouslySetInnerHTML={{ __html: item.description }}
+							dangerouslySetInnerHTML={{ __html: item.specifications }}
 						></p>
 					</div>
 				</div>

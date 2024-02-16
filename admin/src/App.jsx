@@ -18,6 +18,7 @@ import NewProduct from './pages/NewProduct/NewProduct';
 
 import NotFound from './pages/NotFound/NotFound';
 import ProductVariants from './pages/ProductVariants/ProductVariants';
+import EditProduct from './pages/EditProduct/EditProduct';
 
 function App() {
 	const user = useSelector((state) => state.user.currentUser);
@@ -45,6 +46,11 @@ function App() {
 							/>
 							<Route exact path="/products" element={<Products />} />
 							<Route exact path="/products/add" element={<NewProduct />} />
+							<Route
+								excat
+								path="/products/edit/:id"
+								element={<EditProduct />}
+							/>
 							<Route
 								exact
 								path="/products/:id/variants"

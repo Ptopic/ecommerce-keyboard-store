@@ -72,7 +72,9 @@ function SearchModal({ toggleSearchOpen }) {
 				<div className="found-items">
 					<div className="found-items-products-card">
 						<h2>Products</h2>
-						<Link to={'/products'}>View all products</Link>
+						<Link to={'/products/all'} onClick={() => toggleSearchOpen()}>
+							View all products
+						</Link>
 					</div>
 
 					{foundItems.length > 0 ? (

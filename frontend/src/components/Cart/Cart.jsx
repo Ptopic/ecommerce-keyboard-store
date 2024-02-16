@@ -96,7 +96,9 @@ function Cart() {
 											>
 												{product.title}
 											</Link>
-											<p className="cart-product-price">€{product.price}</p>
+											<p className="cart-product-price">
+												€{parseFloat(product.price).toFixed(2)}
+											</p>
 											{product.color.length > 0 && (
 												<p style={{ fontSize: '1.6rem' }}>
 													Color: {product.color}
@@ -126,7 +128,7 @@ function Cart() {
 															dispatch(
 																removeProduct({
 																	id: product._id,
-																	price: product.price,
+																	price: parseFloat(product.price).toFixed(2),
 																	quantity: product.quantity,
 																	color: product.color,
 																})
@@ -138,7 +140,11 @@ function Cart() {
 										</div>
 
 										<div className="cart-product-right">
-											<p>€{product.price * product.quantity}</p>
+											<p>
+												€
+												{parseFloat(product.price).toFixed(2) *
+													product.quantity}
+											</p>
 										</div>
 									</div>
 								))}

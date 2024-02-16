@@ -4,8 +4,16 @@ const ProductVariation = require('../models/ProductVariation');
 const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
 exports.createProduct = async (req, res) => {
-	let { title, description, images, category, price, stock, activeFields } =
-		req.body;
+	let {
+		title,
+		specifications,
+		description,
+		images,
+		category,
+		price,
+		stock,
+		activeFields,
+	} = req.body;
 
 	price = parseFloat(price).toFixed(2);
 
@@ -15,7 +23,8 @@ exports.createProduct = async (req, res) => {
 			let details = {};
 
 			for (let field of activeFields) {
-				details[field] = String(req.body[field]).toLowerCase();
+				// details[field] = String(req.body[field]).toLowerCase().trim();
+				details[field] = String(req.body[field]);
 			}
 
 			let imagesArray = [];
@@ -27,6 +36,7 @@ exports.createProduct = async (req, res) => {
 
 			const newProduct = new Product({
 				title: title,
+				specifications: specifications,
 				description: description,
 				images: imagesArray,
 				category: category,

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 // Styles
-import './NewProduct.css';
+import './EditProduct.css';
+import '../NewProduct/NewProduct.css';
 import '../../styles/forms.css';
 
 // Formik
@@ -19,13 +20,28 @@ import 'react-quill/dist/quill.snow.css';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { admin_request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
-const NewProduct = () => {
+const EditProduct = () => {
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
+
+	const location = useLocation();
+	const id = location.pathname.split('/edit/')[1];
+
+	const [initialProductValues, setInitialProductValues] = useState({
+		title: '',
+		description: '',
+		specifications: '',
+		category: 'Select category',
+		price: '',
+		stock: '',
+		files: [],
+	});
+
+	const [product, setProduct] = useState(null);
 
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
@@ -75,7 +91,7 @@ const NewProduct = () => {
 		setActiveFields([]);
 	};
 
-	const handleAddNewProduct = async (values, formikActions) => {
+	const handleEditProduct = async (values, formikActions) => {
 		if (files?.length != 0) {
 			console.log(values);
 
@@ -110,10 +126,33 @@ const NewProduct = () => {
 		}
 	};
 
+	const getProduct = async () => {
+		try {
+			const res = await admin_request(userToken).get('/products/find/' + id);
+			setProduct(res.data.data);
+		} catch (error) {
+			console.log(error.response.data.error);
+		}
+	};
+
 	// Get all categories options
 	useEffect(() => {
 		getAllCategories();
+		getProduct();
 	}, []);
+
+	useEffect(() => {
+		console.log(product.title);
+		setInitialProductValues({
+			title: (product && product.title) || '',
+			description: product?.description || '',
+			specifications: '',
+			category: 'Select category',
+			price: '',
+			stock: '',
+			files: [],
+		});
+	}, [product]);
 
 	const dragAndDropOnChange = (e) => {
 		setFieldValue('files', e.target.files[0]);
@@ -174,13 +213,7 @@ const NewProduct = () => {
 	};
 
 	const initialValues = {
-		title: '',
-		description: '',
-		specifications: '',
-		category: 'Select category',
-		price: '',
-		stock: '',
-		files: [],
+		...initialProductValues,
 		...getInitialValuesForActiveFields(),
 	};
 
@@ -197,7 +230,7 @@ const NewProduct = () => {
 					initialValues={initialValues}
 					validationSchema={newProductSchema}
 					onSubmit={(values, formikActions) =>
-						handleAddNewProduct(values, formikActions)
+						handleEditProduct(values, formikActions)
 					}
 				>
 					{({ errors, touched, values, setFieldValue }) => (
@@ -353,4 +386,4 @@ const NewProduct = () => {
 	);
 };
 
-export default NewProduct;
+export default EditProduct;

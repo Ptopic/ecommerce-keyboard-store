@@ -101,6 +101,7 @@ const AllProductList = () => {
 			// 	generateFilters(data);
 			// }
 			setProducts(data.data);
+			console.log(data.data);
 			setPage((prevPage) => prevPage + 1);
 		} catch (err) {
 			console.log(err);

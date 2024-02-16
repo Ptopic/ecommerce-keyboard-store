@@ -148,6 +148,9 @@ const Product = () => {
 	};
 
 	const handleAddToCart = () => {
+		// Format string price to float price
+		product.price = parseFloat(product.price).toFixed(2);
+
 		setIsLoading(true);
 		// Check if product is already in cart if it is just increment its quantity
 		var productAlreadyInCart = false;
@@ -206,6 +209,8 @@ const Product = () => {
 		setImageZoomModalOpen(true);
 	};
 
+	console.log(product);
+
 	return (
 		<div className="product-page-container">
 			<Toaster />
@@ -250,7 +255,7 @@ const Product = () => {
 					<h1>{product.title}</h1>
 					<div
 						className="product-specifications-display"
-						dangerouslySetInnerHTML={{ __html: product.description }}
+						dangerouslySetInnerHTML={{ __html: product.specifications }}
 					></div>
 					<span>€{product.price} EUR</span>
 					{product.stock == 0 ? (
@@ -322,6 +327,10 @@ const Product = () => {
 								width={'100%'}
 							/>
 						</div>
+						<div
+							className="product-specifications-display"
+							dangerouslySetInnerHTML={{ __html: product.description }}
+						></div>
 					</div>
 				</div>
 			</div>
