@@ -177,23 +177,6 @@ const AllProductList = () => {
 									</select>
 								</div>
 							)}
-							{color.length > 0 && (
-								<div>
-									<span>COLOR:</span>
-									<br></br>
-									<select
-										name="color"
-										onChange={(e) => setDefaultColor(e.target.value)}
-										value={defaultColor}
-									>
-										<option disabled>COLOR</option>
-										<option key="all">All</option>
-										{color.map((color) => (
-											<option>{color}</option>
-										))}
-									</select>
-								</div>
-							)}
 							<div className="stock-filters">
 								<span>STOCK STATUS:</span>
 								<br></br>
@@ -236,23 +219,7 @@ const AllProductList = () => {
 			{/* Desktop layout */}
 			<div className="products-container">
 				<div className="products-content">
-					<div className="sort-container">
-						<h1>All Products</h1>
-						<button
-							className="filters-btn-mobile"
-							onClick={() => setMobileFiltersOpen(true)}
-						>
-							Filter by
-						</button>
-						<select
-							onChange={(e) => setSort(e.target.value)}
-							className="newest"
-						>
-							<option value="newest">Newest</option>
-							<option value="asc">Price (asc)</option>
-							<option value="desc">Price (desc)</option>
-						</select>
-					</div>
+					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
 							{material.length > 0 && (
@@ -272,35 +239,6 @@ const AllProductList = () => {
 									</select>
 								</div>
 							)}
-							{color.length > 0 && (
-								<div>
-									<span>COLOR:</span>
-									<br></br>
-									<select
-										name="color"
-										onChange={(e) => setDefaultColor(e.target.value)}
-										value={defaultColor}
-									>
-										<option disabled>COLOR</option>
-										<option key="all">All</option>
-										{color.map((color) => (
-											<option>{color}</option>
-										))}
-									</select>
-								</div>
-							)}
-							<div>
-								<span>STOCK STATUS:</span>
-								<select
-									name="stock"
-									value={defaultStock}
-									onChange={(e) => setDefaultStock(e.target.value)}
-								>
-									<option disabled>STOCK STATUS</option>
-									<option>In Stock</option>
-									<option>Out Of Stock</option>
-								</select>
-							</div>
 
 							<div>
 								<span>PRICE:</span>
@@ -327,7 +265,12 @@ const AllProductList = () => {
 							</div>
 						) : (
 							<>
-								<Products products={products} />
+								<Products
+									products={products}
+									title={'All Products'}
+									setMobileFiltersOpen={setMobileFiltersOpen}
+									setSort={setSort}
+								/>
 								<div className="has-more-spinner">
 									{!loading && hasMore ? (
 										<div className="spinner-container" ref={loadRef}>

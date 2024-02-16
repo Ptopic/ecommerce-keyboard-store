@@ -481,22 +481,6 @@ const ProductList = () => {
 							</div>
 						) : (
 							<>
-								<div className="sort-container">
-									<button
-										className="filters-btn-mobile"
-										onClick={() => setMobileFiltersOpen(true)}
-									>
-										Filter by
-									</button>
-									<select
-										onChange={(e) => setSort(e.target.value)}
-										className="newest"
-									>
-										<option value="newest">Newest</option>
-										<option value="asc">Price (asc)</option>
-										<option value="desc">Price (desc)</option>
-									</select>
-								</div>
 								<Products products={products} />
 								<div className="has-more-spinner">
 									{!loading && hasMore ? (

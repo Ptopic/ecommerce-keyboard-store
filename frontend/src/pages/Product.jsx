@@ -248,6 +248,10 @@ const Product = () => {
 				</div>
 				<div className="product-page-info-container">
 					<h1>{product.title}</h1>
+					<div
+						className="product-specifications-display"
+						dangerouslySetInnerHTML={{ __html: product.description }}
+					></div>
 					<span>€{product.price} EUR</span>
 					{product.stock == 0 ? (
 						<h2 className="out-of-stock">Out of stock</h2>
@@ -319,7 +323,6 @@ const Product = () => {
 							/>
 						</div>
 					</div>
-					<div dangerouslySetInnerHTML={{ __html: product.description }}></div>
 				</div>
 			</div>
 			<Footer />

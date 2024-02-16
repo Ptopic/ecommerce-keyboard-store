@@ -6,6 +6,10 @@
     padding-bottom: 6rem;
 }
 
+.filters-container {
+    grid-row: 1/3;
+}
+
 .products-container {
     width: 100%;
     padding: 2rem 20rem;
@@ -28,6 +32,8 @@
 .products-sort-container {
     display: grid;
     grid-template-columns: 1fr 4fr;
+    gap: 2rem;
+    grid-template-rows: 40px 50px auto;
 }
 
 .stock-filters {
@@ -102,11 +108,17 @@ select:not(.newest) {
 
 @media (max-width: 600px) {
     .products-container {
-        padding: 4rem .5rem;
+        padding: 0rem 2rem;
     }
 
     .filters-container {
         display: none;
+    }
+
+    .products-list-container {
+        grid-column: 1/1;
+        padding-top: 1rem;
+        gap: 2rem;
     }
 
     .products-sort-container {
@@ -129,7 +141,7 @@ select:not(.newest) {
         background: white;
         padding: 1.4rem 2rem;
         border: 1px solid var(--black);
-        width: 50%;
+        width: 100%;
         height: 100%;
         border-radius: 0;
         text-align: start;

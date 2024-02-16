@@ -22,6 +22,11 @@
 .product-link-name {
     font-size: 1.2rem;
     padding-bottom: .4rem;
+    height: auto;
+}
+
+.product-link-description {
+    height: 150px;
 }
 
 .info-name {
@@ -30,9 +35,15 @@
     margin-bottom: 2rem;
 }
 
+ul {
+    list-style-position: inside;
+}
+
 li {
     list-style-image: url("../../assets/icons/arrow-right-solid.svg");
-    padding-inline-start: .8ch;
+    padding: 0;
+    height: auto;
+    font-size: 1.4rem;
 }
 
 li::marker {
@@ -46,5 +57,18 @@ li::marker {
 @media (max-width: 600px) {
     .product-link-container {
         padding: 1rem 0;
+    }
+
+    .product-link-container img {
+        width: 100%;
+        height: auto;
+    }
+
+    li {
+        font-size: 1.4rem;
+    }
+
+    li::marker {
+        font-size: 2rem;
     }
 }
