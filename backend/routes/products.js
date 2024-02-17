@@ -8,6 +8,7 @@ const {
 const {
 	createProduct,
 	updateProduct,
+	deleteProductImage,
 	deleteProduct,
 	searchProducts,
 	getProduct,
@@ -25,6 +26,9 @@ router.put('/:id', verifyTokenAndAdmin, updateProduct);
 
 // Delete product (admin only)
 router.delete('/:id', verifyTokenAndAdmin, deleteProduct);
+
+// Delete product image (single) (admin only)
+router.delete('/image/:id', verifyTokenAndAdmin, deleteProductImage);
 
 // Search for product
 router.get('/search', searchProducts);

@@ -5,6 +5,9 @@ import './EditProduct.css';
 import '../NewProduct/NewProduct.css';
 import '../../styles/forms.css';
 
+// Icons
+import { IoClose } from 'react-icons/io5';
+
 // Formik
 import { Formik, Form, Field, useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -20,26 +23,17 @@ import 'react-quill/dist/quill.snow.css';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { admin_request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
 const EditProduct = () => {
+	const navigate = useNavigate();
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
 
 	const location = useLocation();
 	const id = location.pathname.split('/edit/')[1];
-
-	const [initialProductValues, setInitialProductValues] = useState({
-		title: '',
-		description: '',
-		specifications: '',
-		category: 'Select category',
-		price: '',
-		stock: '',
-		files: [],
-	});
 
 	const [product, setProduct] = useState([]);
 
@@ -53,6 +47,7 @@ const EditProduct = () => {
 	const [description, setDescription] = useState('');
 
 	const [files, setFiles] = useState([]);
+	const [previousFiles, setPreviousFiles] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -85,19 +80,6 @@ const EditProduct = () => {
 		'image',
 	];
 
-	const getInitialValuesForActiveFields = (product) => {
-		let initialValues = {};
-		let productDetails = product.details;
-		activeFields.forEach((field) => {
-			if (product && productDetails && productDetails[field]) {
-				initialValues[field] = productDetails[field];
-			} else {
-				initialValues[field] = '';
-			}
-		});
-		return initialValues;
-	};
-
 	const resetAllFormData = () => {
 		setSpecifications('');
 		setDescription('');
@@ -107,50 +89,50 @@ const EditProduct = () => {
 
 	const handleEditProduct = async (values, formikActions) => {
 		console.log(values);
-		// if (files?.length != 0) {
-		// 	console.log(values);
+		if (files?.length != 0) {
+			console.log(values);
 
-		// 	setIsLoading(true);
-		// 	try {
-		// 		const res = await admin_request(userToken).put('/products/', {
-		// 			...values,
-		// 			images: files,
-		// 			activeFields: activeFields,
-		// 		});
+			setIsLoading(true);
+			try {
+				const res = await admin_request(userToken).put('/products/' + id, {
+					...values,
+					images: files,
+					activeFields: activeFields,
+				});
 
-		// 		console.log(files);
-		// 		console.log(res);
-		// 		toast.success('Product added successfully');
-		// 		formikActions.resetForm();
-		// 		setIsLoading(false);
-		// 		resetAllFormData();
-		// 	} catch (error) {
-		// 		toast.error('Something went wrong');
-		// 		setIsLoading(false);
-		// 		resetAllFormData();
-		// 	}
-		// } else {
-		// 	console.log(values);
+				console.log(files);
+				console.log(res);
+				toast.success('Product added successfully');
+				formikActions.resetForm();
+				setIsLoading(false);
+				resetAllFormData();
+				navigate(0);
+			} catch (error) {
+				toast.error('Something went wrong');
+				setIsLoading(false);
+			}
+		} else {
+			console.log(values);
 
-		// 	setIsLoading(true);
-		// 	try {
-		// 		const res = await admin_request(userToken).put('/products/' + id, {
-		// 			...values,
-		// 			activeFields: activeFields,
-		// 		});
+			setIsLoading(true);
+			try {
+				const res = await admin_request(userToken).put('/products/' + id, {
+					...values,
+					activeFields: activeFields,
+				});
 
-		// 		console.log(files);
-		// 		console.log(res);
-		// 		toast.success('Product added successfully');
-		// 		formikActions.resetForm();
-		// 		setIsLoading(false);
-		// 		resetAllFormData();
-		// 	} catch (error) {
-		// 		toast.error('Something went wrong');
-		// 		setIsLoading(false);
-		// 		resetAllFormData();
-		// 	}
-		// }
+				console.log(files);
+				console.log(res);
+				toast.success('Product added successfully');
+				formikActions.resetForm();
+				setIsLoading(false);
+				resetAllFormData();
+			} catch (error) {
+				toast.error('Something went wrong');
+				setIsLoading(false);
+				resetAllFormData();
+			}
+		}
 	};
 
 	const getAllCategories = async () => {
@@ -192,32 +174,20 @@ const EditProduct = () => {
 
 	const getProduct = async () => {
 		try {
-			const res = await admin_request(userToken).get('/products/find/' + id);
-			let productData = res.data.data;
+			await admin_request(userToken)
+				.get('/products/find/' + id)
+				.then((res) => {
+					let productData = res.data.data;
 
-			setSelectedCategory(productData?.category);
+					setSelectedCategory(productData?.category);
 
-			// Manually map active field from selected category
-			const activeFieldsData = mapActiveFieldsFromSelectedCategory(productData);
+					setSpecifications(productData?.specifications);
+					setDescription(productData?.description);
 
-			console.log(activeFields);
-			console.log(productData.activeFields);
+					setProduct(productData);
 
-			setInitialProductValues({
-				title: productData?.title || '',
-				description: productData?.description || '',
-				specifications: productData?.specifications || '',
-				category: productData?.category || 'Select category',
-				price: productData?.price || '',
-				stock: productData?.stock || '',
-				files: productData?.images || [],
-				...getInitialValuesForActiveFields(productData),
-			});
-
-			setSpecifications(productData?.specifications);
-			setDescription(productData?.description);
-
-			setProduct(productData);
+					setPreviousFiles(productData.images);
+				});
 		} catch (error) {
 			console.log(error.response.data.error);
 		}
@@ -265,6 +235,47 @@ const EditProduct = () => {
 		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
 
+	const getInitialValuesForActiveFields = (product) => {
+		let initialValues = {};
+		let productDetails = product.details;
+		activeFields.forEach((field) => {
+			if (product && productDetails && productDetails[field]) {
+				initialValues[field] = productDetails[field];
+			} else {
+				initialValues[field] = '';
+			}
+		});
+		return initialValues;
+	};
+
+	const initialValues = {
+		title: product ? product.title : '',
+		description: product ? product.description : '',
+		specifications: product ? product.specifications : '',
+		category: product ? product.category : 'Select category',
+		price: product ? product.price : '',
+		stock: product ? product.stock : '',
+		files: [],
+		...getInitialValuesForActiveFields(product),
+	};
+
+	const removePreviousImage = async (e, productImageId) => {
+		console.log(productImageId);
+
+		try {
+			await admin_request(userToken)
+				.delete('/products/image/' + id, {
+					data: { productImageId: productImageId },
+				})
+				.then((res) => {
+					console.log(res);
+					navigate(0);
+				});
+		} catch (error) {
+			toast.error('Something went wrong');
+		}
+	};
+
 	return (
 		<div className="form">
 			<Toaster />
@@ -275,7 +286,7 @@ const EditProduct = () => {
 				<div className="seperator-line"></div>
 				<Formik
 					enableReinitialize={true}
-					initialValues={initialProductValues}
+					initialValues={initialValues}
 					validationSchema={newProductSchema}
 					onSubmit={(values, formikActions) => {
 						console.log(values);
@@ -363,6 +374,26 @@ const EditProduct = () => {
 										setFiles={setFiles}
 										currentImages={files}
 									/>
+								</div>
+
+								<div className="file-container">
+									<p>Current Files</p>
+									<div className="previous-images-container">
+										{previousFiles.map((prevFile, id) => {
+											return (
+												<div className="uploaded-image" key={id}>
+													<button
+														type="button"
+														className="close-img-btn"
+														onClick={(e) => removePreviousImage(e, id)}
+													>
+														<IoClose />
+													</button>
+													<img src={prevFile.url} alt="uploaded image" />
+												</div>
+											);
+										})}
+									</div>
 								</div>
 
 								<div className="select-container">

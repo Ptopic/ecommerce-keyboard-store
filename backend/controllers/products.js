@@ -113,11 +113,13 @@ exports.updateProduct = async (req, res) => {
 						title: title,
 						specifications: specifications,
 						description: description,
-						images: imagesArray,
 						category: category,
 						details: details,
 						price: price,
 						stock: stock,
+					},
+					$push: {
+						images: { $each: imagesArray },
 					},
 				},
 				{ new: true }
@@ -149,7 +151,42 @@ exports.updateProduct = async (req, res) => {
 			return res.status(200).send({ success: true, data: updatedProduct });
 		}
 	} catch (err) {
+		console.log(err);
 		return res.status(500).send({ success: false, error: err });
+	}
+};
+
+exports.deleteProductImage = async (req, res) => {
+	const { productImageId } = req.body;
+	const { id } = req.params;
+
+	try {
+		// Get product
+		const productFromDb = await Product.findById(id);
+
+		if (!productFromDb) {
+			return res
+				.status(404)
+				.send({ success: false, error: 'Product not found' });
+		}
+
+		const productImages = productFromDb.images;
+
+		let imageToDelete = productImages[productImageId];
+
+		await removeFromCloudinary(imageToDelete.public_id);
+
+		// Pull element from images array by public id
+		await Product.updateOne(
+			{ _id: id },
+			{ $pull: { images: { public_id: imageToDelete.public_id } } }
+		);
+
+		return res
+			.status(200)
+			.send({ success: true, data: 'Product image removed' });
+	} catch (error) {
+		return res.status(500).send({ success: true, error: error });
 	}
 };
 
