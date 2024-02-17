@@ -33,6 +33,17 @@
     font-size: 1.8rem;
     font-weight: bold;
     margin-bottom: 2rem;
+    overflow: hidden;
+    display: -webkit-box;
+    /* display 2 lines only */
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.info-price {
+    font-size: 2.4rem;
+    font-weight: 600;
 }
 
 ul {
@@ -43,7 +54,7 @@ li {
     list-style-image: url("../../assets/icons/arrow-right-solid.svg");
     padding: 0;
     height: auto;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
 }
 
 li::marker {

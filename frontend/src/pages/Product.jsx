@@ -19,6 +19,9 @@ import { BiSearchAlt } from 'react-icons/bi';
 import { AiOutlineClose } from 'react-icons/ai';
 import Button from '../components/Button/Button';
 
+// Utils
+import { formatPriceDisplay } from '../utils/formatting';
+
 const Product = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -209,8 +212,6 @@ const Product = () => {
 		setImageZoomModalOpen(true);
 	};
 
-	console.log(product);
-
 	return (
 		<div className="product-page-container">
 			<Toaster />
@@ -257,7 +258,7 @@ const Product = () => {
 						className="product-specifications-display"
 						dangerouslySetInnerHTML={{ __html: product.specifications }}
 					></div>
-					<span>€{product.price} EUR</span>
+					<span>€{formatPriceDisplay(product.price)}</span>
 					{product.stock == 0 ? (
 						<h2 className="out-of-stock">Out of stock</h2>
 					) : null}

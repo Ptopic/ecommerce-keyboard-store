@@ -16,6 +16,9 @@ import { BsTrash3 } from 'react-icons/bs';
 // Components
 import Button from '../Button/Button';
 
+// Utils
+import { formatPriceDisplay } from '../../utils/formatting';
+
 function Cart() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -27,19 +30,19 @@ function Cart() {
 		navigate('/checkout');
 		// close cart
 		dispatch(closeCart());
-		// try {
-		// 	setIsLoading(true);
-		// 	const res = await request.post('/checkout/payment', {
-		// 		products: cart.products,
-		// 		amount: cart.totalPrice * 100,
-		// 	});
-		// 	setIsLoading(false);
-		// 	console.log(res);
-		// 	dispatch(closeCart());
-		// 	window.location.assign(res.data.url);
-		// } catch (err) {
-		// 	console.log(err);
-		// }
+		try {
+			setIsLoading(true);
+			const res = await request.post('/checkout/payment', {
+				products: cart.products,
+				amount: cart.totalPrice * 100,
+			});
+			setIsLoading(false);
+			console.log(res);
+			dispatch(closeCart());
+			window.location.assign(res.data.url);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	const continueShopping = () => {
@@ -97,7 +100,7 @@ function Cart() {
 												{product.title}
 											</Link>
 											<p className="cart-product-price">
-												€{parseFloat(product.price).toFixed(2)}
+												€{formatPriceDisplay(product.price)}
 											</p>
 											{product.color.length > 0 && (
 												<p style={{ fontSize: '1.6rem' }}>
@@ -128,7 +131,7 @@ function Cart() {
 															dispatch(
 																removeProduct({
 																	id: product._id,
-																	price: parseFloat(product.price).toFixed(2),
+																	price: product.price,
 																	quantity: product.quantity,
 																	color: product.color,
 																})
@@ -141,9 +144,7 @@ function Cart() {
 
 										<div className="cart-product-right">
 											<p>
-												€
-												{parseFloat(product.price).toFixed(2) *
-													product.quantity}
+												€{formatPriceDisplay(product.price * product.quantity)}
 											</p>
 										</div>
 									</div>
@@ -153,7 +154,7 @@ function Cart() {
 							<div className="cart-checkout">
 								<div className="cart-total-price">
 									<p>Estimated total:</p>
-									<p>€{cart.totalPrice}</p>
+									<p>€{formatPriceDisplay(cart.totalPrice)}</p>
 								</div>
 								<Button
 									width={'100%'}

@@ -16,6 +16,9 @@ import { toast, Toaster } from 'react-hot-toast';
 import Navbar from '../components/Navbar/Navbar';
 import Button from '../components/Button/Button';
 
+// Utils
+import { formatPriceDisplay } from '../utils/formatting';
+
 function PaymentForm() {
 	const stripe = useStripe();
 	const elements = useElements();
@@ -85,7 +88,7 @@ function PaymentForm() {
 							</div>
 
 							<div className="cart-product-right">
-								<p>€{product.price * product.quantity}</p>
+								<p>€{formatPriceDisplay(product.price * product.quantity)}</p>
 							</div>
 						</div>
 					))}
@@ -94,7 +97,7 @@ function PaymentForm() {
 						<div className="ukupno-content">
 							<div className="ukupno-content-item">
 								<h3>Sveukupno:</h3>
-								<p>€{cart.totalPrice}</p>
+								<p>€{formatPriceDisplay(cart.totalPrice)}</p>
 							</div>
 							<div className="ukupno-content-item">
 								<h3 className="ukupno-dostava">Dostava:</h3>
@@ -106,7 +109,9 @@ function PaymentForm() {
 						<Button
 							onClickFunction={sendPayment}
 							text={`Plati ${
-								cart.totalPrice > 20 ? cart.totalPrice : cart.totalPrice + 3
+								cart.totalPrice > 40
+									? formatPriceDisplay(cart.totalPrice)
+									: formatPriceDisplay(cart.totalPrice + 3)
 							}€`}
 							isLoading={isProcessing}
 							width={'100%'}

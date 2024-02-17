@@ -19,6 +19,9 @@ import { setState, resetState } from '../redux/paymentRedux';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
+// Utils
+import { formatPriceDisplay } from '../utils/formatting';
+
 function Checkout() {
 	let user = useSelector((state) => state.user.currentUser);
 	user = user.data;
@@ -626,7 +629,9 @@ function Checkout() {
 									</div>
 
 									<div className="cart-product-right">
-										<p>€{product.price * product.quantity}</p>
+										<p>
+											€{formatPriceDisplay(product.price * product.quantity)}
+										</p>
 									</div>
 								</div>
 							))}
@@ -635,12 +640,12 @@ function Checkout() {
 								<div className="ukupno-content">
 									<div className="ukupno-content-item">
 										<h3>Sveukupno:</h3>
-										<p>€{cart.totalPrice}</p>
+										<p>€{formatPriceDisplay(cart.totalPrice)}</p>
 									</div>
 									<div className="ukupno-content-item">
 										<h3 className="ukupno-dostava">Dostava:</h3>
 										<p className="ukupno-dostava">
-											{cart.totalPrice > 20 ? 'Besplatna' : '€3,00'}
+											{cart.totalPrice > 40 ? 'Besplatna' : '€3,00'}
 										</p>
 									</div>
 								</div>
