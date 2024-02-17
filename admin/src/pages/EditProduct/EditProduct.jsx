@@ -126,11 +126,10 @@ const EditProduct = () => {
 				toast.success('Product added successfully');
 				formikActions.resetForm();
 				setIsLoading(false);
-				resetAllFormData();
+				navigate('/products');
 			} catch (error) {
 				toast.error('Something went wrong');
 				setIsLoading(false);
-				resetAllFormData();
 			}
 		}
 	};
@@ -279,7 +278,7 @@ const EditProduct = () => {
 	return (
 		<div className="form">
 			<Toaster />
-			<h1>Add new Product</h1>
+			<h1>Edit Product</h1>
 
 			<div className="box">
 				<h2>Product Information:</h2>
@@ -453,7 +452,7 @@ const EditProduct = () => {
 									type="submit"
 									isLoading={isLoading}
 									width="100%"
-									text="Add new Product"
+									text="Edit Product"
 								/>
 							</div>
 						</Form>

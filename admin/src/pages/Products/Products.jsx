@@ -25,6 +25,9 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { Formik, Form, Field, useFormik } from 'formik';
 import * as Yup from 'yup';
 
+// Utils
+import { formatPriceDisplay } from '../../../../frontend/src/utils/formatting';
+
 const Products = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -259,7 +262,7 @@ const Products = () => {
 										</div>
 									</td>
 									<td>{product.category}</td>
-									<td>{product.price}</td>
+									<td>€{formatPriceDisplay(product.price)}</td>
 									<td>{product.stock}</td>
 									<td className="actions-row products">
 										<Link

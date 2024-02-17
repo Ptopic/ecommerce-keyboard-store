@@ -11,10 +11,14 @@ export const formatPriceDisplay = (price) => {
 		// Replace . with ,
 		if (splittedPrice[1].length == 1) {
 			splittedPrice[1] += '0';
+			splittedPrice[1] = splittedPrice[1].slice(0, 2);
+			return splittedPrice.join(',');
+		} else {
+			// If length is 2 dont add anything
+			// Replace . with ,
+			splittedPrice[1] = splittedPrice[1].slice(0, 2);
+			return splittedPrice.join(',');
 		}
-		// If length is 2 dont add anything
-		// Replace . with ,
-		return splittedPrice.join(',');
 	} else {
 		// of length is 0
 		// Add ,00 to end
