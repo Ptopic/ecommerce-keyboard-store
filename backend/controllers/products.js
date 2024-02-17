@@ -74,40 +74,80 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
-	const { colors, sizes, materials, names } = req.body;
+	let {
+		title,
+		specifications,
+		description,
+		images,
+		category,
+		price,
+		stock,
+		activeFields,
+	} = req.body;
+
+	price = parseFloat(price).toFixed(2);
+
+	console.log(req.params.id);
+
 	try {
-		let updatedProduct;
-		if (colors || sizes || materials) {
-			// Loop thru names array and join it with -
-			let combinationNamesArray = [];
-			for (let name of names) {
-				let nameValue = name.length == 1 ? name : name.join('-');
-				combinationNamesArray.push(nameValue);
+		if (images) {
+			// Map active fields to details object
+			let details = {};
+
+			for (let field of activeFields) {
+				// details[field] = String(req.body[field]).toLowerCase().trim();
+				details[field] = String(req.body[field]);
 			}
-			updatedProduct = await Product.findByIdAndUpdate(
+
+			let imagesArray = [];
+			for (let image of images) {
+				const uploadRes = await uploadToCloudinary(image, 'shop');
+
+				imagesArray.push(uploadRes);
+			}
+
+			let updatedProduct = await Product.findByIdAndUpdate(
 				req.params.id,
 				{
 					$set: {
-						...req.body,
-						colors: colors,
-						sizes: sizes,
-						materials: materials,
-						variationNames: combinationNamesArray,
+						title: title,
+						specifications: specifications,
+						description: description,
+						images: imagesArray,
+						category: category,
+						details: details,
+						price: price,
+						stock: stock,
 					},
 				},
 				{ new: true }
 			);
+			return res.status(200).send({ success: true, data: updatedProduct });
 		} else {
-			updatedProduct = await Product.findByIdAndUpdate(
+			// Map active fields to details object
+			let details = {};
+
+			for (let field of activeFields) {
+				details[field] = req.body[field];
+			}
+
+			let updatedProduct = await Product.findByIdAndUpdate(
 				req.params.id,
 				{
-					$set: req.body,
+					$set: {
+						title: title,
+						specifications: specifications,
+						description: description,
+						category: category,
+						details: details,
+						price: price,
+						stock: stock,
+					},
 				},
 				{ new: true }
 			);
+			return res.status(200).send({ success: true, data: updatedProduct });
 		}
-
-		return res.status(200).send({ success: true, data: updatedProduct });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}

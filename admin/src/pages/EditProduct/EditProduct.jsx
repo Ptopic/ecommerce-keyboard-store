@@ -41,12 +41,13 @@ const EditProduct = () => {
 		files: [],
 	});
 
-	const [product, setProduct] = useState(null);
+	const [product, setProduct] = useState([]);
 
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 
 	const [activeFields, setActiveFields] = useState([]);
+	const [activeFieldsValues, setActiveFieldsValues] = useState({});
 
 	const [specifications, setSpecifications] = useState('');
 	const [description, setDescription] = useState('');
@@ -84,6 +85,19 @@ const EditProduct = () => {
 		'image',
 	];
 
+	const getInitialValuesForActiveFields = (product) => {
+		let initialValues = {};
+		let productDetails = product.details;
+		activeFields.forEach((field) => {
+			if (product && productDetails && productDetails[field]) {
+				initialValues[field] = productDetails[field];
+			} else {
+				initialValues[field] = '';
+			}
+		});
+		return initialValues;
+	};
+
 	const resetAllFormData = () => {
 		setSpecifications('');
 		setDescription('');
@@ -92,29 +106,51 @@ const EditProduct = () => {
 	};
 
 	const handleEditProduct = async (values, formikActions) => {
-		if (files?.length != 0) {
-			console.log(values);
+		console.log(values);
+		// if (files?.length != 0) {
+		// 	console.log(values);
 
-			setIsLoading(true);
-			try {
-				const res = await admin_request(userToken).post('/products', {
-					...values,
-					images: files,
-					activeFields: activeFields,
-				});
+		// 	setIsLoading(true);
+		// 	try {
+		// 		const res = await admin_request(userToken).put('/products/', {
+		// 			...values,
+		// 			images: files,
+		// 			activeFields: activeFields,
+		// 		});
 
-				console.log(files);
-				console.log(res);
-				toast.success('Product added successfully');
-				formikActions.resetForm();
-				setIsLoading(false);
-				resetAllFormData();
-			} catch (error) {
-				toast.error('Something went wrong');
-				setIsLoading(false);
-				resetAllFormData();
-			}
-		}
+		// 		console.log(files);
+		// 		console.log(res);
+		// 		toast.success('Product added successfully');
+		// 		formikActions.resetForm();
+		// 		setIsLoading(false);
+		// 		resetAllFormData();
+		// 	} catch (error) {
+		// 		toast.error('Something went wrong');
+		// 		setIsLoading(false);
+		// 		resetAllFormData();
+		// 	}
+		// } else {
+		// 	console.log(values);
+
+		// 	setIsLoading(true);
+		// 	try {
+		// 		const res = await admin_request(userToken).put('/products/' + id, {
+		// 			...values,
+		// 			activeFields: activeFields,
+		// 		});
+
+		// 		console.log(files);
+		// 		console.log(res);
+		// 		toast.success('Product added successfully');
+		// 		formikActions.resetForm();
+		// 		setIsLoading(false);
+		// 		resetAllFormData();
+		// 	} catch (error) {
+		// 		toast.error('Something went wrong');
+		// 		setIsLoading(false);
+		// 		resetAllFormData();
+		// 	}
+		// }
 	};
 
 	const getAllCategories = async () => {
@@ -126,39 +162,7 @@ const EditProduct = () => {
 		}
 	};
 
-	const getProduct = async () => {
-		try {
-			const res = await admin_request(userToken).get('/products/find/' + id);
-			setProduct(res.data.data);
-		} catch (error) {
-			console.log(error.response.data.error);
-		}
-	};
-
-	// Get all categories options
-	useEffect(() => {
-		getAllCategories();
-		getProduct();
-	}, []);
-
-	useEffect(() => {
-		console.log(product.title);
-		setInitialProductValues({
-			title: (product && product.title) || '',
-			description: product?.description || '',
-			specifications: '',
-			category: 'Select category',
-			price: '',
-			stock: '',
-			files: [],
-		});
-	}, [product]);
-
-	const dragAndDropOnChange = (e) => {
-		setFieldValue('files', e.target.files[0]);
-	};
-
-	useEffect(() => {
+	const mapActiveFieldsFromSelectedCategory = () => {
 		// Find selected category in category data
 		let curCategory;
 		categories.forEach((category) => {
@@ -166,6 +170,7 @@ const EditProduct = () => {
 				curCategory = category;
 			}
 		});
+
 		// Set fieldDetails to category details
 		if (curCategory != null) {
 			// Format active fields
@@ -181,8 +186,64 @@ const EditProduct = () => {
 			}
 
 			setActiveFields(namesOfActiveFields);
+			return namesOfActiveFields;
 		}
+	};
+
+	const getProduct = async () => {
+		try {
+			const res = await admin_request(userToken).get('/products/find/' + id);
+			let productData = res.data.data;
+
+			setSelectedCategory(productData?.category);
+
+			// Manually map active field from selected category
+			const activeFieldsData = mapActiveFieldsFromSelectedCategory(productData);
+
+			console.log(activeFields);
+			console.log(productData.activeFields);
+
+			setInitialProductValues({
+				title: productData?.title || '',
+				description: productData?.description || '',
+				specifications: productData?.specifications || '',
+				category: productData?.category || 'Select category',
+				price: productData?.price || '',
+				stock: productData?.stock || '',
+				files: productData?.images || [],
+				...getInitialValuesForActiveFields(productData),
+			});
+
+			setSpecifications(productData?.specifications);
+			setDescription(productData?.description);
+
+			setProduct(productData);
+		} catch (error) {
+			console.log(error.response.data.error);
+		}
+	};
+
+	// Get all categories options
+	useEffect(() => {
+		getAllCategories();
+		getProduct();
+	}, []);
+
+	useEffect(() => {
+		if (categories.length === 0) {
+			getAllCategories();
+		} else {
+			mapActiveFieldsFromSelectedCategory(product);
+		}
+	}, [categories]);
+
+	useEffect(() => {
+		mapActiveFieldsFromSelectedCategory(product);
 	}, [selectedCategory]);
+
+	const dragAndDropOnChange = (e) => {
+		setFieldValue('files', e.target.files[0]);
+	};
 
 	const getActiveFieldsValidationSchema = () => {
 		let schema = {};
@@ -200,22 +261,9 @@ const EditProduct = () => {
 			.notOneOf(['Select category'], 'Please select a category'),
 		price: Yup.number().required('Price is required'),
 		stock: Yup.number().required('Stock is required'),
-		files: Yup.array().required('Files are required'),
+		files: Yup.array(),
 		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
-
-	const getInitialValuesForActiveFields = () => {
-		let initialValues = {};
-		activeFields.forEach((field) => {
-			initialValues[field] = '';
-		});
-		return initialValues;
-	};
-
-	const initialValues = {
-		...initialProductValues,
-		...getInitialValuesForActiveFields(),
-	};
 
 	return (
 		<div className="form">
@@ -226,12 +274,13 @@ const EditProduct = () => {
 				<h2>Product Information:</h2>
 				<div className="seperator-line"></div>
 				<Formik
-					enableReinitialize={false}
-					initialValues={initialValues}
+					enableReinitialize={true}
+					initialValues={initialProductValues}
 					validationSchema={newProductSchema}
-					onSubmit={(values, formikActions) =>
-						handleEditProduct(values, formikActions)
-					}
+					onSubmit={(values, formikActions) => {
+						console.log(values);
+						handleEditProduct(values, formikActions);
+					}}
 				>
 					{({ errors, touched, values, setFieldValue }) => (
 						<Form>
@@ -314,9 +363,6 @@ const EditProduct = () => {
 										setFiles={setFiles}
 										currentImages={files}
 									/>
-									{files?.length == 0 ? (
-										<div className="error">Files are required</div>
-									) : null}
 								</div>
 
 								<div className="select-container">
@@ -359,7 +405,11 @@ const EditProduct = () => {
 											name={field}
 											placeholder={field}
 											value={values[field]}
-											onChange={(e) => setFieldValue(field, e.target.value)}
+											onChange={(e) => {
+												{
+													setFieldValue(field, e.target.value);
+												}
+											}}
 											errors={errors[field]}
 											touched={touched[field]}
 										/>
