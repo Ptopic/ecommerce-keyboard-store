@@ -149,7 +149,7 @@ const Product = () => {
 
 	const handleAddToCart = () => {
 		// Format string price to float price
-		product.price = parseFloat(product.price).toFixed(2);
+		product.price = product.price;
 
 		setIsLoading(true);
 		// Check if product is already in cart if it is just increment its quantity

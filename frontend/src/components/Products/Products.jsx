@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Product from '../ProductLink/ProductLink';
+import ProductLink from '../ProductLink/ProductLink';
 import { request } from '../../api';
 import './Products.css';
 
@@ -28,7 +28,7 @@ const Products = ({ products, title, setMobileFiltersOpen, setSort }) => {
 
 			<div className="products-list-container">
 				{products.map((item) => (
-					<Product item={item} key={item.id} />
+					<ProductLink item={item} key={item.id} />
 				))}
 			</div>
 		</>

@@ -8,7 +8,7 @@ const ProductLink = ({ item }) => {
 				<img src={item.images[0].url} />
 				<div className="product-link-info">
 					<div className="product-link-name">
-						<p className="info-name">{item.title}</p>
+						<p className="info-name">{item.title.slice(0, 70)}</p>
 					</div>
 					<div className="product-link-description">
 						<p
