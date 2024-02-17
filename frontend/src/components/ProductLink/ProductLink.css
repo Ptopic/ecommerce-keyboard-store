@@ -41,6 +41,23 @@
     -webkit-box-orient: vertical;
 }
 
+.is-available {
+    margin-bottom: 4rem;
+}
+
+.is-available>p {
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.item-available {
+    color: var(--success);
+}
+
+.item-out-of-stock {
+    color: var(--error);
+}
+
 .info-price {
     font-size: 2.4rem;
     font-weight: 600;

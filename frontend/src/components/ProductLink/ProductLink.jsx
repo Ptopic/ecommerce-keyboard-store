@@ -18,6 +18,13 @@ const ProductLink = ({ item }) => {
 							dangerouslySetInnerHTML={{ __html: item.specifications }}
 						></p>
 					</div>
+					<div className="is-available">
+						{item.stock > 0 ? (
+							<p className="item-available">Available</p>
+						) : (
+							<p className="item-out-of-stock">Out of Stock</p>
+						)}
+					</div>
 				</div>
 			</Link>
 			<div className="product-link-price">

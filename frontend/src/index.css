@@ -9,6 +9,8 @@
     --gray: #E0E0E0;
     --black: #000000;
     --padding: 26rem;
+    --success: #4BB543;
+    --error: #ff3333;
 }
 
 * {

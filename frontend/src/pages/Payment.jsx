@@ -17,9 +17,10 @@ function Payment(props) {
 
 	const configureStripe = async () => {
 		// Add all form data to metadata of payment
+		console.log(cart);
 		const res = await request.post('/checkout/pay', {
 			amount:
-				(cart.totalPrice > 20 ? cart.totalPrice : cart.totalPrice + 3) * 100,
+				(cart.totalPrice > 40 ? cart.totalPrice : cart.totalPrice + 3) * 100,
 			items: cart.products,
 			tvrtka: paymentInfo.tvrtka,
 			tvrtkaDostava: paymentInfo.tvrtkaDostava,

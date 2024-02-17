@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { formatPriceDisplay } = require('./formatting');
 
 const mailTransport = () =>
 	nodemailer.createTransport({
@@ -121,7 +122,7 @@ const generateReceipt = (
         style="padding: 5px 15px 0px 0px"
       >
         <img
-          src="${product.originalProduct.image[0]}"
+          src="${product.originalProduct.images[0].url}"
           alt=""
           style="width: 70px; height: 70px; object-fit: cover"
         />
@@ -135,9 +136,9 @@ const generateReceipt = (
 				} style="color: #000000">Informacije o proizvodu</a>
       </td>
       <td rowspan="2" align="right" valign="center" width="80px">
-        <h3 class="price" style="padding: 0; margin: 0">${
+        <h3 class="price" style="padding: 0; margin: 0">${formatPriceDisplay(
 					product.price * product.quantity
-				} €</h3>
+				)} €</h3>
       </td>
     </tr>
     <tr>
@@ -266,7 +267,7 @@ const generateReceipt = (
       <table align="center" width="95%" style="margin-bottom: 2rem">
         <tr>
           <td>Ukupna cijena s PDV-om</td>
-          <td align="right">${amount} €</td>
+          <td align="right">${formatPriceDisplay(amount)} €</td>
         </tr>
       </table>
   
