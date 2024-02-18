@@ -35,6 +35,7 @@ exports.verifyTokenAuthenticity = (req, res, next) => {
 };
 
 exports.verifyTokenAndAuthorization = (req, res, next) => {
+	console.log(req)
 	verifyToken(req, res, () => {
 		if (req.data.id === req.params.id || req.data.id === req.body.id) {
 			next();

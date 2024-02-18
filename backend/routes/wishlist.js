@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { verifyTokenAndAuthorization } = require('../controllers/verifyToken');
+const { verifyTokenAuthenticity } = require('../controllers/verifyToken');
 
 const {
 	addToWishlist,
@@ -8,8 +8,8 @@ const {
 	getUserWishlist,
 } = require('../controllers/wishlist');
 
-router.post('/wishlist', verifyTokenAndAuthorization, addToWishlist);
-router.delete('/wishlist', verifyTokenAndAuthorization, removeFromWishlist);
+router.post('/wishlist', verifyTokenAuthenticity, addToWishlist);
+router.delete('/wishlist', verifyTokenAuthenticity, removeFromWishlist);
 router.get('/wishlist', getUserWishlist);
 
 module.exports = router;

@@ -21,6 +21,7 @@ import Button from '../components/Button/Button';
 
 // Utils
 import { formatPriceDisplay } from '../utils/formatting';
+import { user_request } from '../../../admin/src/api';
 
 const Product = () => {
 	const navigate = useNavigate();
@@ -38,6 +39,8 @@ const Product = () => {
 	const [imageZoomModalOpen, setImageZoomModalOpen] = useState(false);
 	const cartProducts = useSelector((state) => state.cart.products);
 	const currentUser = useSelector((state) => state.user.currentUser);
+	let userToken = currentUser.data.token;
+	console.log(currentUser)
 
 	const dispatch = useDispatch();
 
@@ -46,7 +49,6 @@ const Product = () => {
 			const res = await request.get('/products/find/' + id);
 			const data = res.data;
 			setProduct(data.data);
-			console.log(res.data.data);
 		} catch (err) {
 			console.log(err);
 		}
@@ -96,32 +98,35 @@ const Product = () => {
 		}
 
 		// Add product to users wishlist (token might be needed)
-		const productId = product._id;
-		const userId = currentUser.data._id;
-
-		try {
-			setIsLoadingWishlist(true);
-			console.log(currentUser.token);
-			const res = await request.post(
-				`/wishlist?id=${userId}`,
-				{
-					userId: userId,
-					productId: productId,
-				},
-				{
-					headers: {
-						token: currentUser.token,
+		if(Object.keys(currentUser).length != 0) {
+			const productId = product._id;
+			const userId = currentUser.data._id;
+	
+			try {
+				setIsLoadingWishlist(true);
+				const res = await user_request(userToken).post(
+					`/wishlist?id=${userId}`,
+					{
+						userId: userId,
+						productId: productId,
 					},
-				}
-			);
-			setIsLoadingWishlist(false);
-			console.log(res);
-			setIsProductInWishlist(true);
-			toast.success(res.data.data);
-		} catch (error) {
-			console.log(error);
-			toast.error(error.response.data);
+					{
+						headers: {
+							token: currentUser.token,
+						},
+					}
+				);
+				setIsLoadingWishlist(false);
+				setIsProductInWishlist(true);
+				toast.success('Product added to wishlist');
+			} catch (error) {
+				console.log(error);
+				toast.error("Something went wrong");
+			}
+		} else {
+			toast.error("Please login to add products to wishlist")
 		}
+		
 	};
 
 	const handleRemoveFromWishlist = async () => {
@@ -142,11 +147,10 @@ const Product = () => {
 			const res = await request.delete(`/wishlist?id=${userId}`, config);
 			setIsLoadingWishlist(false);
 			setIsProductInWishlist(false);
-			console.log(res);
-			toast.success(res.data.data);
+			toast.success('Product removed from wishlist');
 		} catch (error) {
-			console.log(error.response.data);
-			toast.error(error.response.data);
+			console.log(error)
+			toast.error("Something went wrong");
 		}
 	};
 

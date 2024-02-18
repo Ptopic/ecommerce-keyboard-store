@@ -9,6 +9,8 @@ import Navbar from '../components/Navbar/Navbar';
 
 import { toast, Toaster } from 'react-hot-toast';
 
+import { formatPriceDisplay } from '../utils/formatting';
+
 function Wishlist() {
 	const currentUser = useSelector((state) => state.user.currentUser);
 	const [wishlist, setWishlist] = useState([]);
@@ -27,7 +29,7 @@ function Wishlist() {
 				}
 			} catch (error) {
 				console.log(error);
-				console.log(error.response.data);
+				console.log(error?.response?.data);
 			}
 		};
 		getWishlist();
@@ -46,11 +48,11 @@ function Wishlist() {
 					)}
 					{wishlist.map((item) => (
 						<Link to={`/product/${item._id}`} className="wishlist-item">
-							<img src={item.image} alt="" />
+							<img src={item.images[0].url} alt="" />
 							<div className="wishlist-item-info">
 								<h2>{item.title}</h2>
-								<p>{item.description}</p>
-								<p>€{item.price}</p>
+								<p dangerouslySetInnerHTML={{ __html: item.specifications }}></p>
+								<p className='item-price'>€{formatPriceDisplay(item.price)}</p>
 							</div>
 						</Link>
 					))}
