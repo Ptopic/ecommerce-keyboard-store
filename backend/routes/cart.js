@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {
 	verifyToken,
+	verifyTokenAuthenticity,
 	verifyTokenAndAuthorization,
 	verifyTokenAndAdmin,
 } = require('../controllers/verifyToken');
@@ -14,16 +15,16 @@ const {
 } = require('../controllers/cart');
 
 // Create cart
-router.post('/', verifyTokenAndAuthorization, createCart);
+router.post('/', verifyTokenAuthenticity, createCart);
 
 // Edit cart
-router.put('/:id', verifyTokenAndAuthorization, editCart);
+router.put('/:id', verifyTokenAuthenticity, editCart);
 
 // Delete cart
-router.delete('/:id', verifyTokenAndAuthorization, deleteCart);
+router.delete('/:id', verifyTokenAuthenticity, deleteCart);
 
 // Get user cart
-router.get('/find/:userId', verifyTokenAndAuthorization, getUserCart);
+router.get('/find/:userId', verifyTokenAuthenticity, getUserCart);
 
 // Get all carts
 router.get('/', verifyTokenAndAdmin, getAllCarts);
