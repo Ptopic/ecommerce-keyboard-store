@@ -98,8 +98,24 @@ select:not(.newest) {
 
 .has-more-spinner {
     width: 100%;
-    margin-top: 15rem;
+    margin-top: 2rem;
     grid-column: 2/3;
+    margin-bottom: 6rem;
+}
+
+.load-more-btn {
+    width: 100%;
+    border: none;
+    outline: none;
+    color: white;
+    background: black;
+    padding: 3rem;
+    font-size: 1.8rem;
+}
+
+.load-more-btn>span {
+    font-size: 1.4rem;
+    margin-left: 2rem;
 }
 
 /* ---------- Media querys ---------- */

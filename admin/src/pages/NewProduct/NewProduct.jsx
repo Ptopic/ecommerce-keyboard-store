@@ -73,6 +73,7 @@ const NewProduct = () => {
 		setDescription('');
 		setFiles([]);
 		setActiveFields([]);
+		setSelectedCategory('');
 	};
 
 	const handleAddNewProduct = async (values, formikActions) => {
