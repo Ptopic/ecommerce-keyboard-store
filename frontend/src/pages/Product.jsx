@@ -39,8 +39,8 @@ const Product = () => {
 	const [imageZoomModalOpen, setImageZoomModalOpen] = useState(false);
 	const cartProducts = useSelector((state) => state.cart.products);
 	const currentUser = useSelector((state) => state.user.currentUser);
-	let userToken = currentUser.data.token;
-	console.log(currentUser)
+	let userToken = currentUser?.data?.token;
+	console.log(currentUser);
 
 	const dispatch = useDispatch();
 
@@ -98,10 +98,11 @@ const Product = () => {
 		}
 
 		// Add product to users wishlist (token might be needed)
-		if(Object.keys(currentUser).length != 0) {
+		console.log(currentUser);
+		if (Object.keys(currentUser).length != 0) {
 			const productId = product._id;
 			const userId = currentUser.data._id;
-	
+
 			try {
 				setIsLoadingWishlist(true);
 				const res = await user_request(userToken).post(
@@ -109,11 +110,6 @@ const Product = () => {
 					{
 						userId: userId,
 						productId: productId,
-					},
-					{
-						headers: {
-							token: currentUser.token,
-						},
 					}
 				);
 				setIsLoadingWishlist(false);
@@ -121,12 +117,11 @@ const Product = () => {
 				toast.success('Product added to wishlist');
 			} catch (error) {
 				console.log(error);
-				toast.error("Something went wrong");
+				toast.error('Something went wrong');
 			}
 		} else {
-			toast.error("Please login to add products to wishlist")
+			toast.error('Please login to add products to wishlist');
 		}
-		
 	};
 
 	const handleRemoveFromWishlist = async () => {
@@ -136,21 +131,21 @@ const Product = () => {
 		try {
 			setIsLoadingWishlist(true);
 			const config = {
-				headers: {
-					token: currentUser.token,
-				},
 				data: {
 					userId: userId,
 					productId: productId,
 				},
 			};
-			const res = await request.delete(`/wishlist?id=${userId}`, config);
+			const res = await user_request(userToken).delete(
+				`/wishlist?id=${userId}`,
+				config
+			);
 			setIsLoadingWishlist(false);
 			setIsProductInWishlist(false);
 			toast.success('Product removed from wishlist');
 		} catch (error) {
-			console.log(error)
-			toast.error("Something went wrong");
+			console.log(error);
+			toast.error('Something went wrong');
 		}
 	};
 

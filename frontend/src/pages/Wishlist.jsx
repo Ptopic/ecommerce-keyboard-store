@@ -48,11 +48,13 @@ function Wishlist() {
 					)}
 					{wishlist.map((item) => (
 						<Link to={`/product/${item._id}`} className="wishlist-item">
-							<img src={item.images[0].url} alt="" />
+							<img src={item?.images[0]?.url} alt="" />
 							<div className="wishlist-item-info">
-								<h2>{item.title}</h2>
-								<p dangerouslySetInnerHTML={{ __html: item.specifications }}></p>
-								<p className='item-price'>€{formatPriceDisplay(item.price)}</p>
+								<h2>{item?.title}</h2>
+								<p
+									dangerouslySetInnerHTML={{ __html: item?.specifications }}
+								></p>
+								<p className="item-price">€{formatPriceDisplay(item.price)}</p>
 							</div>
 						</Link>
 					))}

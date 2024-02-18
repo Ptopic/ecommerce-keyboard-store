@@ -26,6 +26,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { admin_request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
+import Spinner from '../../components/Spinner/Spinner';
 
 const EditProduct = () => {
 	const navigate = useNavigate();
@@ -50,6 +51,7 @@ const EditProduct = () => {
 	const [previousFiles, setPreviousFiles] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
+	const [imageRemoveIsLoading, setImageRemoveIsLoading] = useState(false);
 
 	const modules = {
 		toolbar: [
@@ -261,6 +263,8 @@ const EditProduct = () => {
 	const removePreviousImage = async (e, productImageId) => {
 		console.log(productImageId);
 
+		setImageRemoveIsLoading(true);
+
 		try {
 			await admin_request(userToken)
 				.delete('/products/image/' + id, {
@@ -273,6 +277,8 @@ const EditProduct = () => {
 		} catch (error) {
 			toast.error('Something went wrong');
 		}
+
+		setImageRemoveIsLoading(false);
 	};
 
 	return (
@@ -386,7 +392,16 @@ const EditProduct = () => {
 														className="close-img-btn"
 														onClick={(e) => removePreviousImage(e, id)}
 													>
-														<IoClose />
+														{imageRemoveIsLoading === true ? (
+															<Spinner
+																width={22}
+																height={22}
+																borderWidth={2}
+																color={'#a94442'}
+															/>
+														) : (
+															<IoClose />
+														)}
 													</button>
 													<img src={prevFile.url} alt="uploaded image" />
 												</div>

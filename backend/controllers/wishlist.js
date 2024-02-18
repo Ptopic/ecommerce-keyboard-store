@@ -26,7 +26,7 @@ exports.addToWishlist = async (req, res) => {
 		}
 	} else {
 		try {
-			await existingWishlist.updateOne({ $addToSet: { products: product } });
+			await existingWishlist.updateOne({ $push: { products: product } });
 			return res
 				.status(200)
 				.send({ success: true, data: 'Product added to wishlist.' });
