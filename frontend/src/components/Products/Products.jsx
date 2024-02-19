@@ -7,10 +7,18 @@ const Products = ({
 	products,
 	title,
 	setMobileFiltersOpen,
-	setTempSort,
 	sort,
+	setSort,
 	direction,
+	setDirection,
 }) => {
+	const handleSortChange = (e) => {
+		let splittedSortString = e.target.value.split('-');
+
+		console.log(splittedSortString);
+		setSort(splittedSortString[0]);
+		setDirection(splittedSortString[1]);
+	};
 	return (
 		<>
 			<div className="products-name">
@@ -20,7 +28,7 @@ const Products = ({
 			<div className="products-sort">
 				<p>Sortiraj prema:</p>
 				<select
-					onChange={(e) => setTempSort(e.target.value)}
+					onChange={(e) => handleSortChange(e)}
 					className="newest"
 					value={sort + '-' + direction}
 				>

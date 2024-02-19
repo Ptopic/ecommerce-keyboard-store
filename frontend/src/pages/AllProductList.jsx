@@ -52,6 +52,8 @@ const AllProductList = () => {
 	const getProducts = debounce(async () => {
 		// Reset page
 		setPage(0);
+
+		console.log(sort);
 		try {
 			setLoading(true);
 			const res = await request.get(`/products`, {
@@ -112,21 +114,14 @@ const AllProductList = () => {
 	};
 
 	useEffect(() => {
+		console.log('hit');
+
 		getProducts();
-	}, [priceSliderValues]);
+	}, [priceSliderValues, sort, direction]);
 
 	useEffect(() => {
 		console.log(page + ' ' + totalPages);
 	}, [page, totalPages]);
-
-	// useEffect(() => {
-	// 	let splittedSortString = tempSort.split('-');
-
-	// 	console.log(splittedSortString);
-	// 	setSort(splittedSortString[0]);
-	// 	setDirection(splittedSortString[1]);
-	// 	getProducts();
-	// }, [tempSort]);
 
 	return (
 		<div className="products-section">
@@ -218,9 +213,10 @@ const AllProductList = () => {
 									products={products}
 									title={'Svi Proizvodi'}
 									setMobileFiltersOpen={setMobileFiltersOpen}
-									setTempSort={setTempSort}
 									sort={sort}
+									setSort={setSort}
 									direction={direction}
+									setDirection={setDirection}
 								/>
 								<div className="has-more-container">
 									{totalPages != page ? (

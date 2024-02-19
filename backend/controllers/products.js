@@ -261,8 +261,14 @@ exports.searchProducts = async (req, res) => {
 };
 
 exports.getAllProducts = async (req, res) => {
-	const { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
+	let { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
 
+	// If sort and direction is null use default
+	if (sort == null && direction == null) {
+		(sort = 'createdAt'), (direction = 'desc');
+	}
+
+	console.log(typeof sort);
 	console.log(req.query);
 
 	// Get total number of products
