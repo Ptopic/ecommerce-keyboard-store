@@ -15,8 +15,8 @@ const {
 	getAllProducts,
 	getAllProductVariations,
 	createOrUpdateProductVariants,
+	getProductsMinMaxPrices,
 } = require('../controllers/products');
-const { upload } = require('../middleware/upload');
 
 // Create product (admin only)
 router.post('/', verifyTokenAndAdmin, createProduct);
@@ -38,6 +38,9 @@ router.get('/find/:id', getProduct);
 
 // Get all products
 router.get('/', getAllProducts);
+
+// Get all products min and max prices
+router.get('/prices', getProductsMinMaxPrices);
 
 // ---------- Product variants ----------
 

@@ -1,4 +1,10 @@
-.product-link-container {}
+.product-link-container {
+    padding: 1.2rem;
+}
+
+.product-link-container:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, .12);
+}
 
 .product-link-container a {
     color: var(--black);
@@ -84,7 +90,7 @@ li::marker {
 
 @media (max-width: 600px) {
     .product-link-container {
-        padding: 1rem 0;
+        padding: 1.2rem;
     }
 
     .product-link-container img {

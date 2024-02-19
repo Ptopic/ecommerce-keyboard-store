@@ -10,19 +10,13 @@ import { request } from '../../api';
 
 import { useNavigate } from 'react-router-dom';
 
+// Utils
+import { debounce } from '../../utils/debounce';
+
 function SearchModal({ toggleSearchOpen }) {
 	const navigate = useNavigate();
 	const [foundItems, setFoundItems] = useState(null);
 	const [searchTermValue, setSearchTermValue] = useState('');
-	function debounce(func, timeout = 300) {
-		let timer;
-		return (...args) => {
-			clearTimeout(timer);
-			timer = setTimeout(() => {
-				func.apply(this, args);
-			}, timeout);
-		};
-	}
 
 	const searchItems = debounce(async (e) => {
 		const searchTerm = e.target.value;

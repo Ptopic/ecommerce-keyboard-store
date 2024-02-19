@@ -261,14 +261,15 @@ exports.searchProducts = async (req, res) => {
 };
 
 exports.getAllProducts = async (req, res) => {
-	const { sort, direction, page, pageSize, search } = req.query;
+	const { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
 
-	// Get total number of orders
+	console.log(req.query);
+
+	// Get total number of products
 	let totalProducts;
-	// If search query is not empty, get total number of orders that match search query
-	if (search != '' && search != null) {
+	if (minPrice && maxPrice) {
 		totalProducts = await Product.find({
-			title: { $regex: search, $options: 'i' },
+			price: { $gte: minPrice, $lte: maxPrice },
 		}).count();
 	} else {
 		totalProducts = await Product.find().count();
@@ -279,48 +280,15 @@ exports.getAllProducts = async (req, res) => {
 
 	try {
 		let products;
-		if (
-			page != null &&
-			pageSize != null &&
-			sort != null &&
-			direction != null &&
-			search != ''
-		) {
-			products = await Product.find({
-				title: { $regex: search, $options: 'i' },
-			})
-				.limit(pageSize)
-				.skip(pageSize * page)
-				.sort([[sort, direction]]);
-		} else if (page && pageSize && search != '' && search != null) {
-			products = await Product.find({
-				title: { $regex: search, $options: 'i' },
-			})
-				.limit(pageSize)
-				.skip(pageSize * page);
-		} else if (sort != null && direction != null && search != '') {
-			products = await Product.find({
-				title: { $regex: search, $options: 'i' },
-			}).sort([[sort, direction]]);
-		} else if (
-			page != null &&
-			pageSize != null &&
-			sort != null &&
-			direction != null
-		) {
-			products = await Product.find()
-				.limit(pageSize)
-				.skip(pageSize * page)
-				.sort([[sort, direction]]);
-		} else if (page != null && pageSize != null) {
-			products = await Product.find()
-				.limit(pageSize)
-				.skip(pageSize * page);
-		} else if (sort != null && direction != null) {
-			products = await Product.find().sort([[sort, direction]]);
-		} else {
-			products = await Product.find();
-		}
+
+		// Sortiraj prema najnovijima po defaultu
+		products = await Product.find({
+			price: { $gte: minPrice, $lte: maxPrice },
+		})
+			.limit(pageSize)
+			.skip(pageSize * page)
+			.sort([[sort, direction]]);
+
 		return res.status(200).send({
 			success: true,
 			data: products,
@@ -328,7 +296,28 @@ exports.getAllProducts = async (req, res) => {
 			totalPages: totalPages,
 		});
 	} catch (err) {
+		console.log(err);
 		return res.status(500).send({ success: false, error: err });
+	}
+};
+
+exports.getProductsMinMaxPrices = async (req, res) => {
+	try {
+		const max = await Product.find()
+			.sort([['price', 'desc']])
+			.limit(1);
+		const min = await Product.find()
+			.sort([['price', 'asc']])
+			.limit(1);
+
+		return res.status(200).send({
+			success: true,
+			minPrice: min,
+			maxPrice: max,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 

@@ -10,9 +10,10 @@ import ReactSlider from 'react-slider';
 import { motion as m, AnimatePresence } from 'framer-motion';
 
 import Spinner from '../components/Spinner/Spinner';
+import toast, { Toaster } from 'react-hot-toast';
 
-let minPrice = 0;
-let maxPrice = 0;
+// Utils
+import { debounce } from '../utils/debounce';
 
 const AllProductList = () => {
 	let PAGE_SIZE = 6;
@@ -21,10 +22,62 @@ const AllProductList = () => {
 	const [loading, setLoading] = useState(true);
 
 	const [products, setProducts] = useState([]);
-	const [sort, setSort] = useState('newest');
+
+	const [tempSort, setTempSort] = useState('');
+	const [sort, setSort] = useState('createdAt');
+	const [direction, setDirection] = useState('desc');
+
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-	const getInitialProducts = async () => {
+	const [priceSliderValues, setPriceSliderValues] = useState([0, 0]);
+	const [min, setMin] = useState(0);
+	const [max, setMax] = useState(0);
+
+	const getMinMaxPrices = async () => {
+		try {
+			// Get min max prices of products
+			const resPrices = await request.get('/products/prices');
+			let pricesData = resPrices.data;
+			let minPrice = pricesData.minPrice[0].price;
+			let maxPrice = pricesData.maxPrice[0].price;
+			setMin(minPrice);
+			setMax(maxPrice);
+			setPriceSliderValues([minPrice, maxPrice]);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
+		}
+	};
+
+	const getProducts = debounce(async () => {
+		// Reset page
+		setPage(0);
+		try {
+			setLoading(true);
+			const res = await request.get(`/products`, {
+				params: {
+					page: 0,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : null,
+				},
+			});
+
+			let data = res.data;
+
+			setProducts(data.data);
+			setLoading(false);
+			setPage(1);
+			setTotalPages(data.totalPages);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
+		}
+	}, 1200);
+
+	const loadMoreData = async () => {
 		try {
 			let data;
 			setLoading(true);
@@ -32,28 +85,53 @@ const AllProductList = () => {
 				params: {
 					page: page,
 					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : direction,
 				},
 			});
 			data = res.data;
-			console.log(data);
 			setLoading(false);
-			// if (products.length == 0) {
-			// 	generateFilters(data);
-			// }
-			setProducts(data.data);
+			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
 			setTotalPages(data.totalPages);
-		} catch (err) {
-			console.log(err);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
 		}
 	};
+
 	useEffect(() => {
-		getInitialProducts();
+		getMinMaxPrices();
+		getProducts();
 	}, []);
+
+	const handlePriceFiltersChange = (e) => {
+		setPriceSliderValues([e[0], e[1]]);
+	};
+
+	useEffect(() => {
+		getProducts();
+	}, [priceSliderValues]);
+
+	useEffect(() => {
+		console.log(page + ' ' + totalPages);
+	}, [page, totalPages]);
+
+	// useEffect(() => {
+	// 	let splittedSortString = tempSort.split('-');
+
+	// 	console.log(splittedSortString);
+	// 	setSort(splittedSortString[0]);
+	// 	setDirection(splittedSortString[1]);
+	// 	getProducts();
+	// }, [tempSort]);
 
 	return (
 		<div className="products-section">
 			<Navbar />
+			<Toaster />
 
 			{/* Filters on mobile layout */}
 			<AnimatePresence>
@@ -83,7 +161,22 @@ const AllProductList = () => {
 							<div className="filters-devider"></div>
 
 							<div className="price-filters">
-								<span>PRICE:</span>
+								<span className="filter-name">CIJENA:</span>
+								<div className="price-ranges current">
+									<p>{priceSliderValues[0]}</p>
+									<p>{priceSliderValues[1]}</p>
+								</div>
+								<ReactSlider
+									className="slider"
+									value={priceSliderValues}
+									onChange={(e) => handlePriceFiltersChange(e)}
+									min={min}
+									max={max}
+								/>
+								<div className="price-ranges">
+									<p>{min}</p>
+									<p>{max}</p>
+								</div>
 							</div>
 						</div>
 					</m.div>
@@ -96,8 +189,23 @@ const AllProductList = () => {
 					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
-							<div>
-								<span>PRICE:</span>
+							<div className="price-filters">
+								<span className="filter-name">CIJENA:</span>
+								<div className="price-ranges current">
+									<p>€{priceSliderValues[0]}</p>
+									<p>€{priceSliderValues[1]}</p>
+								</div>
+								<ReactSlider
+									className="slider"
+									value={priceSliderValues}
+									onChange={(e) => handlePriceFiltersChange(e)}
+									min={min}
+									max={max}
+								/>
+								<div className="price-ranges">
+									<p>€{min}</p>
+									<p>€{max}</p>
+								</div>
 							</div>
 						</div>
 						{loading ? (
@@ -108,13 +216,18 @@ const AllProductList = () => {
 							<>
 								<Products
 									products={products}
-									title={'All Products'}
+									title={'Svi Proizvodi'}
 									setMobileFiltersOpen={setMobileFiltersOpen}
-									setSort={setSort}
+									setTempSort={setTempSort}
+									sort={sort}
+									direction={direction}
 								/>
-								<div className="has-more-spinner">
+								<div className="has-more-container">
 									{totalPages != page ? (
-										<button className="load-more-btn">
+										<button
+											className="load-more-btn"
+											onClick={(e) => loadMoreData()}
+										>
 											Prikaži više
 											<span>
 												(str. {page}/{totalPages})

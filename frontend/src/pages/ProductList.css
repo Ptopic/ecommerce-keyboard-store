@@ -44,11 +44,20 @@
     margin-top: 2rem;
 }
 
-.price-range-current {
+.filter-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.price-ranges.current {
     margin-top: 1rem;
-    font-size: 1.8rem;
     display: flex;
     justify-content: space-between;
+}
+
+.price-ranges.current p {
+    font-size: 1.8rem;
+    font-weight: 800;
 }
 
 .price-ranges {
@@ -70,7 +79,7 @@
     width: 20px;
     height: 20px;
     cursor: grab;
-    margin-top: -1rem;
+    top: -9px;
     background: #fff;
     border-radius: 50%;
     border: 2px solid var(--primary-color)
@@ -96,7 +105,7 @@ select:not(.newest) {
     display: none;
 }
 
-.has-more-spinner {
+.has-more-container {
     width: 100%;
     margin-top: 2rem;
     grid-column: 2/3;
@@ -210,7 +219,7 @@ select:not(.newest) {
         width: 100%;
     }
 
-    .has-more-spinner {
+    .has-more-container {
         width: 100%;
         grid-column: 1/2;
     }
