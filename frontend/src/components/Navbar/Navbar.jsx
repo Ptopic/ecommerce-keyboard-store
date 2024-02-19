@@ -84,8 +84,6 @@ const Navbar = () => {
 	const getAllCategories = async () => {
 		const res = await request('/categories');
 
-		console.log(res.data.data);
-
 		// Cache categories in redux persist store
 		if (categories.length == 0) {
 			dispatch(setCategories({ categories: res.data.data }));

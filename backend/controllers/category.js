@@ -75,6 +75,16 @@ exports.getCategoryById = async (req, res) => {
 	}
 };
 
+exports.getCategoryByName = async (req, res) => {
+	const { name } = req.params;
+	try {
+		const category = await Category.find({ name: name });
+		return res.status(200).send({ success: true, data: category });
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
 exports.createCategory = async (req, res) => {
 	const { name, selectedFields } = req.body;
 

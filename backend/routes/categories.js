@@ -10,6 +10,7 @@ const {
 const {
 	getAllCategories,
 	getCategoryById,
+	getCategoryByName,
 	createCategory,
 	editCategory,
 	deleteCategory,
@@ -20,6 +21,9 @@ router.get('/', getAllCategories);
 
 // Get category by id (Admin only)
 router.get('/:id', verifyTokenAndAdmin, getCategoryById);
+
+// Get categiry by name
+router.get('/name/:name', getCategoryByName);
 
 // Get all products of a category (Admin only)
 // router.get('/:id/products', verifyTokenAndAdmin);

@@ -309,6 +309,29 @@ exports.getAllProducts = async (req, res) => {
 	}
 };
 
+exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
+	let { category } = req.params;
+
+	console.log(category);
+
+	try {
+		let products;
+
+		// Sortiraj prema najnovijima po defaultu
+		products = await Product.find({
+			category: category,
+		});
+
+		return res.status(200).send({
+			success: true,
+			data: products,
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
 exports.getAllProductsByCategory = async (req, res) => {
 	let { category } = req.params;
 	let { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;

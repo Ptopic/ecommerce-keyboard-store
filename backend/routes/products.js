@@ -19,6 +19,7 @@ const {
 	createOrUpdateProductVariants,
 	getProductsMinMaxPrices,
 	getProductsMinMaxPricesByCategory,
+	getAllProductsByCategoryWithoutPagination,
 } = require('../controllers/products');
 
 // Create product (admin only)
@@ -41,6 +42,9 @@ router.get('/find/:id', getProduct);
 
 // Get all products
 router.get('/all', getAllProducts);
+
+// Get all products by category (without pagination) - for creating product filters
+router.get('/filters/:category', getAllProductsByCategoryWithoutPagination);
 
 // Get all products by category
 router.get('/category/:category', getAllProductsByCategory);

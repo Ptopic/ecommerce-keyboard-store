@@ -49,7 +49,7 @@ const NewProduct = () => {
 				{ indent: '-1' },
 				{ indent: '+1' },
 			],
-			['link', 'image'],
+			['link', 'image', 'video'],
 			['clean'],
 		],
 	};
@@ -66,6 +66,7 @@ const NewProduct = () => {
 		'indent',
 		'link',
 		'image',
+		'video',
 	];
 
 	const resetAllFormData = () => {

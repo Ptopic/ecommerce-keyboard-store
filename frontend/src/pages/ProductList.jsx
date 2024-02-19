@@ -12,10 +12,14 @@ import { motion as m, AnimatePresence } from 'framer-motion';
 import Spinner from '../components/Spinner/Spinner';
 import { toast, Toaster } from 'react-hot-toast';
 
+// Redux
+import { useSelector } from 'react-redux/es/hooks/useSelector';
+
 // Utils
 import { debounce } from '../utils/debounce';
 
 const ProductList = () => {
+	const categories = useSelector((state) => state.categories.data);
 	let PAGE_SIZE = 6;
 	const navigate = useNavigate();
 	const [page, setPage] = useState(0);
@@ -38,10 +42,54 @@ const ProductList = () => {
 	const [min, setMin] = useState(0);
 	const [max, setMax] = useState(0);
 
-	const generateFilters = (data) => {
-		setLoading(true);
-		setLoading(false);
+	// Other filters
+	const [filters, setFilters] = useState({});
+
+	const generateFilters = async () => {
+		// Get all products by category from redux state to generate filters for it
+		const allProductsRes = await request.get(`/products/filters/` + name, {
+			category: name,
+		});
+
+		let productsData = allProductsRes.data.data;
+
+		let categoryFields = categories.find(
+			(category) => category.name === name
+		).fields;
+
+		let filtersArray = [];
+
+		for (let filter of categoryFields) {
+			let obj = {};
+			obj[filter.name] = new Set([]);
+			filtersArray.push(obj);
+		}
+
+		for (let product of productsData) {
+			// Loop thru all products details
+			for (let i = 0; i < categoryFields.length; i++) {
+				let filterName = categoryFields[i].name;
+
+				let productFilter = product.details[filterName.toString()];
+
+				let filterSet = filtersArray[i][filterName.toString()];
+
+				filterSet.add(productFilter);
+			}
+		}
+
+		setFilters(filtersArray);
+		console.log(filters);
+
+		// Cache filters for current category in redux persist
 	};
+
+	// If products array changes generate filters (initial load or load more data) or location changes
+	useEffect(() => {
+		if (products.length > 0) {
+			generateFilters();
+		}
+	}, [products, location]);
 
 	const getMinMaxPrices = async () => {
 		try {
