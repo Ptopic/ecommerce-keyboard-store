@@ -63,6 +63,36 @@ const ProductList = () => {
 		}
 	};
 
+	const getProductsWithoutDebounce = async () => {
+		// Reset page
+		setPage(0);
+
+		console.log(sort);
+		try {
+			setLoading(true);
+			const res = await request.get(`/products/category/` + category, {
+				params: {
+					page: 0,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : null,
+				},
+			});
+
+			let data = res.data;
+
+			setProducts(data.data);
+			setLoading(false);
+			setPage(1);
+			setTotalPages(data.totalPages);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
+		}
+	};
+
 	const getProducts = debounce(async () => {
 		// Reset page
 		setPage(0);
@@ -120,13 +150,13 @@ const ProductList = () => {
 
 	useEffect(() => {
 		getMinMaxPrices();
-		getProducts();
+		getProductsWithoutDebounce();
 	}, []);
 
 	// If category changes refetch data
 	useEffect(() => {
 		getMinMaxPrices();
-		getProducts();
+		getProductsWithoutDebounce();
 	}, [location]);
 
 	const handlePriceFiltersChange = (e) => {
@@ -136,10 +166,6 @@ const ProductList = () => {
 	useEffect(() => {
 		getProducts();
 	}, [priceSliderValues, sort, direction]);
-
-	useEffect(() => {
-		console.log(page + ' ' + totalPages);
-	}, [page, totalPages]);
 
 	return (
 		<div className="products-section">

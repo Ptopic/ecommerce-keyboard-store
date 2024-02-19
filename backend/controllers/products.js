@@ -366,7 +366,10 @@ exports.getAllProductsForAdminPage = async (req, res) => {
 	// If search query is not empty, get total number of orders that match search query
 	if (search != '' && search != null) {
 		totalProducts = await Product.find({
-			title: { $regex: search, $options: 'i' },
+			$or: [
+				{ title: { $regex: search, $options: 'i' } },
+				{ category: { $regex: search, $options: 'i' } },
+			],
 		}).count();
 	} else {
 		totalProducts = await Product.find().count();
@@ -387,20 +390,29 @@ exports.getAllProductsForAdminPage = async (req, res) => {
 			search != ''
 		) {
 			products = await Product.find({
-				title: { $regex: search, $options: 'i' },
+				$or: [
+					{ title: { $regex: search, $options: 'i' } },
+					{ category: { $regex: search, $options: 'i' } },
+				],
 			})
 				.limit(pageSize)
 				.skip(pageSize * page)
 				.sort([[sort, direction]]);
 		} else if (page && pageSize && search != '' && search != null) {
 			products = await Product.find({
-				title: { $regex: search, $options: 'i' },
+				$or: [
+					{ title: { $regex: search, $options: 'i' } },
+					{ category: { $regex: search, $options: 'i' } },
+				],
 			})
 				.limit(pageSize)
 				.skip(pageSize * page);
 		} else if (sort != null && direction != null && search != '') {
 			products = await Product.find({
-				title: { $regex: search, $options: 'i' },
+				$or: [
+					{ title: { $regex: search, $options: 'i' } },
+					{ category: { $regex: search, $options: 'i' } },
+				],
 			}).sort([[sort, direction]]);
 		} else if (
 			page != null &&

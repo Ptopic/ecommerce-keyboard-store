@@ -133,7 +133,7 @@ const Products = () => {
 							<InputField
 								type={'text'}
 								name={'search'}
-								placeholder={'Search products by title'}
+								placeholder={'Search products by title or category'}
 								value={searchTermValue}
 								onChange={(e) => setSearchTermValue(e.target.value)}
 								width={'50%'}
