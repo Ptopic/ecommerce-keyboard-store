@@ -128,7 +128,7 @@ const EditProduct = () => {
 				toast.success('Product added successfully');
 				formikActions.resetForm();
 				setIsLoading(false);
-				navigate('/products');
+				navigate(-1);
 			} catch (error) {
 				toast.error('Something went wrong');
 				setIsLoading(false);

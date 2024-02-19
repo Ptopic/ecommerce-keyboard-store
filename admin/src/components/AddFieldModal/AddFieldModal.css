@@ -96,8 +96,8 @@
 
 .fields-list-container {
    position: absolute;
-   height: 60%;
-   padding: 1rem 0;
+   height: 50%;
+   padding: 2rem 0;
    width: calc(100% - 8rem);
    overflow: auto;
 }

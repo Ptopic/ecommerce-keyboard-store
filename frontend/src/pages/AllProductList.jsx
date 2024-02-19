@@ -23,7 +23,6 @@ const AllProductList = () => {
 
 	const [products, setProducts] = useState([]);
 
-	const [tempSort, setTempSort] = useState('');
 	const [sort, setSort] = useState('createdAt');
 	const [direction, setDirection] = useState('desc');
 
@@ -35,11 +34,19 @@ const AllProductList = () => {
 
 	const getMinMaxPrices = async () => {
 		try {
+			let minPrice = 0;
+			let maxPrice = 0;
 			// Get min max prices of products
-			const resPrices = await request.get('/products/prices');
+			const resPrices = await request.get('/products/prices/all');
 			let pricesData = resPrices.data;
-			let minPrice = pricesData.minPrice[0].price;
-			let maxPrice = pricesData.maxPrice[0].price;
+			if (
+				pricesData != null &&
+				pricesData.minPrice[0] != null &&
+				pricesData.maxPrice[0] != null
+			) {
+				minPrice = pricesData.minPrice[0].price;
+				maxPrice = pricesData.maxPrice[0].price;
+			}
 			setMin(minPrice);
 			setMax(maxPrice);
 			setPriceSliderValues([minPrice, maxPrice]);
@@ -56,7 +63,7 @@ const AllProductList = () => {
 		console.log(sort);
 		try {
 			setLoading(true);
-			const res = await request.get(`/products`, {
+			const res = await request.get(`/products/all`, {
 				params: {
 					page: 0,
 					pageSize: PAGE_SIZE,
@@ -83,7 +90,7 @@ const AllProductList = () => {
 		try {
 			let data;
 			setLoading(true);
-			const res = await request.get(`/products`, {
+			const res = await request.get(`/products/all`, {
 				params: {
 					page: page,
 					pageSize: PAGE_SIZE,
@@ -114,8 +121,6 @@ const AllProductList = () => {
 	};
 
 	useEffect(() => {
-		console.log('hit');
-
 		getProducts();
 	}, [priceSliderValues, sort, direction]);
 
@@ -158,8 +163,8 @@ const AllProductList = () => {
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
 								<div className="price-ranges current">
-									<p>{priceSliderValues[0]}</p>
-									<p>{priceSliderValues[1]}</p>
+									<p>€{priceSliderValues[0]}</p>
+									<p>€{priceSliderValues[1]}</p>
 								</div>
 								<ReactSlider
 									className="slider"
@@ -169,8 +174,8 @@ const AllProductList = () => {
 									max={max}
 								/>
 								<div className="price-ranges">
-									<p>{min}</p>
-									<p>{max}</p>
+									<p>€{min}</p>
+									<p>€{max}</p>
 								</div>
 							</div>
 						</div>

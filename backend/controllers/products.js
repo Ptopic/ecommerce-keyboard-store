@@ -263,6 +263,9 @@ exports.searchProducts = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
 	let { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
 
+	const term = req.query.search;
+	let termString = String(term);
+
 	// If sort and direction is null use default
 	if (sort == null && direction == null) {
 		(sort = 'createdAt'), (direction = 'desc');
@@ -306,12 +309,159 @@ exports.getAllProducts = async (req, res) => {
 	}
 };
 
+exports.getAllProductsByCategory = async (req, res) => {
+	let { category } = req.params;
+	let { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
+
+	// If sort and direction is null use default
+	if (sort == null && direction == null) {
+		(sort = 'createdAt'), (direction = 'desc');
+	}
+
+	console.log(req.query);
+
+	// Get total number of products
+	let totalProducts;
+	if (minPrice && maxPrice) {
+		totalProducts = await Product.find({
+			price: { $gte: minPrice, $lte: maxPrice },
+			category: category,
+		}).count();
+	} else {
+		totalProducts = await Product.find({ category: category }).count();
+	}
+
+	// Calculate number of pages based on page size
+	const totalPages = Math.ceil(totalProducts / pageSize);
+
+	try {
+		let products;
+
+		// Sortiraj prema najnovijima po defaultu
+		products = await Product.find({
+			price: { $gte: minPrice, $lte: maxPrice },
+			category: category,
+		})
+			.limit(pageSize)
+			.skip(pageSize * page)
+			.sort([[sort, direction]]);
+
+		return res.status(200).send({
+			success: true,
+			data: products,
+			totalProducts: totalProducts,
+			totalPages: totalPages,
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
+exports.getAllProductsForAdminPage = async (req, res) => {
+	const { sort, direction, page, pageSize, search } = req.query;
+
+	// Get total number of orders
+	let totalProducts;
+	// If search query is not empty, get total number of orders that match search query
+	if (search != '' && search != null) {
+		totalProducts = await Product.find({
+			title: { $regex: search, $options: 'i' },
+		}).count();
+	} else {
+		totalProducts = await Product.find().count();
+	}
+
+	// Calculate number of pages based on page size
+	const totalPages = Math.ceil(totalProducts / pageSize);
+
+	console.log(totalPages);
+
+	try {
+		let products;
+		if (
+			page != null &&
+			pageSize != null &&
+			sort != null &&
+			direction != null &&
+			search != ''
+		) {
+			products = await Product.find({
+				title: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize && search != '' && search != null) {
+			products = await Product.find({
+				title: { $regex: search, $options: 'i' },
+			})
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort != null && direction != null && search != '') {
+			products = await Product.find({
+				title: { $regex: search, $options: 'i' },
+			}).sort([[sort, direction]]);
+		} else if (
+			page != null &&
+			pageSize != null &&
+			sort != null &&
+			direction != null
+		) {
+			products = await Product.find()
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page != null && pageSize != null) {
+			products = await Product.find()
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort != null && direction != null) {
+			products = await Product.find().sort([[sort, direction]]);
+		} else {
+			products = await Product.find();
+		}
+
+		console.log(products);
+		return res.status(200).send({
+			success: true,
+			data: products,
+			totalProducts: totalProducts,
+			totalPages: totalPages,
+		});
+	} catch (err) {
+		return res.status(500).send({ success: false, error: err });
+	}
+};
+
 exports.getProductsMinMaxPrices = async (req, res) => {
 	try {
 		const max = await Product.find()
 			.sort([['price', 'desc']])
 			.limit(1);
 		const min = await Product.find()
+			.sort([['price', 'asc']])
+			.limit(1);
+
+		return res.status(200).send({
+			success: true,
+			minPrice: min,
+			maxPrice: max,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
+	}
+};
+
+exports.getProductsMinMaxPricesByCategory = async (req, res) => {
+	let { category } = req.params;
+
+	try {
+		const max = await Product.find({ category: category })
+			.sort([['price', 'desc']])
+			.limit(1);
+		const min = await Product.find({ category: category })
 			.sort([['price', 'asc']])
 			.limit(1);
 

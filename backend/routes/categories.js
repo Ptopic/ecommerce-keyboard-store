@@ -16,7 +16,7 @@ const {
 } = require('../controllers/category');
 
 // Get all categories (Admin only)
-router.get('/', verifyTokenAndAdmin, getAllCategories);
+router.get('/', getAllCategories);
 
 // Get category by id (Admin only)
 router.get('/:id', verifyTokenAndAdmin, getCategoryById);

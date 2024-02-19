@@ -14,8 +14,11 @@ const {
 	getProduct,
 	getAllProducts,
 	getAllProductVariations,
+	getAllProductsByCategory,
+	getAllProductsForAdminPage,
 	createOrUpdateProductVariants,
 	getProductsMinMaxPrices,
+	getProductsMinMaxPricesByCategory,
 } = require('../controllers/products');
 
 // Create product (admin only)
@@ -37,10 +40,19 @@ router.get('/search', searchProducts);
 router.get('/find/:id', getProduct);
 
 // Get all products
-router.get('/', getAllProducts);
+router.get('/all', getAllProducts);
+
+// Get all products by category
+router.get('/category/:category', getAllProductsByCategory);
+
+// Get all products for admin page
+router.get('/admin', verifyTokenAndAdmin, getAllProductsForAdminPage);
 
 // Get all products min and max prices
-router.get('/prices', getProductsMinMaxPrices);
+router.get('/prices/all', getProductsMinMaxPrices);
+
+// Get products min max prices by category
+router.get('/prices/:category', getProductsMinMaxPricesByCategory);
 
 // ---------- Product variants ----------
 

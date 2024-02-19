@@ -3,304 +3,148 @@ import Navbar from '../components/Navbar/Navbar';
 import Products from '../components/Products/Products';
 import Footer from '../components/Footer/Footer';
 import { AiOutlineClose } from 'react-icons/ai';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './ProductList.css';
 import { request } from '../api';
 import ReactSlider from 'react-slider';
 import { motion as m, AnimatePresence } from 'framer-motion';
 
 import Spinner from '../components/Spinner/Spinner';
+import { toast, Toaster } from 'react-hot-toast';
 
-let minPrice = 0;
-let maxPrice = 0;
+// Utils
+import { debounce } from '../utils/debounce';
 
 const ProductList = () => {
-	const [page, setPage] = useState(1);
-	const [hasMore, setHasMore] = useState(true);
+	let PAGE_SIZE = 6;
+	const navigate = useNavigate();
+	const [page, setPage] = useState(0);
+	const [totalPages, setTotalPages] = useState(0);
 	const [loading, setLoading] = useState(true);
 
-	const loadRef = useRef(null);
-
 	const [products, setProducts] = useState([]);
+
 	const [searchParams] = useSearchParams();
 	const location = useLocation();
 	const category = location.pathname.split('/')[2];
 	const name = searchParams.get('name');
-	const [sort, setSort] = useState('newest');
+
+	const [sort, setSort] = useState('createdAt');
+	const [direction, setDirection] = useState('desc');
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-	// Filters for products
-	const [material, setMaterial] = useState([]);
-	const [defaultMaterial, setDefaultMaterial] = useState(null);
-	const [color, setColor] = useState([]);
-	const [defaultColor, setDefaultColor] = useState(null);
-	const [defaultStock, setDefaultStock] = useState(null);
-
 	// Price filters
+	const [priceSliderValues, setPriceSliderValues] = useState([0, 0]);
 	const [min, setMin] = useState(0);
 	const [max, setMax] = useState(0);
 
 	const generateFilters = (data) => {
 		setLoading(true);
-		// Check if product has material, color ect...
-		var products = data.data;
-		var product = products[0];
-
-		// Get min and max price of products
-		var allPrices = [];
-		products.map((product) => {
-			allPrices.push(product.price);
-		});
-		minPrice = Math.min(...allPrices);
-		setMin(minPrice);
-		maxPrice = Math.max(...allPrices);
-		setMax(maxPrice);
-
-		// Create sets of unique materials and colors if available for products
-
-		// Loop thru and add all materials to array
-		var allMaterials = [];
-		products.map((product) => {
-			product.material.map((material) => {
-				allMaterials.push(material);
-			});
-		});
-		// Create set of materials
-		var materialsSet = Array.from(new Set(allMaterials));
-		setMaterial(materialsSet);
-
-		// Loop thru and add all colors to array
-		var allColors = [];
-		products.map((product) => {
-			product['color'].map((color) => {
-				allColors.push(color);
-			});
-		});
-		// Create set of materials
-		var colorSet = Array.from(new Set(allColors));
-		setColor(colorSet);
-
-		setMin(minPrice);
-		setMax(maxPrice);
 		setLoading(false);
 	};
 
-	const getInitialProducts = async () => {
+	const getMinMaxPrices = async () => {
+		try {
+			let minPrice = 0;
+			let maxPrice = 0;
+			// Get min max prices of products
+			const resPrices = await request.get('/products/prices/' + category);
+			let pricesData = resPrices.data;
+			if (pricesData && pricesData.minPrice && pricesData.maxPrice) {
+				minPrice = pricesData.minPrice[0].price;
+				maxPrice = pricesData.maxPrice[0].price;
+			}
+			setMin(minPrice);
+			setMax(maxPrice);
+			setPriceSliderValues([minPrice, maxPrice]);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
+		}
+	};
+
+	const getProducts = debounce(async () => {
+		// Reset page
+		setPage(0);
+
+		console.log(sort);
+		try {
+			setLoading(true);
+			const res = await request.get(`/products/category/` + category, {
+				params: {
+					page: 0,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : null,
+				},
+			});
+
+			let data = res.data;
+
+			setProducts(data.data);
+			setLoading(false);
+			setPage(1);
+			setTotalPages(data.totalPages);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
+		}
+	}, 1200);
+
+	const loadMoreData = async () => {
 		try {
 			let data;
 			setLoading(true);
-			if ((defaultColor || defaultMaterial) && min && max) {
-				if (defaultColor != 'All' && defaultColor != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&color=${defaultColor}&min=${min}&max=${max}`
-					);
-					data = res.data;
-				} else if (defaultMaterial != 'All' && defaultMaterial != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&material=${defaultMaterial}&min=${min}&max=${max}`
-					);
-					data = res.data;
-				} else {
-					console.log('all');
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&min=${min}&max=${max}`
-					);
-					data = res.data;
-				}
-			} else if (
-				(defaultColor || defaultMaterial) &&
-				defaultStock &&
-				min &&
-				max
-			) {
-			} else if (defaultColor || defaultMaterial) {
-				if (defaultColor != 'All' && defaultColor != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&color=${defaultColor}`
-					);
-					data = res.data;
-				} else if (defaultMaterial != 'All' && defaultMaterial != null) {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}&material=${defaultMaterial}`
-					);
-					data = res.data;
-				} else {
-					const res = await request.get(
-						`/products?category=${category}&sort=${sort}`
-					);
-					data = res.data;
-				}
-			} else if (min && max) {
-				const res = await request.get(
-					`/products?category=${category}&sort=${sort}`
-				);
-				data = res.data;
-			} else {
-				const res = await request.get(
-					`/products?category=${category}&sort=${sort}`
-				);
-				data = res.data;
-			}
+			const res = await request.get(`/products/category/` + category, {
+				params: {
+					page: page,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : direction,
+				},
+			});
+			data = res.data;
 			setLoading(false);
-			if (products.length == 0) {
-				generateFilters(data);
-			}
-			setProducts(data.data);
+			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const fetchMoreData = async () => {
-		try {
-			let data;
-			if (sort && defaultColor != null && defaultMaterial != null) {
-				if (defaultColor) {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}`
-						);
-						data = res.data;
-					}
-				} else if (defaultStock) {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&stock=${defaultStock}`
-						);
-						data = res.data;
-					}
-				} else if (defaultColor && defaultStock) {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&color=${defaultColor}&stock=${defaultStock}`
-						);
-						data = res.data;
-					}
-				} else {
-					if (sort == 'newest') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
-						);
-						data = res.data;
-					} else if (sort === 'asc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
-						);
-						data = res.data;
-					} else if (sort === 'desc') {
-						const res = await request.get(
-							`/products?category=${category}&page=${page}&sort=${sort}&material=${defaultMaterial}`
-						);
-						data = res.data;
-					}
-				}
-			} else if (sort) {
-				if (sort == 'newest') {
-					const res = await request.get(
-						`/products?category=${category}&page=${page}&sort=${sort}`
-					);
-					data = res.data;
-				} else if (sort === 'asc') {
-					const res = await request.get(
-						`/products?category=${category}&page=${page}&sort=${sort}`
-					);
-					data = res.data;
-				} else if (sort === 'desc') {
-					const res = await request.get(
-						`/products?category=${category}&page=${page}&sort=${sort}`
-					);
-					data = res.data;
-				}
-			}
-			if (data.data.length == 0) {
-				setHasMore(false);
-			} else {
-				setProducts((prev) => [...prev, ...data.data]);
-				setPage((prevPage) => prevPage + 1);
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	const resetFilters = () => {
-		setPage(1);
-		setHasMore(true);
-	};
-
-	const onIntersection = (entries) => {
-		const firstEntry = entries[0];
-		if (firstEntry.isIntersecting && hasMore) {
-			fetchMoreData();
-			console.log('intersecting');
+			setTotalPages(data.totalPages);
+		} catch (error) {
+			console.log(error);
+			toast.error('Something went wrong...');
 		}
 	};
 
 	useEffect(() => {
-		const observer = new IntersectionObserver(onIntersection);
-		if (observer && loadRef.current) {
-			observer.observe(loadRef.current);
-		}
+		getMinMaxPrices();
+		getProducts();
+	}, []);
 
-		return () => {
-			if (observer) {
-				observer.disconnect();
-			}
-		};
-	}, [products]);
-
+	// If category changes refetch data
 	useEffect(() => {
-		getInitialProducts();
-	}, [category]);
+		getMinMaxPrices();
+		getProducts();
+	}, [location]);
 
-	useEffect(() => {
-		getInitialProducts();
-		resetFilters();
-	}, [sort, defaultColor, defaultMaterial, defaultStock, min, max]);
-
-	const handlePriceFilterChange = (value) => {
-		console.log(value);
-		// Add value to min max
-		setMin(value[0]);
-		setMax(value[1]);
-		// Reset filters
-		resetFilters();
+	const handlePriceFiltersChange = (e) => {
+		setPriceSliderValues([e[0], e[1]]);
 	};
+
+	useEffect(() => {
+		getProducts();
+	}, [priceSliderValues, sort, direction]);
+
+	useEffect(() => {
+		console.log(page + ' ' + totalPages);
+	}, [page, totalPages]);
 
 	return (
 		<div className="products-section">
 			<Navbar />
+			<Toaster />
 
 			{/* Filters on mobile layout */}
 			<AnimatePresence>
@@ -328,72 +172,23 @@ const ProductList = () => {
 								/>
 							</div>
 							<div className="filters-devider"></div>
-							{material.length > 0 && (
-								<div>
-									<span>MATERIAL:</span>
-									<br></br>
-									<select
-										name="material"
-										onChange={(e) => setDefaultMaterial(e.target.value)}
-										value={defaultMaterial}
-									>
-										<option disabled>MATERIAL</option>
-										<option key="all">All</option>
-										{material.map((m) => (
-											<option>{m}</option>
-										))}
-									</select>
-								</div>
-							)}
-							{color.length > 0 && (
-								<div>
-									<span>COLOR:</span>
-									<br></br>
-									<select
-										name="color"
-										onChange={(e) => setDefaultColor(e.target.value)}
-										value={defaultColor}
-									>
-										<option disabled>COLOR</option>
-										<option key="all">All</option>
-										{color.map((color) => (
-											<option>{color}</option>
-										))}
-									</select>
-								</div>
-							)}
-							<div className="stock-filters">
-								<span>STOCK STATUS:</span>
-								<br></br>
-								<select
-									name="stock"
-									onChange={(e) => setDefaultStock(e.target.value)}
-									value={defaultStock}
-								>
-									<option disabled>STOCK STATUS</option>
-									<option>In Stock</option>
-									<option>Out Of Stock</option>
-								</select>
-							</div>
 
 							<div className="price-filters">
-								<span>PRICE:</span>
-								<div className="slider-mobile-container">
-									<div className="price-range-current">
-										<p>€{min}</p>
-										<p>€{max}</p>
-									</div>
-									<ReactSlider
-										className="slider"
-										onAfterChange={(value) => handlePriceFilterChange(value)}
-										value={[min, max]}
-										min={minPrice}
-										max={maxPrice}
-									/>
-									<div className="price-ranges">
-										<p>€{minPrice}</p>
-										<p>€{maxPrice}</p>
-									</div>
+								<span className="filter-name">CIJENA:</span>
+								<div className="price-ranges current">
+									<p>€{priceSliderValues[0]}</p>
+									<p>€{priceSliderValues[1]}</p>
+								</div>
+								<ReactSlider
+									className="slider"
+									value={priceSliderValues}
+									onChange={(e) => handlePriceFiltersChange(e)}
+									min={min}
+									max={max}
+								/>
+								<div className="price-ranges">
+									<p>€{min}</p>
+									<p>€{max}</p>
 								</div>
 							</div>
 						</div>
@@ -403,75 +198,26 @@ const ProductList = () => {
 
 			{/* Desktop layout */}
 			<div className="products-container">
-				<div className="products-title">
-					<h1>{name}</h1>
-				</div>
 				<div className="products-content">
+					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
-							{material.length > 0 && (
-								<div>
-									<span>MATERIAL:</span>
-									<br></br>
-									<select
-										name="material"
-										onChange={(e) => setDefaultMaterial(e.target.value)}
-										value={defaultMaterial}
-									>
-										<option disabled>MATERIAL</option>
-										<option key="all">All</option>
-										{material.map((m) => (
-											<option>{m}</option>
-										))}
-									</select>
-								</div>
-							)}
-							{color.length > 0 && (
-								<div>
-									<span>COLOR:</span>
-									<br></br>
-									<select
-										name="color"
-										onChange={(e) => setDefaultColor(e.target.value)}
-										value={defaultColor}
-									>
-										<option disabled>COLOR</option>
-										<option key="all">All</option>
-										{color.map((color) => (
-											<option>{color}</option>
-										))}
-									</select>
-								</div>
-							)}
-							<div>
-								<span>STOCK STATUS:</span>
-								<select
-									name="stock"
-									value={defaultStock}
-									onChange={(e) => setDefaultStock(e.target.value)}
-								>
-									<option disabled>STOCK STATUS</option>
-									<option>In Stock</option>
-									<option>Out Of Stock</option>
-								</select>
-							</div>
-
-							<div>
-								<span>PRICE:</span>
-								<div className="price-ranges">
-									<p>{min}</p>
-									<p>{max}</p>
+							<div className="price-filters">
+								<span className="filter-name">CIJENA:</span>
+								<div className="price-ranges current">
+									<p>€{priceSliderValues[0]}</p>
+									<p>€{priceSliderValues[1]}</p>
 								</div>
 								<ReactSlider
 									className="slider"
-									onAfterChange={(value) => handlePriceFilterChange(value)}
-									value={[min, max]}
-									min={minPrice}
-									max={maxPrice}
+									value={priceSliderValues}
+									onChange={(e) => handlePriceFiltersChange(e)}
+									min={min}
+									max={max}
 								/>
 								<div className="price-ranges">
-									<p>{minPrice}</p>
-									<p>{maxPrice}</p>
+									<p>€{min}</p>
+									<p>€{max}</p>
 								</div>
 							</div>
 						</div>
@@ -481,12 +227,26 @@ const ProductList = () => {
 							</div>
 						) : (
 							<>
-								<Products products={products} />
-								<div className="has-more-spinner">
-									{!loading && hasMore ? (
-										<div className="spinner-container" ref={loadRef}>
-											<Spinner />
-										</div>
+								<Products
+									products={products}
+									title={name}
+									setMobileFiltersOpen={setMobileFiltersOpen}
+									sort={sort}
+									setSort={setSort}
+									direction={direction}
+									setDirection={setDirection}
+								/>
+								<div className="has-more-container">
+									{totalPages != page ? (
+										<button
+											className="load-more-btn"
+											onClick={(e) => loadMoreData()}
+										>
+											Prikaži više
+											<span>
+												(str. {page}/{totalPages})
+											</span>
+										</button>
 									) : null}
 								</div>
 							</>

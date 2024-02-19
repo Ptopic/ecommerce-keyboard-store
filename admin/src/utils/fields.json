@@ -1,8 +1,17 @@
 {
 	"fields": [
-		{ "name": "Manufacturer" },
-		{ "name": "Series" },
-		{ "name": "Socket" },
-		{ "name": "Number Of Cores" }
+		{ "name": "Potkategorija" },
+		{ "name": "Proizvođač" },
+		{ "name": "Serija" },
+		{ "name": "Podnožje" },
+		{ "name": "Broj jezgri" },
+		{ "name": "Memorija" },
+		{ "name": "Vrsta Memorije" },
+		{ "name": "Broj jezgri" },
+		{ "name": "Veličina" },
+		{ "name": "WIFI/Bluetooth" },
+		{ "name": "Kapacitet" },
+		{ "name": "Brzina" },
+		{ "name": "Latencija" }
 	]
 }

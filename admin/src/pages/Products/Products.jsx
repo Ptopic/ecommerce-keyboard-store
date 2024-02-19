@@ -60,7 +60,7 @@ const Products = () => {
 	const getProductsData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/products', {
+			const res = await admin_request(userToken).get('/products/admin', {
 				params: {
 					sort: sort,
 					direction: direction,

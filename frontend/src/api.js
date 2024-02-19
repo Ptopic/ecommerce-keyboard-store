@@ -5,7 +5,7 @@ let TOKEN = '';
 // Check if token is in local storage
 if (localStorage.getItem('persist:root') != undefined) {
 	TOKEN = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user)
-		.currentUser.token;
+		.currentUser?.token;
 }
 // const TOKEN = currentUser.token;
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Badge from '@mui/material/Badge';
 import { red } from '@mui/material/colors';
 import { motion as m, AnimatePresence } from 'framer-motion';
@@ -10,12 +10,10 @@ import {
 	AiOutlineHeart,
 	AiOutlineShopping,
 } from 'react-icons/ai';
-import { useSelector } from 'react-redux';
+
 import { Link } from 'react-router-dom';
 import './Navbar.css';
-import { useDispatch } from 'react-redux';
-import { logout } from '../../redux/userRedux';
-import { openCart, closeCart } from '../../redux/cartRedux';
+
 import Cart from '../Cart/Cart';
 
 import logo from '../../assets/logo3.png';
@@ -24,15 +22,28 @@ import NavbarLink from './NavbarLink';
 import SearchModal from '../SearchModal/SearchModal';
 
 import { useNavigate } from 'react-router-dom';
+import { request } from '../../api';
+
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { setCategories } from '../../redux/categoriesRedux';
+import { logout } from '../../redux/userRedux';
+import { openCart, closeCart } from '../../redux/cartRedux';
 
 const Navbar = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const [navOpen, setNavOpen] = useState(false);
-	const [searchOpen, setSearchOpen] = useState(false);
+
 	const user = useSelector((state) => state.user.currentUser);
 	const quantity = useSelector((state) => state.cart.quantity);
+	const categories = useSelector((state) => state.categories.data);
+
 	const { open } = useSelector((state) => state.cart);
+
+	const [navOpen, setNavOpen] = useState(false);
+	const [searchOpen, setSearchOpen] = useState(false);
+
+	const [categoriesData, setCategoriesData] = useState([]);
 
 	const toggleSearchOpen = () => {
 		if (searchOpen) {
@@ -70,6 +81,24 @@ const Navbar = () => {
 		window.location.reload();
 	};
 
+	const getAllCategories = async () => {
+		const res = await request('/categories');
+
+		console.log(res.data.data);
+
+		// Cache categories in redux persist store
+		if (categories.length == 0) {
+			dispatch(setCategories({ categories: res.data.data }));
+			setCategoriesData(categories);
+		}
+		setCategoriesData(categories);
+	};
+
+	// When navbar loads get all categories
+	useEffect(() => {
+		getAllCategories();
+	}, []);
+
 	return (
 		<nav className="navbar">
 			<div className="navbar-wrapper">
@@ -95,9 +124,9 @@ const Navbar = () => {
 					</Link>
 				</div>
 				<div className="navbar-right">
-					{user.data ? (
+					{user?.data ? (
 						<div className="navbar-user-data">
-							<p>{user.data.username}</p>
+							<p>{user?.data?.username}</p>
 							<button onClick={() => handleLogOut()}>Logout</button>
 						</div>
 					) : (
@@ -112,7 +141,7 @@ const Navbar = () => {
 						</Link>
 					)}
 
-					{user.data && (
+					{user?.data && (
 						<Link
 							style={{
 								textDecoration: 'none',
@@ -175,15 +204,26 @@ const Navbar = () => {
 						>
 							<NavbarLink link={'/'} text="Home" closeFunction={closeNavbar} />
 							<NavbarLink
-								link={'/products/all'}
-								text="All Products"
+								link={'/configurator'}
+								text="Konfigurator"
 								closeFunction={closeNavbar}
 							/>
 							<NavbarLink
-								link={'/products/keyboard?name=Keyboards'}
-								text="Keyboards"
+								link={'/products/all'}
+								text="Svi Proizvodi"
 								closeFunction={closeNavbar}
 							/>
+
+							{/* Map thru categories */}
+							{categoriesData.map((category) => {
+								return (
+									<NavbarLink
+										link={`/products/${category.name}?name=${category.name}`}
+										text={category.name}
+										closeFunction={closeNavbar}
+									/>
+								);
+							})}
 
 							<NavbarLink
 								link={'/about'}
