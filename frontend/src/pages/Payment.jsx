@@ -17,10 +17,11 @@ function Payment(props) {
 
 	const configureStripe = async () => {
 		// Add all form data to metadata of payment
-		console.log(cart);
+		let priceTo2DecimalPlaces = parseFloat(
+			cart.totalPrice > 40 ? cart.totalPrice : cart.totalPrice + 3
+		).toFixed(2);
 		const res = await request.post('/checkout/pay', {
-			amount:
-				(cart.totalPrice > 40 ? cart.totalPrice : cart.totalPrice + 3) * 100,
+			amount: priceTo2DecimalPlaces * 100,
 			items: cart.products,
 			tvrtka: paymentInfo.tvrtka,
 			tvrtkaDostava: paymentInfo.tvrtkaDostava,
