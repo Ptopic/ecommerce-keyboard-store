@@ -14,6 +14,9 @@ import OrderStatus from '../components/OrderStatus/OrderStatus';
 import logo from '../assets/logo3.png';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 
+// Utils
+import { formatPriceDisplay } from '../utils/formatting';
+
 import {
 	MapContainer,
 	Marker,
@@ -38,9 +41,12 @@ function Order() {
 			params: { orderId: id },
 		});
 		setOrder(res.data.data[0]);
+
+		getAddressCordinates(res.data.data[0]);
 	};
 
-	const getAddressCordinates = async () => {
+	const getAddressCordinates = async (order) => {
+		console.log(order);
 		const city = order.shippingInfo.address.city;
 		const adresa = order.shippingInfo.address.line1.split(' ');
 
@@ -63,10 +69,6 @@ function Order() {
 	useEffect(() => {
 		getOrderByOrderId();
 	}, []);
-
-	useEffect(() => {
-		getAddressCordinates();
-	}, [order]);
 
 	return (
 		<div className="order-container">
@@ -162,14 +164,14 @@ function Order() {
 					<div className="order-products">
 						<div className="order-products-image">
 							<div className="badge">{product.quantity}</div>
-							<img src={product.originalProduct.image[0]} alt="" />
+							<img src={product.originalProduct.images[0].url} alt="" />
 						</div>
 						<div className="order-products-info">
 							<h3>{product.originalProduct.title}</h3>
 							<p>{product?.color}</p>
 						</div>
 						<div className="order-products-price">
-							<h3>{product.price}€</h3>
+							<h3>{formatPriceDisplay(product.price)}€</h3>
 						</div>
 					</div>
 				))}
@@ -179,7 +181,12 @@ function Order() {
 				<div className="order-summary">
 					<div>
 						<p>Subtotal</p>
-						<h3>{order.amount > 20 ? order.amount : order.amount - 3}€</h3>
+						<h3>
+							{order.amount > 20
+								? formatPriceDisplay(order.amount)
+								: formatPriceDisplay(order.amount - 3)}
+							€
+						</h3>
 					</div>
 					<div>
 						<p>Discount</p> <h3>0.00€</h3>
@@ -192,7 +199,7 @@ function Order() {
 				<div className="devider-products"></div>
 
 				<div className="order-total">
-					<p>Total</p> <h3>{order.amount}€</h3>
+					<p>Total</p> <h3>{formatPriceDisplay(order.amount)}€</h3>
 				</div>
 			</div>
 		</div>

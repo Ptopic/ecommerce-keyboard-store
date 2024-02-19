@@ -268,7 +268,6 @@ exports.getAllProducts = async (req, res) => {
 		(sort = 'createdAt'), (direction = 'desc');
 	}
 
-	console.log(typeof sort);
 	console.log(req.query);
 
 	// Get total number of products
