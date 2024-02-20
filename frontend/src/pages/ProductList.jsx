@@ -251,10 +251,13 @@ const ProductList = () => {
 		let updatedFilters = { ...activeFilters };
 		updatedFilters[filterIndex][filterKey] = newFilterValue;
 
-		console.log(updatedFilters);
-
 		// Trigger filters re render
 		setFilters([...filters]);
+	};
+
+	const clearFilters = (e) => {
+		e.preventDefault();
+		setPriceSliderValues([min, max]);
 	};
 
 	return (
@@ -281,7 +284,7 @@ const ProductList = () => {
 					>
 						<div className="filters-by-content">
 							<div className="filters-header-container">
-								<p className="filters-header">FILTER BY</p>
+								<p className="filters-header">IZBOR FILTERA</p>
 								<AiOutlineClose
 									size={26}
 									onClick={() => setMobileFiltersOpen(false)}
@@ -289,7 +292,7 @@ const ProductList = () => {
 							</div>
 							<div className="filters-devider"></div>
 
-							{filters.map((filter) => {
+							{filters.map((filter, filterIndex) => {
 								return (
 									<div className="filter">
 										<div className="filter-name">{Object.keys(filter)}:</div>
@@ -302,19 +305,24 @@ const ProductList = () => {
 																type="button"
 																style={{
 																	background:
-																		activeFilters[Object.keys(filter)[0]] == ''
+																		Object.values(
+																			activeFilters[filterIndex]
+																		)[0] == filterValue
 																			? '#E81123'
 																			: '#fff',
 																	border:
-																		activeFilters[Object.keys(filter)[0]] == ''
+																		Object.values(activeFilters[filterIndex]) ==
+																		filterValue
 																			? 'none'
 																			: '1px solid black',
 																}}
-																onClick={
-																	() => setActiveFilters({ ...activeFilters })
-																	// activeFilters[Object.keys(filter)[0]] == ''
-																	// 	? 'check'
-																	// 	: 'unCheck'
+																onClick={() =>
+																	handleFilterCheckboxClick(
+																		filterIndex,
+																		Object.keys(activeFilters[filterIndex]),
+																		Object.values(activeFilters[filterIndex]),
+																		filterValue
+																	)
 																}
 															>
 																{activeFilters[Object.keys(filter)[0]] != '' ? (
@@ -349,6 +357,12 @@ const ProductList = () => {
 									<p>€{max}</p>
 								</div>
 							</div>
+							<button
+								className="clear-filters"
+								onClick={(e) => clearFilters(e)}
+							>
+								Izbriši Filtere
+							</button>
 						</div>
 					</m.div>
 				)}
@@ -367,10 +381,6 @@ const ProductList = () => {
 										<div className="filter-values">
 											{Object.values(filter).map((el) => {
 												return Array.from(el).map((filterValue) => {
-													console.log(
-														Object.values(activeFilters[filterIndex]) ==
-															filterValue
-													);
 													return (
 														<div className="checkout-checkbox">
 															<button
@@ -428,6 +438,12 @@ const ProductList = () => {
 									<p>€{max}</p>
 								</div>
 							</div>
+							<button
+								className="clear-filters"
+								onClick={(e) => clearFilters(e)}
+							>
+								Izbriši Filtere
+							</button>
 						</div>
 						{loading ? (
 							<div className="spinner-container">

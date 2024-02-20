@@ -128,6 +128,10 @@ const AllProductList = () => {
 		console.log(page + ' ' + totalPages);
 	}, [page, totalPages]);
 
+	const clearFilters = () => {
+		setPriceSliderValues([min, max]);
+	};
+
 	return (
 		<div className="products-section">
 			<Navbar />
@@ -178,6 +182,9 @@ const AllProductList = () => {
 									<p>€{max}</p>
 								</div>
 							</div>
+							<button className="clear-filters" onClick={() => clearFilters()}>
+								Izbriši Filtere
+							</button>
 						</div>
 					</m.div>
 				)}
@@ -206,6 +213,12 @@ const AllProductList = () => {
 									<p>€{min}</p>
 									<p>€{max}</p>
 								</div>
+								<button
+									className="clear-filters"
+									onClick={() => clearFilters()}
+								>
+									Izbriši Filtere
+								</button>
 							</div>
 						</div>
 						{loading ? (
