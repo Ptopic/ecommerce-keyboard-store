@@ -334,24 +334,38 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 
 exports.getAllProductsByCategory = async (req, res) => {
 	let { category } = req.params;
-	let { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
+	let { sort, direction, page, pageSize, minPrice, maxPrice, activeFilters } =
+		req.query;
 
 	// If sort and direction is null use default
 	if (sort == null && direction == null) {
 		(sort = 'createdAt'), (direction = 'desc');
 	}
 
-	console.log(req.query);
+	let query = {};
+	if (minPrice && maxPrice) {
+		query = { price: { $gte: minPrice, $lte: maxPrice }, category: category };
+	} else {
+		query = { category: category };
+	}
+
+	if (activeFilters != null) {
+		for (let activeFilter of activeFilters) {
+			if (Object.values(activeFilter)[0] != '') {
+				query['details.' + Object.keys(activeFilter)] =
+					Object.values(activeFilter)[0];
+			}
+		}
+	}
+
+	console.log(query);
 
 	// Get total number of products
 	let totalProducts;
 	if (minPrice && maxPrice) {
-		totalProducts = await Product.find({
-			price: { $gte: minPrice, $lte: maxPrice },
-			category: category,
-		}).count();
+		totalProducts = await Product.find(query).count();
 	} else {
-		totalProducts = await Product.find({ category: category }).count();
+		totalProducts = await Product.find(query).count();
 	}
 
 	// Calculate number of pages based on page size
@@ -361,10 +375,7 @@ exports.getAllProductsByCategory = async (req, res) => {
 		let products;
 
 		// Sortiraj prema najnovijima po defaultu
-		products = await Product.find({
-			price: { $gte: minPrice, $lte: maxPrice },
-			category: category,
-		})
+		products = await Product.find(query)
 			.limit(pageSize)
 			.skip(pageSize * page)
 			.sort([[sort, direction]]);

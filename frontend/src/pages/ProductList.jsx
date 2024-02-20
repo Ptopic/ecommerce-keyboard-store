@@ -56,6 +56,7 @@ const ProductList = () => {
 		// Get all products by category from redux state to generate filters for it
 		const allProductsRes = await request.get(`/products/filters/` + name, {
 			category: name,
+			activeFilters: activeFilters.length != 0 ? activeFilters : null,
 		});
 
 		let productsData = allProductsRes.data.data;
@@ -64,19 +65,26 @@ const ProductList = () => {
 			(category) => category.name === name
 		).fields;
 
+		// let filtersArray = filters.length != 0 ? [...filters] : [];
+		// let initialFiltersArray =
+		// 	activeFilters.length != 0 ? [...activeFilters] : [];
 		let filtersArray = [];
 		let initialFiltersArray = [];
 
-		for (let filter of categoryFields) {
-			let obj = {};
-			let initialFilter = {};
-			obj[filter.name] = new Set([]);
-			initialFilter[filter.name] = '';
-			filtersArray.push(obj);
-			initialFiltersArray.push(initialFilter);
+		if (initialFiltersArray.length == 0) {
+			for (let filter of categoryFields) {
+				let obj = {};
+				let initialFilter = {};
+				obj[filter.name] = new Set([]);
+				initialFilter[filter.name] = '';
+				filtersArray.push(obj);
+				initialFiltersArray.push(initialFilter);
+			}
 		}
 
 		setActiveFilters(initialFiltersArray);
+
+		console.log(activeFilters);
 
 		for (let product of productsData) {
 			// Loop thru all products details
@@ -84,6 +92,8 @@ const ProductList = () => {
 				let filterName = categoryFields[i].name;
 
 				let productFilter = product.details[filterName.toString()];
+
+				console.log(productFilter);
 
 				let filterSet = filtersArray[i][filterName.toString()];
 
@@ -107,16 +117,20 @@ const ProductList = () => {
 		}
 
 		setFilters(filtersArray);
+		console.log(filters);
 
 		// Cache filters for current category in redux persist
 	};
 
 	// If products array changes generate filters (initial load or load more data) or location changes
 	useEffect(() => {
-		if (products.length > 0) {
-			generateFilters();
-		}
-	}, [products, location]);
+		console.log(activeFilters);
+		generateFilters();
+		// if (products.length > 0) {
+		// 	// Reset active filters
+		// 	generateFilters();
+		// }
+	}, [location]);
 
 	const getMinMaxPrices = async () => {
 		try {
@@ -181,12 +195,14 @@ const ProductList = () => {
 					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
 					sort: sort != '' ? sort : null,
 					direction: direction != '' ? direction : null,
+					activeFilters: activeFilters != [] ? activeFilters : null,
 				},
 			});
 
 			let data = res.data;
 
 			setProducts(data.data);
+			console.log(data);
 			setLoading(false);
 			setPage(1);
 			setTotalPages(data.totalPages);
@@ -208,6 +224,7 @@ const ProductList = () => {
 					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
 					sort: sort != '' ? sort : null,
 					direction: direction != '' ? direction : direction,
+					activeFilters: activeFilters != [] ? activeFilters : null,
 				},
 			});
 			data = res.data;
@@ -248,17 +265,30 @@ const ProductList = () => {
 		newFilterValue
 	) => {
 		// Update the state with the new filters
-		let updatedFilters = { ...activeFilters };
+		let updatedFilters = [...activeFilters];
 		updatedFilters[filterIndex][filterKey] = newFilterValue;
+
+		setActiveFilters(updatedFilters);
 
 		// Trigger filters re render
 		setFilters([...filters]);
+
+		// Get new products
+		getProducts();
+
+		// // Regenerate filters
+		// generateFilters();
 	};
 
 	const clearFilters = (e) => {
 		e.preventDefault();
 		setPriceSliderValues([min, max]);
 	};
+
+	// If active filters change refetch data and new filters based on new data
+	// useEffect(() => {
+	// 	getProducts();
+	// }, [activeFilters]);
 
 	return (
 		<div className="products-section">
@@ -376,10 +406,10 @@ const ProductList = () => {
 						<div className="filters-container">
 							{filters.map((filter, filterIndex) => {
 								return (
-									<div className="filter">
+									<div className="filter" key={filterIndex}>
 										<div className="filter-name">{Object.keys(filter)}:</div>
 										<div className="filter-values">
-											{Object.values(filter).map((el) => {
+											{Object.values(filter).map((el, id) => {
 												return Array.from(el).map((filterValue) => {
 													return (
 														<div className="checkout-checkbox">
