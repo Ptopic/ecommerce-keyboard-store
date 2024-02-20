@@ -261,9 +261,15 @@ const ProductList = () => {
 		curFilterValue,
 		newFilterValue
 	) => {
-		// Update the state with the new filters
+		// If new filter value is equal to current filter value then remove current value
 		let updatedFilters = [...activeFilters];
-		updatedFilters[filterIndex][filterKey] = newFilterValue;
+		if (newFilterValue == curFilterValue) {
+			// Reset filter value
+			updatedFilters[filterIndex][filterKey] = '';
+		} else {
+			// Update the state with the new filters
+			updatedFilters[filterIndex][filterKey] = newFilterValue;
+		}
 
 		setActiveFilters(updatedFilters);
 
