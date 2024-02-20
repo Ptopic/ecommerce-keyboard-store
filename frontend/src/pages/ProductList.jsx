@@ -65,9 +65,6 @@ const ProductList = () => {
 			(category) => category.name === name
 		).fields;
 
-		// let filtersArray = filters.length != 0 ? [...filters] : [];
-		// let initialFiltersArray =
-		// 	activeFilters.length != 0 ? [...activeFilters] : [];
 		let filtersArray = [];
 		let initialFiltersArray = [];
 
@@ -283,6 +280,20 @@ const ProductList = () => {
 	const clearFilters = (e) => {
 		e.preventDefault();
 		setPriceSliderValues([min, max]);
+
+		let categoryFields = categories.find(
+			(category) => category.name === name
+		).fields;
+
+		let initialFiltersArray = [];
+
+		for (let filter of categoryFields) {
+			let initialFilter = {};
+			initialFilter[filter.name] = '';
+			initialFiltersArray.push(initialFilter);
+		}
+
+		setActiveFilters(initialFiltersArray);
 	};
 
 	// If active filters change refetch data and new filters based on new data

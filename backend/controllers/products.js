@@ -311,16 +311,25 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 	let { category } = req.params;
+	let { activeFilters } = req.query;
 
-	console.log(category);
+	let query = { category: category };
+	if (activeFilters != null) {
+		for (let activeFilter of activeFilters) {
+			if (Object.values(activeFilter)[0] != '') {
+				query['details.' + Object.keys(activeFilter)] =
+					Object.values(activeFilter)[0];
+			}
+		}
+	}
+
+	console.log(query);
 
 	try {
 		let products;
 
 		// Sortiraj prema najnovijima po defaultu
-		products = await Product.find({
-			category: category,
-		});
+		products = await Product.find(query);
 
 		return res.status(200).send({
 			success: true,
