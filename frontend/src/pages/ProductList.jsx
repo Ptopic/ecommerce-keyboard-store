@@ -26,7 +26,7 @@ import { IoMdCheckmark } from 'react-icons/io';
 
 const ProductList = () => {
 	const categories = useSelector((state) => state.categories.data);
-	let PAGE_SIZE = 6;
+	let PAGE_SIZE = 12;
 	const navigate = useNavigate();
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
