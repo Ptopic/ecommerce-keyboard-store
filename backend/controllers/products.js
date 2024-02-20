@@ -87,8 +87,6 @@ exports.updateProduct = async (req, res) => {
 
 	price = parseFloat(price).toFixed(2);
 
-	console.log(req.params.id);
-
 	try {
 		if (images) {
 			// Map active fields to details object
@@ -150,9 +148,9 @@ exports.updateProduct = async (req, res) => {
 			);
 			return res.status(200).send({ success: true, data: updatedProduct });
 		}
-	} catch (err) {
-		console.log(err);
-		return res.status(500).send({ success: false, error: err });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 
@@ -254,9 +252,9 @@ exports.searchProducts = async (req, res) => {
 			title: { $regex: termString, $options: 'i' },
 		});
 		return res.status(200).send({ success: true, data: products });
-	} catch (err) {
-		console.log(err);
-		return res.status(500).send({ success: false, error: err });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 
@@ -270,8 +268,6 @@ exports.getAllProducts = async (req, res) => {
 	if (sort == null && direction == null) {
 		(sort = 'createdAt'), (direction = 'desc');
 	}
-
-	console.log(req.query);
 
 	// Get total number of products
 	let totalProducts;
@@ -303,9 +299,9 @@ exports.getAllProducts = async (req, res) => {
 			totalProducts: totalProducts,
 			totalPages: totalPages,
 		});
-	} catch (err) {
-		console.log(err);
-		return res.status(500).send({ success: false, error: err });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 
@@ -323,8 +319,6 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 		}
 	}
 
-	console.log(query);
-
 	try {
 		let products;
 
@@ -335,9 +329,9 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 			success: true,
 			data: products,
 		});
-	} catch (err) {
-		console.log(err);
-		return res.status(500).send({ success: false, error: err });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 
@@ -366,8 +360,6 @@ exports.getAllProductsByCategory = async (req, res) => {
 			}
 		}
 	}
-
-	console.log(query);
 
 	// Get total number of products
 	let totalProducts;
@@ -420,8 +412,6 @@ exports.getAllProductsForAdminPage = async (req, res) => {
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalProducts / pageSize);
-
-	console.log(totalPages);
 
 	try {
 		let products;
@@ -477,7 +467,6 @@ exports.getAllProductsForAdminPage = async (req, res) => {
 			products = await Product.find();
 		}
 
-		console.log(products);
 		return res.status(200).send({
 			success: true,
 			data: products,
@@ -575,7 +564,6 @@ exports.createOrUpdateProductVariants = async (req, res) => {
 				imagesArray.push(uploadRes);
 			}
 
-			console.log(names[i]);
 			let nameValue =
 				names[i].length == 1 ? String(names[i]) : names[i].join('-');
 			const result = await ProductVariation.findOneAndUpdate(

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Navbar from '../components/Navbar/Navbar';
 import Products from '../components/Products/Products';
 import Footer from '../components/Footer/Footer';
@@ -81,16 +81,12 @@ const ProductList = () => {
 
 		setActiveFilters(initialFiltersArray);
 
-		console.log(activeFilters);
-
 		for (let product of productsData) {
 			// Loop thru all products details
 			for (let i = 0; i < categoryFields.length; i++) {
 				let filterName = categoryFields[i].name;
 
 				let productFilter = product.details[filterName.toString()];
-
-				console.log(productFilter);
 
 				let filterSet = filtersArray[i][filterName.toString()];
 
@@ -114,7 +110,6 @@ const ProductList = () => {
 		}
 
 		setFilters(filtersArray);
-		console.log(filters);
 
 		// Cache filters for current category in redux persist
 	};
@@ -130,6 +125,7 @@ const ProductList = () => {
 				},
 			});
 			let pricesData = resPrices.data;
+			console.log(pricesData);
 			if (pricesData && pricesData.minPrice && pricesData.maxPrice) {
 				minPrice = pricesData.minPrice[0].price;
 				maxPrice = pricesData.maxPrice[0].price;
@@ -193,7 +189,6 @@ const ProductList = () => {
 			let data = res.data;
 
 			setProducts(data.data);
-			console.log(data);
 			setLoading(false);
 			setPage(1);
 			setTotalPages(data.totalPages);
@@ -234,10 +229,18 @@ const ProductList = () => {
 		getProductsWithoutDebounce();
 	}, []);
 
+	// Get new prices with useMemo only when activeFilters change
+	const getNewFilters = useMemo(() => {
+		getMinMaxPrices();
+	}, [activeFilters]);
+
 	// If category changes refetch data
 	// If products array changes generate filters (initial load or load more data) or location changes
 	useEffect(() => {
-		getMinMaxPrices();
+		// Reset filters and active filters
+		clearFilters();
+
+		// getMinMaxPrices();
 		getProductsWithoutDebounce();
 		generateFilters();
 	}, [location]);
@@ -282,8 +285,7 @@ const ProductList = () => {
 		getMinMaxPrices();
 	};
 
-	const clearFilters = (e) => {
-		e.preventDefault();
+	const clearFilters = () => {
 		setPriceSliderValues([min, max]);
 
 		let categoryFields = categories.find(
@@ -300,17 +302,6 @@ const ProductList = () => {
 
 		setActiveFilters(initialFiltersArray);
 	};
-
-	// When products change recalculate prices
-	// useEffect(() => {
-	// 	// Recalculate prices
-	// 	getMinMaxPrices();
-	// }, [products]);
-
-	// If active filters change refetch data and new filters based on new data
-	// useEffect(() => {
-	// 	getProducts();
-	// }, [activeFilters]);
 
 	return (
 		<div className="products-section">
@@ -409,10 +400,7 @@ const ProductList = () => {
 									<p>€{max}</p>
 								</div>
 							</div>
-							<button
-								className="clear-filters"
-								onClick={(e) => clearFilters(e)}
-							>
+							<button className="clear-filters" onClick={() => clearFilters()}>
 								Izbriši Filtere
 							</button>
 						</div>
