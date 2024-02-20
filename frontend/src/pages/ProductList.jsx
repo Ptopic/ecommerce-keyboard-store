@@ -27,7 +27,9 @@ import { IoMdCheckmark } from 'react-icons/io';
 const ProductList = () => {
 	const categories = useSelector((state) => state.categories.data);
 	let PAGE_SIZE = 12;
+
 	const navigate = useNavigate();
+	const loadMoreBtnRef = useRef(null);
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
 	const [loading, setLoading] = useState(true);
@@ -251,7 +253,10 @@ const ProductList = () => {
 		}
 	}, 2000);
 
-	const loadMoreData = async () => {
+	const loadMoreData = async (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+
 		try {
 			let data;
 			setLoading(true);
@@ -271,6 +276,9 @@ const ProductList = () => {
 			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
 			setTotalPages(data.totalPages);
+
+			// Scroll load more btn in view
+			loadMoreBtnRef.current.scrollIntoView();
 		} catch (error) {
 			console.log(error);
 			toast.error('Something went wrong...');
@@ -560,11 +568,11 @@ const ProductList = () => {
 									direction={direction}
 									setDirection={setDirection}
 								/>
-								<div className="has-more-container">
+								<div className="has-more-container" ref={loadMoreBtnRef}>
 									{totalPages != page ? (
 										<button
 											className="load-more-btn"
-											onClick={(e) => loadMoreData()}
+											onClick={(e) => loadMoreData(e)}
 										>
 											Prikaži više
 											<span>

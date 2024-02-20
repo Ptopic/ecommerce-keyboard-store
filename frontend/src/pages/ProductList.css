@@ -144,6 +144,7 @@ select:not(.newest) {
 @media (max-width: 600px) {
     .products-container {
         padding: 0rem .5rem;
+        overflow-anchor: none;
     }
 
     .filters-container {
@@ -185,6 +186,7 @@ select:not(.newest) {
     .filter-by-container {
         display: block;
         position: fixed;
+        overflow-x: hidden;
         width: 100%;
         background-color: rgba(0, 0, 0, 0.2);
         height: 100vh;
@@ -201,7 +203,8 @@ select:not(.newest) {
         height: 100dvh;
         background-color: var(--white600);
         padding: 1rem 2rem;
-        overflow: auto;
+        overflow-x: auto;
+        overscroll-behavior: none;
     }
 
     .filters-header-container {
@@ -232,5 +235,9 @@ select:not(.newest) {
     .has-more-container {
         width: 100%;
         grid-column: 1/2;
+    }
+
+    .clear-filters {
+        margin: 2rem 0 2rem 0;
     }
 }
