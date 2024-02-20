@@ -53,10 +53,11 @@ const ProductList = () => {
 	const [activeFilters, setActiveFilters] = useState([]);
 
 	const generateFilters = async () => {
-		// Get all products by category from redux state to generate filters for it
+		// Get all products by category to generate filters for it
 		const allProductsRes = await request.get(`/products/filters/` + name, {
-			category: name,
-			activeFilters: activeFilters.length != 0 ? activeFilters : null,
+			params: {
+				activeFilters: activeFilters != [] ? activeFilters : null,
+			},
 		});
 
 		let productsData = allProductsRes.data.data;
@@ -114,6 +115,62 @@ const ProductList = () => {
 		// Cache filters for current category in redux persist
 	};
 
+	const regenerateFilters = async () => {
+		// Get all products by category to generate filters for it
+		const allProductsRes = await request.get(`/products/filters/` + name, {
+			params: {
+				activeFilters: activeFilters != [] ? activeFilters : null,
+			},
+		});
+
+		console.log(allProductsRes);
+
+		let productsData = allProductsRes.data.data;
+
+		let categoryFields = categories.find(
+			(category) => category.name === name
+		).fields;
+
+		let filtersArray = [];
+
+		for (let filter of categoryFields) {
+			let obj = {};
+			obj[filter.name] = new Set([]);
+			filtersArray.push(obj);
+		}
+
+		for (let product of productsData) {
+			// Loop thru all products details
+			for (let i = 0; i < categoryFields.length; i++) {
+				let filterName = categoryFields[i].name;
+
+				let productFilter = product.details[filterName.toString()];
+
+				let filterSet = filtersArray[i][filterName.toString()];
+
+				filterSet.add(productFilter);
+			}
+		}
+
+		// Loop thru all filters to sort its sets
+		for (let j = 0; j < filtersArray.length; j++) {
+			let curSet = Object.values(filtersArray[j])[0];
+
+			// Sort filter set
+			let sortedArrayFromSet = Array.from(curSet).sort();
+
+			curSet.clear();
+
+			// Add sorted values back into set
+			for (let value of sortedArrayFromSet) {
+				curSet.add(value);
+			}
+		}
+
+		console.log(filtersArray);
+		setFilters(filtersArray);
+	};
+
 	const getMinMaxPrices = async () => {
 		try {
 			let minPrice = 0;
@@ -144,7 +201,6 @@ const ProductList = () => {
 		setPage(0);
 
 		try {
-			setLoading(true);
 			const res = await request.get(`/products/category/` + category, {
 				params: {
 					page: 0,
@@ -159,7 +215,6 @@ const ProductList = () => {
 			let data = res.data;
 
 			setProducts(data.data);
-			setLoading(false);
 			setPage(1);
 			setTotalPages(data.totalPages);
 		} catch (error) {
@@ -173,7 +228,6 @@ const ProductList = () => {
 		setPage(0);
 
 		try {
-			setLoading(true);
 			const res = await request.get(`/products/category/` + category, {
 				params: {
 					page: 0,
@@ -189,14 +243,13 @@ const ProductList = () => {
 			let data = res.data;
 
 			setProducts(data.data);
-			setLoading(false);
 			setPage(1);
 			setTotalPages(data.totalPages);
 		} catch (error) {
 			console.log(error);
 			toast.error('Something went wrong...');
 		}
-	}, 1200);
+	}, 2000);
 
 	const loadMoreData = async () => {
 		try {
@@ -224,34 +277,9 @@ const ProductList = () => {
 		}
 	};
 
-	useEffect(() => {
-		getMinMaxPrices();
-		getProductsWithoutDebounce();
-	}, []);
-
-	// Get new prices with useMemo only when activeFilters change
-	const getNewFilters = useMemo(() => {
-		getMinMaxPrices();
-	}, [activeFilters]);
-
-	// If category changes refetch data
-	// If products array changes generate filters (initial load or load more data) or location changes
-	useEffect(() => {
-		// Reset filters and active filters
-		clearFilters();
-
-		// getMinMaxPrices();
-		getProductsWithoutDebounce();
-		generateFilters();
-	}, [location]);
-
 	const handlePriceFiltersChange = (e) => {
 		setPriceSliderValues([e[0], e[1]]);
 	};
-
-	useEffect(() => {
-		getProducts();
-	}, [priceSliderValues, sort, direction]);
 
 	// Filter check box click
 	const handleFilterCheckboxClick = (
@@ -260,6 +288,8 @@ const ProductList = () => {
 		curFilterValue,
 		newFilterValue
 	) => {
+		setLoading(true);
+		console.log('Started');
 		// If new filter value is equal to current filter value then remove current value
 		let updatedFilters = [...activeFilters];
 		if (newFilterValue == curFilterValue) {
@@ -283,6 +313,8 @@ const ProductList = () => {
 
 		// Recalculate prices
 		getMinMaxPrices();
+		console.log('Finished');
+		setLoading(false);
 	};
 
 	const clearFilters = () => {
@@ -302,6 +334,34 @@ const ProductList = () => {
 
 		setActiveFilters(initialFiltersArray);
 	};
+
+	useEffect(() => {
+		setLoading(true);
+		getMinMaxPrices();
+		getProductsWithoutDebounce();
+		setLoading(false);
+	}, []);
+
+	// Get new prices with useMemo only when activeFilters change
+	useMemo(() => {
+		getMinMaxPrices();
+		regenerateFilters();
+	}, [activeFilters]);
+
+	// If category changes refetch data
+	// If products array changes generate filters (initial load or load more data) or location changes
+	useEffect(() => {
+		// Reset filters and active filters
+		clearFilters();
+
+		// getMinMaxPrices();
+		getProductsWithoutDebounce();
+		generateFilters();
+	}, [location]);
+
+	useEffect(() => {
+		getProducts();
+	}, [priceSliderValues, sort, direction]);
 
 	return (
 		<div className="products-section">

@@ -309,6 +309,8 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 	let { category } = req.params;
 	let { activeFilters } = req.query;
 
+	console.log(req.params);
+
 	let query = { category: category };
 	if (activeFilters != null) {
 		for (let activeFilter of activeFilters) {
@@ -318,6 +320,8 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 			}
 		}
 	}
+
+	console.log(query);
 
 	try {
 		let products;
@@ -387,9 +391,9 @@ exports.getAllProductsByCategory = async (req, res) => {
 			totalProducts: totalProducts,
 			totalPages: totalPages,
 		});
-	} catch (err) {
-		console.log(err);
-		return res.status(500).send({ success: false, error: err });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 
