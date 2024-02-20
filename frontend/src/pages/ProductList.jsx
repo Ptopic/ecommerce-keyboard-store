@@ -119,22 +119,16 @@ const ProductList = () => {
 		// Cache filters for current category in redux persist
 	};
 
-	// If products array changes generate filters (initial load or load more data) or location changes
-	useEffect(() => {
-		console.log(activeFilters);
-		generateFilters();
-		// if (products.length > 0) {
-		// 	// Reset active filters
-		// 	generateFilters();
-		// }
-	}, [location]);
-
 	const getMinMaxPrices = async () => {
 		try {
 			let minPrice = 0;
 			let maxPrice = 0;
 			// Get min max prices of products
-			const resPrices = await request.get('/products/prices/' + category);
+			const resPrices = await request.get('/products/prices/' + category, {
+				params: {
+					activeFilters: activeFilters != [] ? activeFilters : null,
+				},
+			});
 			let pricesData = resPrices.data;
 			if (pricesData && pricesData.minPrice && pricesData.maxPrice) {
 				minPrice = pricesData.minPrice[0].price;
@@ -241,9 +235,11 @@ const ProductList = () => {
 	}, []);
 
 	// If category changes refetch data
+	// If products array changes generate filters (initial load or load more data) or location changes
 	useEffect(() => {
 		getMinMaxPrices();
 		getProductsWithoutDebounce();
+		generateFilters();
 	}, [location]);
 
 	const handlePriceFiltersChange = (e) => {
@@ -281,6 +277,9 @@ const ProductList = () => {
 
 		// // Regenerate filters
 		// generateFilters();
+
+		// Recalculate prices
+		getMinMaxPrices();
 	};
 
 	const clearFilters = (e) => {
@@ -301,6 +300,12 @@ const ProductList = () => {
 
 		setActiveFilters(initialFiltersArray);
 	};
+
+	// When products change recalculate prices
+	// useEffect(() => {
+	// 	// Recalculate prices
+	// 	getMinMaxPrices();
+	// }, [products]);
 
 	// If active filters change refetch data and new filters based on new data
 	// useEffect(() => {

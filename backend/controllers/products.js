@@ -511,12 +511,24 @@ exports.getProductsMinMaxPrices = async (req, res) => {
 
 exports.getProductsMinMaxPricesByCategory = async (req, res) => {
 	let { category } = req.params;
+	let { activeFilters } = req.query;
+
+	let query = { category: category };
+
+	if (activeFilters != null) {
+		for (let activeFilter of activeFilters) {
+			if (Object.values(activeFilter)[0] != '') {
+				query['details.' + Object.keys(activeFilter)] =
+					Object.values(activeFilter)[0];
+			}
+		}
+	}
 
 	try {
-		const max = await Product.find({ category: category })
+		const max = await Product.find(query)
 			.sort([['price', 'desc']])
 			.limit(1);
-		const min = await Product.find({ category: category })
+		const min = await Product.find(query)
 			.sort([['price', 'asc']])
 			.limit(1);
 
