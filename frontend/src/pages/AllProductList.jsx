@@ -156,7 +156,7 @@ const AllProductList = () => {
 					>
 						<div className="filters-by-content">
 							<div className="filters-header-container">
-								<p className="filters-header">FILTER BY</p>
+								<p className="filters-header">IZBOR FILTERA</p>
 								<AiOutlineClose
 									size={26}
 									onClick={() => setMobileFiltersOpen(false)}

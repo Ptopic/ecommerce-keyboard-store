@@ -44,7 +44,7 @@ const Products = ({
 				className="filters-btn-mobile"
 				onClick={() => setMobileFiltersOpen(true)}
 			>
-				Filter by
+				Izbor Filtera
 			</button>
 
 			<div className="products-list-container">
