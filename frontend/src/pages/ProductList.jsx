@@ -71,7 +71,7 @@ const ProductList = () => {
 			let obj = {};
 			let initialFilter = {};
 			obj[filter.name] = new Set([]);
-			initialFilter[filter.name] = 'dawdawd';
+			initialFilter[filter.name] = '';
 			filtersArray.push(obj);
 			initialFiltersArray.push(initialFilter);
 		}
@@ -240,6 +240,23 @@ const ProductList = () => {
 		getProducts();
 	}, [priceSliderValues, sort, direction]);
 
+	// Filter check box click
+	const handleFilterCheckboxClick = (
+		filterIndex,
+		filterKey,
+		curFilterValue,
+		newFilterValue
+	) => {
+		// Update the state with the new filters
+		let updatedFilters = { ...activeFilters };
+		updatedFilters[filterIndex][filterKey] = newFilterValue;
+
+		console.log(updatedFilters);
+
+		// Trigger filters re render
+		setFilters([...filters]);
+	};
+
 	return (
 		<div className="products-section">
 			<Navbar />
@@ -343,33 +360,41 @@ const ProductList = () => {
 					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
-							{filters.map((filter) => {
+							{filters.map((filter, filterIndex) => {
 								return (
 									<div className="filter">
 										<div className="filter-name">{Object.keys(filter)}:</div>
 										<div className="filter-values">
 											{Object.values(filter).map((el) => {
 												return Array.from(el).map((filterValue) => {
-													console.log(Object.keys(filter)[0]);
+													console.log(
+														Object.values(activeFilters[filterIndex]) ==
+															filterValue
+													);
 													return (
 														<div className="checkout-checkbox">
 															<button
 																type="button"
 																style={{
 																	background:
-																		activeFilters[Object.keys(filter)[0]] == ''
+																		Object.values(
+																			activeFilters[filterIndex]
+																		)[0] == filterValue
 																			? '#E81123'
 																			: '#fff',
 																	border:
-																		activeFilters[Object.keys(filter)[0]] == ''
+																		Object.values(activeFilters[filterIndex]) ==
+																		filterValue
 																			? 'none'
 																			: '1px solid black',
 																}}
-																onClick={
-																	() => setActiveFilters({ ...activeFilters })
-																	// activeFilters[Object.keys(filter)[0]] == ''
-																	// 	? 'check'
-																	// 	: 'unCheck'
+																onClick={() =>
+																	handleFilterCheckboxClick(
+																		filterIndex,
+																		Object.keys(activeFilters[filterIndex]),
+																		Object.values(activeFilters[filterIndex]),
+																		filterValue
+																	)
 																}
 															>
 																{activeFilters[Object.keys(filter)[0]] != '' ? (
