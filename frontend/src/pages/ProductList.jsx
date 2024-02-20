@@ -12,11 +12,17 @@ import { motion as m, AnimatePresence } from 'framer-motion';
 import Spinner from '../components/Spinner/Spinner';
 import { toast, Toaster } from 'react-hot-toast';
 
+// Styles for input boxes
+import '../pages/Checkout.css';
+
 // Redux
 import { useSelector } from 'react-redux/es/hooks/useSelector';
 
 // Utils
 import { debounce } from '../utils/debounce';
+import { Checkbox } from '@mui/material';
+
+import { IoMdCheckmark } from 'react-icons/io';
 
 const ProductList = () => {
 	const categories = useSelector((state) => state.categories.data);
@@ -43,7 +49,8 @@ const ProductList = () => {
 	const [max, setMax] = useState(0);
 
 	// Other filters
-	const [filters, setFilters] = useState({});
+	const [filters, setFilters] = useState([]);
+	const [activeFilters, setActiveFilters] = useState([]);
 
 	const generateFilters = async () => {
 		// Get all products by category from redux state to generate filters for it
@@ -58,12 +65,18 @@ const ProductList = () => {
 		).fields;
 
 		let filtersArray = [];
+		let initialFiltersArray = [];
 
 		for (let filter of categoryFields) {
 			let obj = {};
+			let initialFilter = {};
 			obj[filter.name] = new Set([]);
+			initialFilter[filter.name] = 'dawdawd';
 			filtersArray.push(obj);
+			initialFiltersArray.push(initialFilter);
 		}
+
+		setActiveFilters(initialFiltersArray);
 
 		for (let product of productsData) {
 			// Loop thru all products details
@@ -78,8 +91,22 @@ const ProductList = () => {
 			}
 		}
 
+		// Loop thru all filters to sort its sets
+		for (let j = 0; j < filtersArray.length; j++) {
+			let curSet = Object.values(filtersArray[j])[0];
+
+			// Sort filter set
+			let sortedArrayFromSet = Array.from(curSet).sort();
+
+			curSet.clear();
+
+			// Add sorted values back into set
+			for (let value of sortedArrayFromSet) {
+				curSet.add(value);
+			}
+		}
+
 		setFilters(filtersArray);
-		console.log(filters);
 
 		// Cache filters for current category in redux persist
 	};
@@ -115,7 +142,6 @@ const ProductList = () => {
 		// Reset page
 		setPage(0);
 
-		console.log(sort);
 		try {
 			setLoading(true);
 			const res = await request.get(`/products/category/` + category, {
@@ -145,7 +171,6 @@ const ProductList = () => {
 		// Reset page
 		setPage(0);
 
-		console.log(sort);
 		try {
 			setLoading(true);
 			const res = await request.get(`/products/category/` + category, {
@@ -247,6 +272,48 @@ const ProductList = () => {
 							</div>
 							<div className="filters-devider"></div>
 
+							{filters.map((filter) => {
+								return (
+									<div className="filter">
+										<div className="filter-name">{Object.keys(filter)}:</div>
+										<div className="filter-values">
+											{Object.values(filter).map((el) => {
+												return Array.from(el).map((filterValue) => {
+													return (
+														<div className="checkout-checkbox">
+															<button
+																type="button"
+																style={{
+																	background:
+																		activeFilters[Object.keys(filter)[0]] == ''
+																			? '#E81123'
+																			: '#fff',
+																	border:
+																		activeFilters[Object.keys(filter)[0]] == ''
+																			? 'none'
+																			: '1px solid black',
+																}}
+																onClick={
+																	() => setActiveFilters({ ...activeFilters })
+																	// activeFilters[Object.keys(filter)[0]] == ''
+																	// 	? 'check'
+																	// 	: 'unCheck'
+																}
+															>
+																{activeFilters[Object.keys(filter)[0]] != '' ? (
+																	<IoMdCheckmark color={'white'} size={24} />
+																) : null}
+															</button>
+															<p>{filterValue}</p>
+														</div>
+													);
+												});
+											})}
+										</div>
+									</div>
+								);
+							})}
+
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
 								<div className="price-ranges current">
@@ -276,6 +343,48 @@ const ProductList = () => {
 					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
+							{filters.map((filter) => {
+								return (
+									<div className="filter">
+										<div className="filter-name">{Object.keys(filter)}:</div>
+										<div className="filter-values">
+											{Object.values(filter).map((el) => {
+												return Array.from(el).map((filterValue) => {
+													console.log(Object.keys(filter)[0]);
+													return (
+														<div className="checkout-checkbox">
+															<button
+																type="button"
+																style={{
+																	background:
+																		activeFilters[Object.keys(filter)[0]] == ''
+																			? '#E81123'
+																			: '#fff',
+																	border:
+																		activeFilters[Object.keys(filter)[0]] == ''
+																			? 'none'
+																			: '1px solid black',
+																}}
+																onClick={
+																	() => setActiveFilters({ ...activeFilters })
+																	// activeFilters[Object.keys(filter)[0]] == ''
+																	// 	? 'check'
+																	// 	: 'unCheck'
+																}
+															>
+																{activeFilters[Object.keys(filter)[0]] != '' ? (
+																	<IoMdCheckmark color={'white'} size={24} />
+																) : null}
+															</button>
+															<p>{filterValue}</p>
+														</div>
+													);
+												});
+											})}
+										</div>
+									</div>
+								);
+							})}
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
 								<div className="price-ranges current">
