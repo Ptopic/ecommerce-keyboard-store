@@ -17,15 +17,7 @@ import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 // Utils
 import { formatPriceDisplay } from '../utils/formatting';
 
-import {
-	MapContainer,
-	Marker,
-	Popup,
-	TileLayer,
-	Tooltip,
-	useMapEvent,
-	useMap,
-} from 'react-leaflet';
+import { setKey, fromAddress } from 'react-geocode';
 
 function Order() {
 	const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -46,24 +38,14 @@ function Order() {
 	};
 
 	const getAddressCordinates = async (order) => {
-		console.log(order);
-		const city = order.shippingInfo.address.city;
-		const adresa = order.shippingInfo.address.line1.split(' ');
+		setKey(apiKey);
 
-		// Map thru address to make object for google maps api
-		let query = ``;
-		for (var i = adresa.length - 1; i >= 0; i--) {
-			query += adresa[i] + '%20';
-		}
-		const res = await request.get(
-			`https://maps.googleapis.com/maps/api/geocode/json?address=${query}${city}&key=${apiKey}`,
-			{}
-		);
-
-		setCordinates([
-			res.data.results[0].geometry.location.lat,
-			res.data.results[0].geometry.location.lng,
-		]);
+		fromAddress(order.shippingInfo.address.line1)
+			.then(({ results }) => {
+				const { lat, lng } = results[0].geometry.location;
+				setCordinates([lat, lng]);
+			})
+			.catch(console.error);
 	};
 
 	useEffect(() => {
