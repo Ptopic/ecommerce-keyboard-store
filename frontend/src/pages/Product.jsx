@@ -14,14 +14,22 @@ import './Product.css';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { AiOutlineDown, AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
+import {
+	AiOutlineDown,
+	AiFillHeart,
+	AiOutlineHeart,
+	AiOutlineClose,
+	AiOutlineLeft,
+	AiOutlineRight,
+} from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
-import { AiOutlineClose } from 'react-icons/ai';
 import Button from '../components/Button/Button';
 
 // Utils
 import { formatPriceDisplay } from '../utils/formatting';
 import { user_request } from '../../../admin/src/api';
+
+import { useSwipeable } from 'react-swipeable';
 
 const Product = () => {
 	const navigate = useNavigate();
@@ -32,15 +40,37 @@ const Product = () => {
 	const [product, setProduct] = useState({});
 	const [isProductInWishlist, setIsProductInWishlist] = useState(false);
 	const [quantity, setQuantity] = useState(1);
+
 	const [color, setColor] = useState('');
 	const [colorOpen, setColorOpen] = useState(false);
 	const [size, setSize] = useState('');
-	const [imageZoom, setImageZoom] = useState({});
+
 	const [imageZoomModalOpen, setImageZoomModalOpen] = useState(false);
+	const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+	const PRODUCT_IMAGES_LENGTH = product?.images?.length;
+
+	const handleNext = () => {
+		setActiveImageIndex((prevIndex) => (prevIndex + 1) % PRODUCT_IMAGES_LENGTH);
+	};
+
+	const handlePrev = () => {
+		setActiveImageIndex(
+			(prevIndex) =>
+				(prevIndex - 1 + PRODUCT_IMAGES_LENGTH) % PRODUCT_IMAGES_LENGTH
+		);
+	};
+
+	const currentTransform = -activeImageIndex * 100;
+
+	const handlers = useSwipeable({
+		onSwipedLeft: () => handleNext(),
+		onSwipedRight: () => handlePrev(),
+	});
+
 	const cartProducts = useSelector((state) => state.cart.products);
 	const currentUser = useSelector((state) => state.user.currentUser);
 	let userToken = currentUser?.data?.token;
-	console.log(currentUser);
 
 	const dispatch = useDispatch();
 
@@ -206,8 +236,8 @@ const Product = () => {
 		}
 	};
 
-	const zoomInImage = (img) => {
-		setImageZoom(img);
+	const zoomInImage = (index) => {
+		setActiveImageIndex(index);
 		setImageZoomModalOpen(true);
 	};
 
@@ -217,32 +247,51 @@ const Product = () => {
 			<Navbar />
 			{imageZoomModalOpen && (
 				<div className="image-zoom-modal">
-					<div className="image-zoom-modal-container">
-						<img src={imageZoom} alt="zoomed image" />
-						<div
-							className="image-zoom-close-overlay"
-							onClick={() => setImageZoomModalOpen(false)}
-						>
-							<AiOutlineClose size={36} />
+					<div className="image-zoom-modal-container" {...handlers}>
+						<div className="images-carousel-collection">
+							<AiOutlineLeft
+								size={34}
+								onClick={() => handlePrev()}
+								className="arrow left"
+								fill="#fff"
+							/>
+							{product.images.map((image, index) => {
+								return (
+									<img
+										src={image.url}
+										className={
+											activeImageIndex === index ? 'slide' : 'slide hidden'
+										}
+									/>
+								);
+							})}
+							<AiOutlineRight
+								size={34}
+								onClick={() => handleNext()}
+								className="arrow right"
+								fill="#fff"
+							/>
+							<AiOutlineClose
+								size={36}
+								className="image-close-icon"
+								onClick={() => setImageZoomModalOpen(false)}
+							/>
 						</div>
 					</div>
 				</div>
 			)}
 			<div className="product-page-wrapper">
 				<div className="product-page-image-container">
-					<div
-						className="product-image header"
-						onClick={() => zoomInImage(product.images?.[0].url)}
-					>
+					<div className="product-image header" onClick={() => zoomInImage(0)}>
 						<img src={product.images?.[0].url} />
 						<div className="image-overlay">
 							<BiSearchAlt size={36} />
 						</div>
 					</div>
-					{product.images?.slice(1).map((image) => (
+					{product.images?.slice(1).map((image, index) => (
 						<div
 							className="product-image"
-							onClick={() => zoomInImage(image.url)}
+							onClick={() => zoomInImage(index + 1)}
 						>
 							<img src={image.url} />
 							<div className="image-overlay">

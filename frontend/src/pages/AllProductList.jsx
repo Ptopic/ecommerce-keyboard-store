@@ -41,18 +41,21 @@ const AllProductList = () => {
 			let pricesData = resPrices.data;
 			if (
 				pricesData != null &&
-				pricesData.minPrice[0] != null &&
-				pricesData.maxPrice[0] != null
+				pricesData.minPrice.length > 0 &&
+				pricesData.maxPrice.length > 0
 			) {
 				minPrice = pricesData.minPrice[0].price;
 				maxPrice = pricesData.maxPrice[0].price;
+			} else {
+				minPrice = 0;
+				maxPrice = 0;
 			}
 			setMin(minPrice);
 			setMax(maxPrice);
 			setPriceSliderValues([minPrice, maxPrice]);
 		} catch (error) {
 			console.log(error);
-			toast.error('Something went wrong...');
+			toast.error('Failed to load prices...');
 		}
 	};
 
@@ -82,7 +85,7 @@ const AllProductList = () => {
 			setTotalPages(data.totalPages);
 		} catch (error) {
 			console.log(error);
-			toast.error('Something went wrong...');
+			toast.error('Failed to load products...');
 		}
 	}, 1200);
 
@@ -107,7 +110,7 @@ const AllProductList = () => {
 			setTotalPages(data.totalPages);
 		} catch (error) {
 			console.log(error);
-			toast.error('Something went wrong...');
+			toast.error('Failed to load more products...');
 		}
 	};
 
@@ -123,10 +126,6 @@ const AllProductList = () => {
 	useEffect(() => {
 		getProducts();
 	}, [priceSliderValues, sort, direction]);
-
-	useEffect(() => {
-		console.log(page + ' ' + totalPages);
-	}, [page, totalPages]);
 
 	const clearFilters = () => {
 		setPriceSliderValues([min, max]);
