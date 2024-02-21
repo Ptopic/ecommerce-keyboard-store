@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Order.css';
-import 'leaflet/dist/leaflet.css';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
