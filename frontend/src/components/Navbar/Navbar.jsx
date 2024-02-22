@@ -10,6 +10,7 @@ import {
 	AiOutlineHeart,
 	AiOutlineShopping,
 } from 'react-icons/ai';
+import { IoLogOutOutline } from 'react-icons/io5';
 
 import { Link } from 'react-router-dom';
 import './Navbar.css';
@@ -124,8 +125,9 @@ const Navbar = () => {
 				<div className="navbar-right">
 					{user?.data ? (
 						<div className="navbar-user-data">
-							<p>{user?.data?.username}</p>
-							<button onClick={() => handleLogOut()}>Logout</button>
+							<button onClick={() => handleLogOut()}>
+								<IoLogOutOutline size={26} />
+							</button>
 						</div>
 					) : (
 						<Link
