@@ -154,7 +154,7 @@ select:not(.newest) {
     .products-list-container {
         grid-column: 1/1;
         padding-top: 1rem;
-        gap: 2rem;
+        gap: 1rem;
     }
 
     .products-sort-container {

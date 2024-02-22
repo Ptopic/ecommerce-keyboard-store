@@ -91,6 +91,8 @@ li {
 
 li::marker {
     font-size: 2.4rem;
+    margin: 0;
+    padding: 0;
 }
 
 /* ---------- Media querys ---------- */
@@ -98,8 +100,29 @@ li::marker {
 /* Phone */
 
 @media (max-width: 600px) {
+    .info-name {
+        font-size: 1.6rem;
+        font-weight: bolder;
+        margin-bottom: 2rem;
+        display: -webkit-box;
+        /* display 2 lines only */
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .info-description {
+        overflow: hidden;
+        display: -webkit-box;
+        /* display 2 lines only */
+        font-size: 1.2rem;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+
     .product-link-container {
-        padding: 1.2rem;
+        padding: .8rem;
     }
 
     .product-link-container img {
