@@ -232,6 +232,10 @@ select:not(.newest) {
         width: 100%;
     }
 
+    .filter-values>.checkout-checkbox>p {
+        margin-left: 1rem;
+    }
+
     .has-more-container {
         width: 100%;
         grid-column: 1/2;

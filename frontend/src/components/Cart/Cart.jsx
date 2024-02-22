@@ -23,6 +23,10 @@ function Cart() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const cart = useSelector((state) => state.cart);
+	const user = useSelector((state) => state?.user?.currentUser);
+
+	console.log(user.data);
+
 	const [isLoading, setIsLoading] = useState(false);
 
 	const makePaymentRequest = async () => {
@@ -177,10 +181,17 @@ function Cart() {
 								isLoading={isLoading}
 							/>
 
-							<p style={{ marginBottom: '1.4rem' }}>Have an account?</p>
-							<p>
-								<Link to="/login">Log in</Link> to checkout faster
-							</p>
+							{Object.keys(user) == 0 ? (
+								<>
+									<p style={{ marginBottom: '1.4rem' }}>Have an account?</p>
+									<p>
+										<Link to="/login" onClick={() => continueShopping()}>
+											Log in
+										</Link>{' '}
+										to checkout faster
+									</p>
+								</>
+							) : null}
 						</div>
 					)}
 				</div>

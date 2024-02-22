@@ -68,6 +68,28 @@ function UserOrders() {
 			res.data.totalPages == 0
 				? setTotalPages(0)
 				: setTotalPages(res.data.totalPages - 1);
+
+			// Format order dates
+			for (let order of res.data.data) {
+				let orderDate = order.createdAt.split('T')[0];
+				let splittedDate = orderDate.split('-');
+				let year;
+				let month;
+				let day;
+				console.log(splittedDate);
+				if (splittedDate.length == 3) {
+					if (splittedDate[0].length == 1) {
+						splittedDate[0] = '0' + splittedDate[0];
+					} else if (splittedDate[1].length == 1) {
+						splittedDate[1] = '0' + splittedDate[1];
+					}
+
+					year = splittedDate[0];
+					month = splittedDate[1];
+					day = splittedDate[2];
+				}
+				order['orderDate'] = day + '.' + month + '.' + year;
+			}
 			setOrders(res.data.data);
 		} catch (error) {
 			console.log(error);
@@ -217,7 +239,7 @@ function UserOrders() {
 							{orders.map((order) => (
 								<tr className="table-content-row" key={order.orderNumber}>
 									<td>{order.orderNumber}</td>
-									<td>{order.createdAt.split('T')[0]}</td>
+									<td>{order.orderDate}</td>
 									<td>{order.status}</td>
 									<td>€{order.amount}</td>
 									<td>
@@ -268,9 +290,7 @@ function UserOrders() {
 										</div>
 										<div className="order-card-content-row">
 											<h2 className="order-row-category">Datum</h2>
-											<h3 className="order-row-value">
-												{order.createdAt.split('T')[0]}
-											</h3>
+											<h3 className="order-row-value">{order.orderDate}</h3>
 										</div>
 									</div>
 									<div className="order-card-footer">
