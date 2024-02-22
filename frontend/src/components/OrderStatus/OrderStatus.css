@@ -7,6 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
 }
 
 .order-status-container-top>div {
@@ -15,6 +16,7 @@
     align-items: center;
     padding: .8rem;
     border-radius: .6rem;
+    text-align: center;
 }
 
 .devider {
@@ -31,4 +33,14 @@
     padding: 0 .4rem;
     display: flex;
     justify-content: space-between;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .order-status-container {
+        padding: 1rem;
+    }
 }
