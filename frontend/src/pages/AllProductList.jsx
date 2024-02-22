@@ -16,7 +16,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { debounce } from '../utils/debounce';
 
 const AllProductList = () => {
-	let PAGE_SIZE = 6;
+	let PAGE_SIZE = 12;
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
 	const [loading, setLoading] = useState(true);

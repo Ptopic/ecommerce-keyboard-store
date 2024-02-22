@@ -34,7 +34,28 @@
     margin-bottom: 10rem;
 }
 
+.user-content-left>.checkout-checkbox {
+    margin-bottom: 0;
+}
+
 .user-content-left h1 {
     margin-bottom: 4rem;
     font-size: 3.2rem;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .user-details-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        padding: 4rem 1rem;
+        gap: 2rem;
+    }
+
+    .user-details-container .btn {
+        width: 100%;
+    }
 }

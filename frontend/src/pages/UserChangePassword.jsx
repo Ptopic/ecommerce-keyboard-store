@@ -130,7 +130,6 @@ function UserChangePassword() {
 										text="Reset password"
 										type="submit"
 										isLoading={isLoading}
-										width="30%"
 									/>
 								</div>
 							</Form>

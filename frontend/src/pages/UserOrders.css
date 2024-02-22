@@ -12,6 +12,10 @@
     font-size: 3.2rem;
 }
 
+.user-orders-container form .input-container {
+    width: 50%;
+}
+
 .table {
     font-size: 1.8rem;
     border: 1.5px solid var(--bg1000);
@@ -121,4 +125,119 @@ th {
     justify-content: center;
     border-radius: .4rem;
     font-size: 1.6rem;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .user-orders-content>.table {
+        display: none;
+    }
+
+    .user-orders-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        padding: 4rem 1rem;
+        gap: 2rem;
+    }
+
+    .user-orders-container .btn {
+        width: 100%;
+    }
+
+    .user-orders-container form .input-container {
+        width: 100%;
+    }
+
+    .user-orders-sort {
+        display: grid;
+        grid-template-columns: auto auto;
+        width: 100%;
+        padding: 1rem;
+        background: #f5f5f5;
+        margin-top: 2rem;
+    }
+
+    .user-orders-sort p {
+        margin-right: 1rem;
+    }
+
+    .user-orders-sort .newest {
+        width: 100%;
+    }
+
+    .user-orders-sort select {
+        border: none;
+        color: var(--primary-color);
+        background: #f5f5f5;
+        padding: 0;
+    }
+
+    .user-orders-sort select:focus {
+        border: none;
+        outline: none;
+    }
+
+    .order-cards-container {
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .order-card {
+        padding: 1.4rem 0;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .22);
+        border-radius: .6rem;
+    }
+
+    .order-card-amount {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: .8px solid var(--bg1000);
+        padding: 0 1.4rem;
+        padding-bottom: 2rem;
+    }
+
+    .order-card-content-row {
+        padding: 1rem 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: .8px solid var(--bg1000);
+    }
+
+    .order-row-category {
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .order-row-value {
+        font-weight: 600;
+        font-size: 1.6rem;
+    }
+
+    .order-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .order-card-footer a {
+        text-decoration: none;
+        margin-top: 1.4rem;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        width: calc(100% - 2.8rem);
+        text-align: center;
+        font-size: 1.6rem;
+        font-weight: 600;
+        border-radius: .6rem;
+        padding: 1rem 0;
+    }
+
 }

@@ -104,6 +104,8 @@ const Product = () => {
 	};
 
 	useEffect(() => {
+		// Scroll to top
+		window.scrollTo(0, 0);
 		getProductById();
 		getWishlist();
 	}, []);

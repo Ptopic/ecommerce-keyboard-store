@@ -46,13 +46,17 @@ function UserOrders() {
 	const pageDisplay = Number(page) + 1;
 	const pageSize = 5;
 
-	// Get all orders from user
+	const [sortValue, setSortValue] = useState(sort != null ? sort : '');
+	const [directionValue, setDirectionValue] = useState(
+		direction != null ? direction : ''
+	);
 
+	// Get all orders from user
 	const getUsersOrders = async () => {
 		const res = await userRequest.get('/orders/find/' + user.data._id, {
 			params: {
-				sort: sort,
-				direction: direction,
+				sort: sortValue,
+				direction: directionValue,
 				page: page,
 				pageSize: pageSize,
 				search: searchTermValue,
@@ -73,7 +77,7 @@ function UserOrders() {
 	// When page changes or page size changes rerender
 	useEffect(() => {
 		getUsersOrders();
-	}, [page, pageSize, searchTermValue, sort, direction]);
+	}, [page, pageSize, searchTermValue, sortValue, directionValue]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -85,6 +89,13 @@ function UserOrders() {
 		} else {
 			return <FaSortAlphaDown color="white" size={20} />;
 		}
+	};
+
+	const handleSortChange = (e) => {
+		let splittedSortString = e.target.value.split('-');
+
+		setSortValue(splittedSortString[0]);
+		setDirectionValue(splittedSortString[1]);
 	};
 
 	return (
@@ -114,7 +125,7 @@ function UserOrders() {
 									placeholder={'Search orders by order number'}
 									value={searchTermValue}
 									onChange={(e) => setSearchTermValue(e.target.value)}
-									width={'50%'}
+									className="search-field"
 									icon={
 										<Link
 											to={`/user/orders
@@ -212,6 +223,59 @@ function UserOrders() {
 							))}
 						</tbody>
 					</table>
+
+					{/* Mobile cards display instead of table */}
+					<div className="mobile-orders-container">
+						<div className="user-orders-sort">
+							<p>Sortiraj prema:</p>
+							<select
+								onChange={(e) => handleSortChange(e)}
+								className="newest"
+								value={sort + '-' + direction}
+							>
+								<option value="orderNumber-asc">Broj Narudžbe - Rastuće</option>
+								<option value="orderNumber-desc">
+									Broj Narudžbe - Padajuće
+								</option>
+								<option value="createdAt-asc">Datum - Rastuće</option>
+								<option value="createdAt-desc">Datum - Padajuće</option>
+								<option value="status-asc">Status - Rastuće</option>
+								<option value="status-desc">Status - Padajuće</option>
+								<option value="amount-asc">Ukupno - Rastuće</option>
+								<option value="amount-desc">Ukupno - Padajuće</option>
+							</select>
+						</div>
+						<div className="order-cards-container">
+							{orders.map((order) => (
+								<div className="order-card">
+									<div className="order-card-top">
+										<div className="order-card-amount">
+											<div>
+												<p>Ukupno</p>
+												<h2>€{order.amount}</h2>
+											</div>
+											<div>{order.status}</div>
+										</div>
+									</div>
+									<div className="order-card-content">
+										<div className="order-card-content-row">
+											<h2 className="order-row-category">Broj narudžbe</h2>
+											<h3 className="order-row-value">{order.orderNumber}</h3>
+										</div>
+										<div className="order-card-content-row">
+											<h2 className="order-row-category">Datum</h2>
+											<h3 className="order-row-value">
+												{order.createdAt.split('T')[0]}
+											</h3>
+										</div>
+									</div>
+									<div className="order-card-footer">
+										<Link to={'/order/' + order._id}>Detalji</Link>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
 					<div className="pagination-controls">
 						{page != 0 && totalPages > 0 && (
 							<Link
