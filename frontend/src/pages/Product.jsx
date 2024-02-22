@@ -46,6 +46,7 @@ const Product = () => {
 	const [size, setSize] = useState('');
 
 	const [imageZoomModalOpen, setImageZoomModalOpen] = useState(false);
+	const [activeHeaderImage, setActiveHeaderImage] = useState(0);
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
 
 	const PRODUCT_IMAGES_LENGTH = product?.images?.length;
@@ -60,8 +61,6 @@ const Product = () => {
 				(prevIndex - 1 + PRODUCT_IMAGES_LENGTH) % PRODUCT_IMAGES_LENGTH
 		);
 	};
-
-	const currentTransform = -activeImageIndex * 100;
 
 	const handlers = useSwipeable({
 		onSwipedLeft: () => handleNext(),
@@ -282,23 +281,32 @@ const Product = () => {
 			)}
 			<div className="product-page-wrapper">
 				<div className="product-page-image-container">
-					<div className="product-image header" onClick={() => zoomInImage(0)}>
-						<img src={product.images?.[0].url} />
+					<div
+						className="product-image header"
+						onClick={() => zoomInImage(activeHeaderImage)}
+					>
+						<img src={product.images?.[activeHeaderImage].url} />
 						<div className="image-overlay">
 							<BiSearchAlt size={36} />
 						</div>
 					</div>
-					{product.images?.slice(1).map((image, index) => (
-						<div
-							className="product-image"
-							onClick={() => zoomInImage(index + 1)}
-						>
-							<img src={image.url} />
-							<div className="image-overlay">
-								<BiSearchAlt size={36} />
+					<div className="product-images-previews">
+						{product.images?.map((image, index) => (
+							<div
+								className={
+									activeHeaderImage === index
+										? 'product-image small active'
+										: 'product-image small'
+								}
+								onClick={() => setActiveHeaderImage(index)}
+							>
+								<img src={image.url} />
+								<div className="image-overlay">
+									<BiSearchAlt size={36} />
+								</div>
 							</div>
-						</div>
-					))}
+						))}
+					</div>
 				</div>
 				<div className="product-page-info-container">
 					<h1>{product.title}</h1>
