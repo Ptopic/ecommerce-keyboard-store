@@ -126,7 +126,7 @@ function UserOrders() {
 								<InputField
 									type={'text'}
 									name={'search'}
-									placeholder={'Search orders by order number'}
+									placeholder={'Search orders by order number or date'}
 									value={searchTermValue}
 									onChange={(e) => setSearchTermValue(e.target.value)}
 									className="search-field"

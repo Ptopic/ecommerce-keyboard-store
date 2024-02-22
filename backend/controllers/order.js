@@ -197,7 +197,6 @@ exports.getUserOrder = async (req, res) => {
 			order = await Order.find({ userId: req.params.userId });
 		}
 
-		console.log(order);
 		return res.status(200).send({
 			success: true,
 			data: order,

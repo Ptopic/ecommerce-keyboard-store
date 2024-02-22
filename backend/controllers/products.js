@@ -246,10 +246,21 @@ exports.searchProducts = async (req, res) => {
 	const term = req.query.search;
 	let termString = String(term);
 
+	let numberString = parseInt(term);
+
 	try {
 		// Search for product that contains term in title
+
 		let products = await Product.find({
-			title: { $regex: termString, $options: 'i' },
+			$or: [
+				!isNaN(numberString)
+					? {
+							$expr: {
+								$eq: ['$price', termString],
+							},
+					  }
+					: { title: { $regex: termString, $options: 'i' } },
+			],
 		});
 		return res.status(200).send({ success: true, data: products });
 	} catch (error) {
