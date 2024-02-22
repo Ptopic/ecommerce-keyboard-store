@@ -2,13 +2,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Mulish&display=swap');
 
 :root {
+    --primary-color: #E81123;
+    --secondary-color: #00A651;
     --white: #f8f8f5;
     --white600: #F5F5F5;
     --gray: #E0E0E0;
     --black: #000000;
     --padding: 26rem;
+    --success: #4BB543;
+    --error: #ff3333;
 
-    --primary-color: #E81123;
     --primary100: #fde7e9;
     --primary200: #f8b8bd;
     --primary300: #f48891;

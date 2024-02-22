@@ -337,14 +337,16 @@ const ProductList = () => {
 
 		let categoryFields = categories.find(
 			(category) => category.name === name
-		).fields;
+		)?.fields;
 
 		let initialFiltersArray = [];
 
-		for (let filter of categoryFields) {
-			let initialFilter = {};
-			initialFilter[filter.name] = '';
-			initialFiltersArray.push(initialFilter);
+		if (categoryFields) {
+			for (let filter of categoryFields) {
+				let initialFilter = {};
+				initialFilter[filter.name] = '';
+				initialFiltersArray.push(initialFilter);
+			}
 		}
 
 		setActiveFilters(initialFiltersArray);

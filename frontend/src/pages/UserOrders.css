@@ -127,11 +127,19 @@ th {
     font-size: 1.6rem;
 }
 
+.mobile-orders-container {
+    display: none;
+}
+
 /* ---------- Media querys ---------- */
 
 /* Phone */
 
 @media (max-width: 600px) {
+    .mobile-orders-container {
+        display: block;
+    }
+
     .user-orders-content>.table {
         display: none;
     }

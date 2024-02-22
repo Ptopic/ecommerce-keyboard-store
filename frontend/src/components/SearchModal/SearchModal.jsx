@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Utils
 import { debounce } from '../../utils/debounce';
+import { formatPriceDisplay } from '../../utils/formatting';
 
 function SearchModal({ toggleSearchOpen }) {
 	const navigate = useNavigate();
@@ -83,7 +84,7 @@ function SearchModal({ toggleSearchOpen }) {
 
 										<h2>{item.title}</h2>
 
-										<p>€{item.price}</p>
+										<p>€{formatPriceDisplay(item.price)}</p>
 									</div>
 								);
 							})}

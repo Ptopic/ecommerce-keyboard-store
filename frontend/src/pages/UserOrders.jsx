@@ -53,21 +53,25 @@ function UserOrders() {
 
 	// Get all orders from user
 	const getUsersOrders = async () => {
-		const res = await userRequest.get('/orders/find/' + user.data._id, {
-			params: {
-				sort: sortValue,
-				direction: directionValue,
-				page: page,
-				pageSize: pageSize,
-				search: searchTermValue,
-			},
-			headers: { token: user.token },
-		});
+		try {
+			const res = await userRequest.get('/orders/find/' + user.data._id, {
+				params: {
+					sort: sortValue,
+					direction: directionValue,
+					page: page,
+					pageSize: pageSize,
+					search: searchTermValue,
+				},
+				headers: { token: user.token },
+			});
 
-		res.data.totalPages == 0
-			? setTotalPages(0)
-			: setTotalPages(res.data.totalPages - 1);
-		setOrders(res.data.data);
+			res.data.totalPages == 0
+				? setTotalPages(0)
+				: setTotalPages(res.data.totalPages - 1);
+			setOrders(res.data.data);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 	useEffect(() => {
 		// Get all orders from user

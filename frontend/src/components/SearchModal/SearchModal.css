@@ -83,7 +83,7 @@
 
 .found-items-item img {
     width: 100%;
-    height: 150px;
+    height: 250px;
     object-fit: cover;
     margin-bottom: 3rem;
 }
@@ -93,6 +93,12 @@
     text-align: center;
     color: var(--primary-color);
     margin-bottom: 2rem;
+    overflow: hidden;
+    display: -webkit-box;
+    /* display 2 lines only */
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 .found-items-item p {
@@ -102,4 +108,19 @@
 
 .search-not-found {
     padding: 0 2rem;
+}
+
+/* ---------- Media querys ---------- */
+
+/* Phone */
+
+@media (max-width: 600px) {
+    .found-items-container {
+        grid-template-columns: 1fr;
+    }
+
+    .found-items-item img {
+        height: 250px
+    }
+
 }

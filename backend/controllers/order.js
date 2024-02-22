@@ -86,10 +86,37 @@ exports.getUserOrder = async (req, res) => {
 	// Get total number of orders
 	let totalOrders;
 	// If search query is not empty, get total number of orders that match search query
+	let splittedDate = search.split('.');
+	let year;
+	let month;
+	let day;
+	if (splittedDate.length == 3) {
+		if (splittedDate[0].length == 1) {
+			splittedDate[0] = '0' + splittedDate[0];
+		} else if (splittedDate[1].length == 1) {
+			splittedDate[1] = '0' + splittedDate[1];
+		}
+
+		year = splittedDate[2];
+		month = splittedDate[1];
+		day = splittedDate[0];
+	}
+
 	if (search != '' && search != null) {
 		totalOrders = await Order.find({
 			userId: req.params.userId,
-			orderNumber: { $regex: search, $options: 'i' },
+			$or: [
+				{ orderNumber: { $regex: search, $options: 'i' } },
+				{
+					$expr: {
+						$and: [
+							{ $eq: [{ $year: '$createdAt' }, year] },
+							{ $eq: [{ $month: '$createdAt' }, month] },
+							{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+						],
+					},
+				},
+			],
 		}).count();
 	} else {
 		totalOrders = await Order.find({ userId: req.params.userId }).count();
@@ -103,7 +130,18 @@ exports.getUserOrder = async (req, res) => {
 		if (page && pageSize && sort && direction && search != '') {
 			order = await Order.find({
 				userId: req.params.userId,
-				orderNumber: { $regex: search, $options: 'i' },
+				$or: [
+					{ orderNumber: { $regex: search, $options: 'i' } },
+					{
+						$expr: {
+							$and: [
+								{ $eq: [{ $year: '$createdAt' }, year] },
+								{ $eq: [{ $month: '$createdAt' }, month] },
+								{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+							],
+						},
+					},
+				],
 			})
 				.limit(pageSize)
 				.skip(pageSize * page)
@@ -111,14 +149,36 @@ exports.getUserOrder = async (req, res) => {
 		} else if (page && pageSize && search != '') {
 			order = await Order.find({
 				userId: req.params.userId,
-				orderNumber: { $regex: search, $options: 'i' },
+				$or: [
+					{ orderNumber: { $regex: search, $options: 'i' } },
+					{
+						$expr: {
+							$and: [
+								{ $eq: [{ $year: '$createdAt' }, year] },
+								{ $eq: [{ $month: '$createdAt' }, month] },
+								{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+							],
+						},
+					},
+				],
 			})
 				.limit(pageSize)
 				.skip(pageSize * page);
 		} else if (sort && direction && search != '') {
 			order = await Order.find({
 				userId: req.params.userId,
-				orderNumber: { $regex: search, $options: 'i' },
+				$or: [
+					{ orderNumber: { $regex: search, $options: 'i' } },
+					{
+						$expr: {
+							$and: [
+								{ $eq: [{ $year: '$createdAt' }, year] },
+								{ $eq: [{ $month: '$createdAt' }, month] },
+								{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+							],
+						},
+					},
+				],
 			}).sort([[sort, direction]]);
 		} else if (page && pageSize && sort && direction) {
 			order = await Order.find({ userId: req.params.userId })
@@ -136,6 +196,8 @@ exports.getUserOrder = async (req, res) => {
 		} else {
 			order = await Order.find({ userId: req.params.userId });
 		}
+
+		console.log(order);
 		return res.status(200).send({
 			success: true,
 			data: order,
@@ -143,6 +205,7 @@ exports.getUserOrder = async (req, res) => {
 			totalPages: totalPages,
 		});
 	} catch (err) {
+		console.log(err);
 		return res.status(500).send({ success: false, error: err });
 	}
 };
