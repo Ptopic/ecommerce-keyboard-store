@@ -99,7 +99,7 @@ const Product = () => {
 				}
 			}
 		} catch (error) {
-			console.log(error.response.data);
+			console.log(error?.response?.data);
 		}
 	};
 
@@ -248,12 +248,14 @@ const Product = () => {
 				<div className="image-zoom-modal">
 					<div className="image-zoom-modal-container" {...handlers}>
 						<div className="images-carousel-collection">
-							<AiOutlineLeft
-								size={34}
-								onClick={() => handlePrev()}
-								className="arrow left"
-								fill="#fff"
-							/>
+							{product.images.length > 1 && (
+								<AiOutlineLeft
+									size={34}
+									onClick={() => handlePrev()}
+									className="arrow left"
+									fill="#fff"
+								/>
+							)}
 							{product.images.map((image, index) => {
 								return (
 									<img
@@ -264,12 +266,14 @@ const Product = () => {
 									/>
 								);
 							})}
-							<AiOutlineRight
-								size={34}
-								onClick={() => handleNext()}
-								className="arrow right"
-								fill="#fff"
-							/>
+							{product.images.length > 1 && (
+								<AiOutlineRight
+									size={34}
+									onClick={() => handleNext()}
+									className="arrow right"
+									fill="#fff"
+								/>
+							)}
 							<AiOutlineClose
 								size={36}
 								className="image-close-icon"

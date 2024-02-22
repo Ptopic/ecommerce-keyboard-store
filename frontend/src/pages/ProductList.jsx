@@ -566,17 +566,22 @@ const ProductList = () => {
 							</div>
 						) : (
 							<>
-								<Products
-									products={products}
-									title={name}
-									setMobileFiltersOpen={setMobileFiltersOpen}
-									sort={sort}
-									setSort={setSort}
-									direction={direction}
-									setDirection={setDirection}
-								/>
+								{products.length > 0 ? (
+									<Products
+										products={products}
+										title={name}
+										setMobileFiltersOpen={setMobileFiltersOpen}
+										sort={sort}
+										setSort={setSort}
+										direction={direction}
+										setDirection={setDirection}
+									/>
+								) : (
+									<h2>No products to show...</h2>
+								)}
+
 								<div className="has-more-container" ref={loadMoreBtnRef}>
-									{totalPages != page ? (
+									{totalPages != page && products.length > 0 ? (
 										<button
 											className="load-more-btn"
 											onClick={(e) => loadMoreData(e)}
