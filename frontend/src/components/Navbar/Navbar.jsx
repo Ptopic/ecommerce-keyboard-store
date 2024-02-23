@@ -21,6 +21,7 @@ import logo from '../../assets/logo3.png';
 
 import NavbarLink from './NavbarLink';
 import SearchModal from '../SearchModal/SearchModal';
+import Spinner from '../../../../frontend/src/components/Spinner/Spinner';
 
 import { useNavigate } from 'react-router-dom';
 import { request } from '../../api';
@@ -45,6 +46,8 @@ const Navbar = () => {
 	const [searchOpen, setSearchOpen] = useState(false);
 
 	const [categoriesData, setCategoriesData] = useState([]);
+
+	const [loading, setLoading] = useState(false);
 
 	const toggleSearchOpen = () => {
 		if (searchOpen) {
@@ -83,14 +86,22 @@ const Navbar = () => {
 	};
 
 	const getAllCategories = async () => {
-		const res = await request('/categories');
+		setLoading(true);
 
 		// Cache categories in redux persist store
 		if (categories.length == 0) {
-			dispatch(setCategories({ categories: res.data.data }));
+			try {
+				const res = await request('/categories');
+				dispatch(setCategories({ categories: res.data.data }));
+				setCategoriesData(res.data.data);
+				setLoading(false);
+			} catch (error) {
+				console.log(error);
+			}
+		} else {
 			setCategoriesData(categories);
+			setLoading(false);
 		}
-		setCategoriesData(categories);
 	};
 
 	// When navbar loads get all categories
@@ -202,34 +213,45 @@ const Navbar = () => {
 								},
 							}}
 						>
-							<NavbarLink link={'/'} text="Home" closeFunction={closeNavbar} />
-							<NavbarLink
-								link={'/configurator'}
-								text="Konfigurator"
-								closeFunction={closeNavbar}
-							/>
-							<NavbarLink
-								link={'/products/all'}
-								text="Svi Proizvodi"
-								closeFunction={closeNavbar}
-							/>
-
-							{/* Map thru categories */}
-							{categoriesData.map((category) => {
-								return (
+							{loading ? (
+								<Spinner />
+							) : (
+								<>
 									<NavbarLink
-										link={`/products/${category.name}?name=${category.name}`}
-										text={category.name}
+										link={'/'}
+										text="Home"
 										closeFunction={closeNavbar}
 									/>
-								);
-							})}
+									<NavbarLink
+										link={'/configurator'}
+										text="Konfigurator"
+										closeFunction={closeNavbar}
+									/>
+									<NavbarLink
+										link={'/products/all'}
+										text="Svi Proizvodi"
+										closeFunction={closeNavbar}
+									/>
 
-							<NavbarLink
-								link={'/about'}
-								text="About Us"
-								closeFunction={closeNavbar}
-							/>
+									{/* Map thru categories */}
+									{!loading &&
+										categoriesData.map((category) => {
+											return (
+												<NavbarLink
+													link={`/products/${category.name}?name=${category.name}`}
+													text={category.name}
+													closeFunction={closeNavbar}
+												/>
+											);
+										})}
+
+									<NavbarLink
+										link={'/about'}
+										text="About Us"
+										closeFunction={closeNavbar}
+									/>
+								</>
+							)}
 						</m.div>
 					</m.div>
 				)}
