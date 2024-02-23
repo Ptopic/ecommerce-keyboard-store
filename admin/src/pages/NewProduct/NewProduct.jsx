@@ -99,7 +99,11 @@ const NewProduct = () => {
 				setIsLoading(false);
 				resetAllFormData();
 			} catch (error) {
-				toast.error('Something went wrong');
+				if (error?.response?.data?.error) {
+					toast.error(error?.response?.data?.error);
+				} else {
+					toast.error('Something went wrong');
+				}
 				setIsLoading(false);
 				resetAllFormData();
 			}

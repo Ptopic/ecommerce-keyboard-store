@@ -1,5 +1,6 @@
 .product-link-container {
     padding: 1.2rem;
+    height: 650px;
 }
 
 .product-link-container:hover {
@@ -23,6 +24,8 @@
 .product-link-info {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    height: auto;
 }
 
 .product-link-name {
@@ -123,6 +126,7 @@ li::marker {
 
     .product-link-container {
         padding: .8rem;
+        height: 550px;
     }
 
     .product-link-container img {

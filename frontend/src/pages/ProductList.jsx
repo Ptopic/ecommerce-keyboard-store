@@ -283,9 +283,6 @@ const ProductList = () => {
 			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
 			setTotalPages(data.totalPages);
-
-			// Scroll load more btn in view
-			loadMoreBtnRef.current.scrollIntoView();
 		} catch (error) {
 			console.log(error);
 			toast.error('Failed to load more products...');

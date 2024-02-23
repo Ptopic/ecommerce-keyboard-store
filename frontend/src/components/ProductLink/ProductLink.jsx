@@ -25,11 +25,11 @@ const ProductLink = ({ item }) => {
 							<p className="item-out-of-stock">Out of Stock</p>
 						)}
 					</div>
+					<div className="product-link-price">
+						<p className="info-price">€{formatPriceDisplay(item.price)}</p>
+					</div>
 				</div>
 			</Link>
-			<div className="product-link-price">
-				<p className="info-price">€{formatPriceDisplay(item.price)}</p>
-			</div>
 		</div>
 	);
 };
