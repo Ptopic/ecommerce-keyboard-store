@@ -102,7 +102,9 @@ const ProductList = () => {
 			let curSet = Object.values(filtersArray[j])[0];
 
 			// Sort filter set
-			let sortedArrayFromSet = Array.from(curSet).sort();
+			let sortedArrayFromSet = Array.from(curSet).sort((a, b) => a - b);
+
+			console.log(sortedArrayFromSet);
 
 			curSet.clear();
 
@@ -112,7 +114,9 @@ const ProductList = () => {
 			}
 		}
 
+		console.log(filtersArray);
 		setFilters(filtersArray);
+		console.log(filters);
 
 		// Cache filters for current category in redux persist
 	};
@@ -124,8 +128,6 @@ const ProductList = () => {
 				activeFilters: activeFilters != [] ? activeFilters : null,
 			},
 		});
-
-		console.log(allProductsRes);
 
 		let productsData = allProductsRes.data.data;
 
@@ -159,7 +161,7 @@ const ProductList = () => {
 			let curSet = Object.values(filtersArray[j])[0];
 
 			// Sort filter set
-			let sortedArrayFromSet = Array.from(curSet).sort();
+			let sortedArrayFromSet = Array.from(curSet).sort((a, b) => a - b);
 
 			curSet.clear();
 
@@ -169,7 +171,6 @@ const ProductList = () => {
 			}
 		}
 
-		console.log(filtersArray);
 		setFilters(filtersArray);
 	};
 
@@ -184,7 +185,7 @@ const ProductList = () => {
 				},
 			});
 			let pricesData = resPrices.data;
-			console.log(pricesData);
+
 			if (
 				pricesData &&
 				pricesData.minPrice.length > 0 &&
@@ -301,7 +302,6 @@ const ProductList = () => {
 		newFilterValue
 	) => {
 		setLoading(true);
-		console.log('Started');
 		// If new filter value is equal to current filter value then remove current value
 		let updatedFilters = [...activeFilters];
 		if (newFilterValue == curFilterValue) {
@@ -325,7 +325,6 @@ const ProductList = () => {
 
 		// Recalculate prices
 		getMinMaxPrices();
-		console.log('Finished');
 		setLoading(false);
 	};
 
