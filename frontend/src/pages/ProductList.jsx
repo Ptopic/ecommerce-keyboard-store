@@ -102,7 +102,9 @@ const ProductList = () => {
 			let curSet = Object.values(filtersArray[j])[0];
 
 			// Sort filter set
-			let sortedArrayFromSet = Array.from(curSet).sort((a, b) => a - b);
+			let sortedArrayFromSet = Array.from(curSet).sort((a, b) =>
+				('' + a).localeCompare(b, undefined, { numeric: true })
+			);
 
 			console.log(sortedArrayFromSet);
 
@@ -161,7 +163,9 @@ const ProductList = () => {
 			let curSet = Object.values(filtersArray[j])[0];
 
 			// Sort filter set
-			let sortedArrayFromSet = Array.from(curSet).sort((a, b) => a - b);
+			let sortedArrayFromSet = Array.from(curSet).sort((a, b) =>
+				('' + a).localeCompare(b, undefined, { numeric: true })
+			);
 
 			curSet.clear();
 
