@@ -78,8 +78,16 @@ export default function Home() {
 		// Sort users array by month and date
 
 		for (let i = 0; i < arr.length; i++) {
-			let date = arr[i]._id.month + '-' + arr[i]._id.year;
-			let dateObj = { date: date, value: arr[i][field] };
+			let month = arr[i]._id.month;
+			let year = arr[i]._id.year;
+			let date = new Date(year, month - 1);
+			let dateObj = {
+				date: date,
+				dateFormated: month + '-' + year,
+				month: month,
+				year: year,
+				value: arr[i][field],
+			};
 			converted.push(dateObj);
 		}
 
@@ -101,10 +109,8 @@ export default function Home() {
 		if (sales.length > 1) {
 			// Set curSales to latest sale
 			let curSalesValues = convertToObj(sales, 'totalSales');
-			let latestSaleValue = curSalesValues.sort((a, b) =>
-				a.date < b.date ? -1 : 1
-			);
-			console.log(latestSaleValue);
+
+			let latestSaleValue = curSalesValues.sort((a, b) => b.date - a.date);
 			// Set first latest sale value to display for analitics
 			setCurSales(latestSaleValue[0].value.toFixed(2));
 			// Calculate sale percentage increase/decrease compared to previous month
@@ -120,9 +126,7 @@ export default function Home() {
 
 			// Convert sales arr for chart usage - Order is different from other sales used for displaying percentages
 			// Sort values by date
-			let sortedSales = curSalesValues.sort((a, b) =>
-				a.date > b.date ? -1 : 1
-			);
+			let sortedSales = curSalesValues.sort((a, b) => b.date - a.date);
 
 			// Fix all sort values to 2 decimal
 			for (let i = 0; i < sortedSales.length; i++) {
@@ -131,6 +135,7 @@ export default function Home() {
 
 			setSalesForChart(sortedSales);
 		} else {
+			setCurSales(sales[0]?.totalSales);
 			setSalesPercentage(Number(0).toFixed(1));
 		}
 	}, [sales]);
@@ -141,15 +146,14 @@ export default function Home() {
 			// Get latest users count
 			// Set curUsers to latest users
 			let curUsersValues = convertToObj(users, 'usersCount');
-			let latesUserValues = curUsersValues.sort((a, b) =>
-				a.date < b.date ? -1 : 1
-			);
+			let latestUsersValue = curUsersValues.sort((a, b) => b.date - a.date);
 
-			setUsersCount(latesUserValues[0].value);
+			console.log(latestUsersValue);
+			setUsersCount(latestUsersValue[0].value);
 
 			// Calculate users percentage increase/decrease compared to previous month
-			let curValue = latesUserValues[0].value;
-			let prevValue = latesUserValues[1].value;
+			let curValue = latestUsersValue[0].value;
+			let prevValue = latestUsersValue[1].value;
 
 			let percentageChange = calculatePercentageChange(
 				curValue,
@@ -166,18 +170,15 @@ export default function Home() {
 	useEffect(() => {
 		if (orders.length > 1) {
 			// Get latest orders count
-
 			// Set curOrders to latest sale
 			let curOrdersValues = convertToObj(orders, 'ordersCount');
-			let latesOrdersValues = curOrdersValues.sort((a, b) =>
-				a.date < b.date ? -1 : 1
-			);
+			let latestOrderValues = curOrdersValues.sort((a, b) => b.date - a.date);
 
-			setOrdersCount(latesOrdersValues[0].value);
+			setOrdersCount(latestOrderValues[0].value);
 
 			// Calculate orders percentage increase/decrease compared to previous month
-			let curValue = latesOrdersValues[0].value;
-			let prevValue = latesOrdersValues[1].value;
+			let curValue = latestOrderValues[0].value;
+			let prevValue = latestOrderValues[1].value;
 
 			let percentageChange = calculatePercentageChange(
 				curValue,
@@ -186,6 +187,7 @@ export default function Home() {
 
 			setOrdersPercentage(percentageChange);
 		} else {
+			setOrdersCount(orders[0]?.ordersCount);
 			setOrdersPercentage(Number(0).toFixed(1));
 		}
 	}, [orders]);

@@ -7,7 +7,7 @@ import Login from './pages/Login/Login';
 
 import { useSelector } from 'react-redux';
 import Analytics from './pages/Analytics/Analytics';
-import UserList from './pages/userList/UserList';
+import UserList from './pages/UserList/UserList';
 import NewUser from './pages/NewUser/NewUser';
 import EditUser from './pages/EditUser/EditUser';
 import Categories from './pages/Categories/Categories';

@@ -57,8 +57,16 @@ const Analytics = () => {
 		// Sort users array by month and date
 
 		for (let i = 0; i < arr.length; i++) {
-			let date = arr[i]._id.month + '-' + arr[i]._id.year;
-			let dateObj = { date: date, value: arr[i][field] };
+			let month = arr[i]._id.month;
+			let year = arr[i]._id.year;
+			let date = new Date(year, month - 1);
+			let dateObj = {
+				date: date,
+				dateFormated: month + '-' + year,
+				month: month,
+				year: year,
+				value: arr[i][field],
+			};
 			converted.push(dateObj);
 		}
 
@@ -82,9 +90,7 @@ const Analytics = () => {
 
 			// Convert sales arr for chart usage
 			// Sort values by date
-			let sortedSales = curSalesValues.sort((a, b) =>
-				a.date > b.date ? -1 : 1
-			);
+			let sortedSales = curSalesValues.sort((a, b) => b.date - a.date);
 
 			// Fix all sort values to 2 decimal
 			for (let i = 0; i < sortedSales.length; i++) {
@@ -102,9 +108,9 @@ const Analytics = () => {
 
 			// Convert users arr for chart usage
 			// Sort values by date
-			let sortedUsers = curUsersValues.sort((a, b) =>
-				a.date > b.date ? -1 : 1
-			);
+			let sortedUsers = curUsersValues.sort((a, b) => b.date - a.date);
+
+			console.log(sortedUsers);
 
 			setUsersChartData(sortedUsers);
 		}
@@ -117,9 +123,7 @@ const Analytics = () => {
 
 			// Convert orders arr for chart usage
 			// Sort values by date
-			let sortedOrders = curOrdersValues.sort((a, b) =>
-				a.date > b.date ? -1 : 1
-			);
+			let sortedOrders = curOrdersValues.sort((a, b) => b.date - a.date);
 
 			setOrdersChartData(sortedOrders);
 		}
