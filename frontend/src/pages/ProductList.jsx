@@ -64,9 +64,13 @@ const ProductList = () => {
 
 		let productsData = allProductsRes.data.data;
 
-		let categoryFields = categories.find(
-			(category) => category.name === name
-		).fields;
+		let foundCategory = categories.find((category) => category.name === name);
+
+		console.log(name);
+		if (foundCategory?.fields == undefined) {
+			return;
+		}
+		let categoryFields = foundCategory?.fields;
 
 		let filtersArray = [];
 		let initialFiltersArray = [];
@@ -491,52 +495,55 @@ const ProductList = () => {
 					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
-							{filters.map((filter, filterIndex) => {
-								return (
-									<div className="filter" key={filterIndex}>
-										<div className="filter-name">{Object.keys(filter)}:</div>
-										<div className="filter-values">
-											{Object.values(filter).map((el, id) => {
-												return Array.from(el).map((filterValue) => {
-													return (
-														<div className="checkout-checkbox">
-															<button
-																type="button"
-																style={{
-																	background:
-																		Object.values(
-																			activeFilters[filterIndex]
-																		)[0] == filterValue
-																			? '#E81123'
-																			: '#fff',
-																	border:
-																		Object.values(activeFilters[filterIndex]) ==
-																		filterValue
-																			? 'none'
-																			: '1px solid black',
-																}}
-																onClick={() =>
-																	handleFilterCheckboxClick(
-																		filterIndex,
-																		Object.keys(activeFilters[filterIndex]),
-																		Object.values(activeFilters[filterIndex]),
-																		filterValue
-																	)
-																}
-															>
-																{activeFilters[Object.keys(filter)[0]] != '' ? (
-																	<IoMdCheckmark color={'white'} size={24} />
-																) : null}
-															</button>
-															<p>{filterValue}</p>
-														</div>
-													);
-												});
-											})}
+							{filters.length > 0 &&
+								filters.map((filter, filterIndex) => {
+									return (
+										<div className="filter" key={filterIndex}>
+											<div className="filter-name">{Object.keys(filter)}:</div>
+											<div className="filter-values">
+												{Object.values(filter).map((el, id) => {
+													return Array.from(el).map((filterValue) => {
+														return (
+															<div className="checkout-checkbox">
+																<button
+																	type="button"
+																	style={{
+																		background:
+																			Object.values(
+																				activeFilters[filterIndex]
+																			)[0] == filterValue
+																				? '#E81123'
+																				: '#fff',
+																		border:
+																			Object.values(
+																				activeFilters[filterIndex]
+																			) == filterValue
+																				? 'none'
+																				: '1px solid black',
+																	}}
+																	onClick={() =>
+																		handleFilterCheckboxClick(
+																			filterIndex,
+																			Object.keys(activeFilters[filterIndex]),
+																			Object.values(activeFilters[filterIndex]),
+																			filterValue
+																		)
+																	}
+																>
+																	{activeFilters[Object.keys(filter)[0]] !=
+																	'' ? (
+																		<IoMdCheckmark color={'white'} size={24} />
+																	) : null}
+																</button>
+																<p>{filterValue}</p>
+															</div>
+														);
+													});
+												})}
+											</div>
 										</div>
-									</div>
-								);
-							})}
+									);
+								})}
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
 								<div className="price-ranges current">
