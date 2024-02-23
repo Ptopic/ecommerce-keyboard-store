@@ -66,10 +66,10 @@ const ProductList = () => {
 
 		let foundCategory = categories.find((category) => category.name === name);
 
-		console.log(name);
 		if (foundCategory?.fields == undefined) {
 			return;
 		}
+
 		let categoryFields = foundCategory?.fields;
 
 		let filtersArray = [];
@@ -137,9 +137,11 @@ const ProductList = () => {
 
 		let productsData = allProductsRes.data.data;
 
-		let categoryFields = categories.find(
-			(category) => category.name === name
-		).fields;
+		let foundCategory = categories.find((category) => category.name === name);
+
+		if (foundCategory?.fields == undefined) {
+			return;
+		}
 
 		let filtersArray = [];
 
