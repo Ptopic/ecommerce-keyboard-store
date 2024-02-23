@@ -24,7 +24,7 @@ import 'react-quill/dist/quill.snow.css';
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { admin_request } from '../../api';
+import { admin_request, request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import Spinner from '../../components/Spinner/Spinner';
 
@@ -52,6 +52,9 @@ const EditProduct = () => {
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [imageRemoveIsLoading, setImageRemoveIsLoading] = useState(false);
+
+	const [filters, setFilters] = useState([]);
+	const [activeFilters, setActiveFilters] = useState([]);
 
 	const modules = {
 		toolbar: [
@@ -145,11 +148,12 @@ const EditProduct = () => {
 		}
 	};
 
-	const mapActiveFieldsFromSelectedCategory = () => {
+	const mapActiveFieldsFromSelectedCategory = async (newCategory) => {
 		// Find selected category in category data
+		setSelectedCategory(newCategory);
 		let curCategory;
 		categories.forEach((category) => {
-			if (category['name'] == selectedCategory) {
+			if (category['name'] == newCategory) {
 				curCategory = category;
 			}
 		});
@@ -167,6 +171,67 @@ const EditProduct = () => {
 				object[namesOfActiveFields[i]] = '';
 				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
 			}
+
+			// Get all products by category to generate filters for it
+			const allProductsRes = await request.get(
+				`/products/filters/` + newCategory,
+				{
+					params: {
+						activeFilters: activeFilters != [] ? activeFilters : null,
+					},
+				}
+			);
+
+			let productsData = allProductsRes.data.data;
+
+			// Get category by name
+			let categoryFields = curCategory.fields;
+
+			let filtersArray = [];
+			let initialFiltersArray = [];
+
+			if (initialFiltersArray.length == 0) {
+				for (let filter of categoryFields) {
+					let obj = {};
+					let initialFilter = {};
+					obj[filter.name] = new Set([]);
+					initialFilter[filter.name] = '';
+					filtersArray.push(obj);
+					initialFiltersArray.push(initialFilter);
+				}
+			}
+
+			setActiveFilters(initialFiltersArray);
+
+			for (let product of productsData) {
+				// Loop thru all products details
+				for (let i = 0; i < categoryFields.length; i++) {
+					let filterName = categoryFields[i].name;
+
+					let productFilter = product.details[filterName.toString()];
+
+					let filterSet = filtersArray[i][filterName.toString()];
+
+					filterSet.add(productFilter);
+				}
+			}
+
+			// Loop thru all filters to sort its sets
+			for (let j = 0; j < filtersArray.length; j++) {
+				let curSet = Object.values(filtersArray[j])[0];
+
+				// Sort filter set
+				let sortedArrayFromSet = Array.from(curSet).sort();
+
+				curSet.clear();
+
+				// Add sorted values back into set
+				for (let value of sortedArrayFromSet) {
+					curSet.add(value);
+				}
+			}
+
+			setFilters(filtersArray);
 
 			setActiveFields(namesOfActiveFields);
 			return namesOfActiveFields;
@@ -204,13 +269,13 @@ const EditProduct = () => {
 		if (categories.length === 0) {
 			getAllCategories();
 		} else {
-			mapActiveFieldsFromSelectedCategory(product);
+			mapActiveFieldsFromSelectedCategory();
 		}
 	}, [categories]);
 
 	useEffect(() => {
-		mapActiveFieldsFromSelectedCategory(product);
-	}, [selectedCategory]);
+		mapActiveFieldsFromSelectedCategory();
+	}, [product]);
 
 	const dragAndDropOnChange = (e) => {
 		setFieldValue('files', e.target.files[0]);
@@ -416,9 +481,11 @@ const EditProduct = () => {
 										placeholder="Category *"
 										as="select"
 										name="category"
+										value={selectedCategory}
 										onChange={(e) => {
 											setFieldValue('category', e.target.value);
 											setSelectedCategory(e.target.value);
+											mapActiveFieldsFromSelectedCategory(e.target.value);
 										}}
 									>
 										<option disabled>Select category</option>
@@ -444,20 +511,37 @@ const EditProduct = () => {
 									</div>
 
 									{activeFields.map((field, index) => (
-										<InputField
-											key={index}
-											type="text"
-											name={field}
-											placeholder={field}
-											value={values[field]}
-											onChange={(e) => {
-												{
-													setFieldValue(field, e.target.value);
-												}
-											}}
-											errors={errors[field]}
-											touched={touched[field]}
-										/>
+										<>
+											<InputField
+												key={index}
+												type="text"
+												name={field}
+												placeholder={field}
+												value={values[field]}
+												onChange={(e) => {
+													{
+														setFieldValue(field, e.target.value);
+													}
+												}}
+												errors={errors[field]}
+												touched={touched[field]}
+											/>
+											<div className="previous-filters">
+												{filters &&
+													Array.from(Object.values(filters[index])[0]).map(
+														(el) => {
+															return (
+																<div
+																	className="previous-filter"
+																	onClick={() => setFieldValue(field, el)}
+																>
+																	<p>{el}</p>
+																</div>
+															);
+														}
+													)}
+											</div>
+										</>
 									))}
 								</div>
 							)}

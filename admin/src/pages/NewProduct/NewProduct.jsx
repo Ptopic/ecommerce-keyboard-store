@@ -39,7 +39,6 @@ const NewProduct = () => {
 
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Other filters
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
 
@@ -160,9 +159,7 @@ const NewProduct = () => {
 			let productsData = allProductsRes.data.data;
 
 			// Get category by name
-			let categoryFields = categories.find(
-				(category) => category.name === selectedCategory
-			).fields;
+			let categoryFields = curCategory.fields;
 
 			let filtersArray = [];
 			let initialFiltersArray = [];
@@ -255,73 +252,6 @@ const NewProduct = () => {
 		stock: '',
 		files: [],
 		...getInitialValuesForActiveFields(),
-	};
-
-	const generateFilters = async () => {
-		// Get all products by category to generate filters for it
-		const allProductsRes = await request.get(
-			`/products/filters/` + selectedCategory,
-			{
-				params: {
-					activeFilters: activeFilters != [] ? activeFilters : null,
-				},
-			}
-		);
-
-		let productsData = allProductsRes.data.data;
-
-		// Get category by name
-		let categoryFields = categories.find(
-			(category) => category.name === selectedCategory
-		).fields;
-
-		let filtersArray = [];
-		let initialFiltersArray = [];
-
-		if (initialFiltersArray.length == 0) {
-			for (let filter of categoryFields) {
-				let obj = {};
-				let initialFilter = {};
-				obj[filter.name] = new Set([]);
-				initialFilter[filter.name] = '';
-				filtersArray.push(obj);
-				initialFiltersArray.push(initialFilter);
-			}
-		}
-
-		setActiveFilters(initialFiltersArray);
-
-		for (let product of productsData) {
-			// Loop thru all products details
-			for (let i = 0; i < categoryFields.length; i++) {
-				let filterName = categoryFields[i].name;
-
-				let productFilter = product.details[filterName.toString()];
-
-				let filterSet = filtersArray[i][filterName.toString()];
-
-				filterSet.add(productFilter);
-			}
-		}
-
-		// Loop thru all filters to sort its sets
-		for (let j = 0; j < filtersArray.length; j++) {
-			let curSet = Object.values(filtersArray[j])[0];
-
-			// Sort filter set
-			let sortedArrayFromSet = Array.from(curSet).sort();
-
-			curSet.clear();
-
-			// Add sorted values back into set
-			for (let value of sortedArrayFromSet) {
-				curSet.add(value);
-			}
-		}
-
-		setFilters(filtersArray);
-
-		// Cache filters for current category in redux persist
 	};
 
 	return (
