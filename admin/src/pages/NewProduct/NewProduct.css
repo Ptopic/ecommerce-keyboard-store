@@ -51,3 +51,20 @@
    background-color: var(--primary200);
    transition: .4s all ease;
 }
+
+.previous-filters {
+   margin-top: 1rem;
+   display: flex;
+}
+
+.previous-filter {
+   margin-right: 1rem;
+   background: var(--primary500);
+   color: white;
+   border-radius: 1.2rem;
+   padding: 1rem;
+}
+
+.previous-filter:hover {
+   cursor: pointer;
+}
