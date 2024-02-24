@@ -235,15 +235,17 @@ const Navbar = () => {
 
 									{/* Map thru categories */}
 									{!loading &&
-										categoriesData.map((category) => {
-											return (
-												<NavbarLink
-													link={`/products/${category.name}?name=${category.name}`}
-													text={category.name}
-													closeFunction={closeNavbar}
-												/>
-											);
-										})}
+										categoriesData
+											.sort((a, b) => a.name.localeCompare(b.name))
+											.map((category) => {
+												return (
+													<NavbarLink
+														link={`/products/${category.name}?name=${category.name}`}
+														text={category.name}
+														closeFunction={closeNavbar}
+													/>
+												);
+											})}
 
 									<NavbarLink
 										link={'/about'}

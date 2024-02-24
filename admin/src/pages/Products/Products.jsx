@@ -118,7 +118,7 @@ const Products = () => {
 		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
-		navigate('/products');
+		navigate(`/products?page=${page}`);
 
 		// Refresh page
 		navigate(0);

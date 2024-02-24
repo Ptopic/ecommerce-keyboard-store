@@ -129,7 +129,7 @@ function EditCategory() {
 									type={'text'}
 									name={'name'}
 									placeholder={'Category Name *'}
-									value={values.name}
+									value={name}
 									onChange={(e) => {
 										setFieldValue('name', e.target.value);
 										setName(e.target.value);
@@ -155,9 +155,9 @@ function EditCategory() {
 
 								<div className="filter-fields">
 									{selectedFields.length > 0 &&
-										selectedFields.map((field) => {
+										selectedFields.map((field, id) => {
 											return (
-												<div className="filter-field" key={field.id}>
+												<div className="filter-field" key={id}>
 													<h2>{field.name}</h2>
 													<button
 														className="delete-btn"

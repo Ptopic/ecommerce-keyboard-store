@@ -112,7 +112,7 @@ function Categories() {
 		setCategoryIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
-		navigate('/categories');
+		navigate(`/categories?page=${page}`);
 
 		// Refresh page
 		navigate(0);

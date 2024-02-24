@@ -113,7 +113,7 @@ export default function UserList() {
 		setDeleteModal({ open: false, text: '' });
 
 		// Reset all filters
-		navigate('/users');
+		navigate(`/users?page=${page}`);
 
 		// Refresh page
 		navigate(0);
