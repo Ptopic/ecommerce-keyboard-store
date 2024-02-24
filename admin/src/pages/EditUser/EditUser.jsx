@@ -18,12 +18,24 @@ import InputField from '../../../../frontend/src/components/InputField/InputFiel
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+	Link,
+	useLocation,
+	useNavigate,
+	useSearchParams,
+} from 'react-router-dom';
 import { admin_request } from '../../api';
 
 function EditUser() {
 	const navigate = useNavigate();
 	const location = useLocation();
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const [page, setPage] = useState(
+		searchParams ? searchParams.get('page') : null
+	);
+
 	const id = location.pathname.split('/edit/')[1];
 
 	const user = useSelector((state) => state.user);
@@ -194,7 +206,7 @@ function EditUser() {
 					)}
 				</Formik>
 			</div>
-			<Link to={'/users'} className="back-btn">
+			<Link to={`/users?page=${page}`} className="back-btn">
 				Back
 			</Link>
 		</div>

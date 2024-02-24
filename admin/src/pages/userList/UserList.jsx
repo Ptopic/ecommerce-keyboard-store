@@ -148,7 +148,7 @@ export default function UserList() {
 					)}
 				</Formik>
 				<div className="add-new-container">
-					<Link to={'/users/add'} className="add-btn">
+					<Link to={`/users/add?page=${page}`} className="add-btn">
 						Add new User
 					</Link>
 				</div>
@@ -247,16 +247,8 @@ export default function UserList() {
 										</span>
 									</td>
 									<td className="actions-row">
-										{/* <Link
-											to={`/users/${user._id}`}
-											className="action-btn"
-											role="button"
-											title="User Details"
-										>
-											<BsFillPersonLinesFill />
-										</Link> */}
 										<Link
-											to={`/users/edit/${user._id}`}
+											to={`/users/edit/${user._id}?page=${page}`}
 											className="action-btn"
 											title="Edit User"
 										>
