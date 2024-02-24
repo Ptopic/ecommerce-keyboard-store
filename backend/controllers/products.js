@@ -83,6 +83,10 @@ exports.updateProduct = async (req, res) => {
 		price,
 		stock,
 		activeFields,
+		colors,
+		sizes,
+		materials,
+		names,
 	} = req.body;
 
 	price = parseFloat(price).toFixed(2);
@@ -92,9 +96,11 @@ exports.updateProduct = async (req, res) => {
 			// Map active fields to details object
 			let details = {};
 
-			for (let field of activeFields) {
-				// details[field] = String(req.body[field]).toLowerCase().trim();
-				details[field] = String(req.body[field]);
+			if (activeFields) {
+				for (let field of activeFields) {
+					// details[field] = String(req.body[field]).toLowerCase().trim();
+					details[field] = String(req.body[field]);
+				}
 			}
 
 			let imagesArray = [];
@@ -115,9 +121,27 @@ exports.updateProduct = async (req, res) => {
 						details: details,
 						price: price,
 						stock: stock,
+						materials: materials,
+						colors: colors,
+						sizes: sizes,
+						names: names,
 					},
 					$push: {
 						images: { $each: imagesArray },
+					},
+				},
+				{ new: true }
+			);
+			return res.status(200).send({ success: true, data: updatedProduct });
+		} else if (colors || materials || sizes || names) {
+			let updatedProduct = await Product.findByIdAndUpdate(
+				req.params.id,
+				{
+					$set: {
+						materials: materials,
+						colors: colors,
+						sizes: sizes,
+						variationNames: names,
 					},
 				},
 				{ new: true }
@@ -127,8 +151,10 @@ exports.updateProduct = async (req, res) => {
 			// Map active fields to details object
 			let details = {};
 
-			for (let field of activeFields) {
-				details[field] = req.body[field];
+			if (activeFields) {
+				for (let field of activeFields) {
+					details[field] = req.body[field];
+				}
 			}
 
 			let updatedProduct = await Product.findByIdAndUpdate(
@@ -142,6 +168,10 @@ exports.updateProduct = async (req, res) => {
 						details: details,
 						price: price,
 						stock: stock,
+						materials: materials,
+						colors: colors,
+						sizes: sizes,
+						names: names,
 					},
 				},
 				{ new: true }
@@ -587,7 +617,7 @@ exports.createOrUpdateProductVariants = async (req, res) => {
 					$set: {
 						productId: productId,
 						price: variations[i].price,
-						stock: variations[i].price,
+						stock: variations[i].stock,
 						images: imagesArray,
 						name: nameValue,
 					},

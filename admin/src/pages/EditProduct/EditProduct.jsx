@@ -151,6 +151,9 @@ const EditProduct = () => {
 	const mapActiveFieldsFromSelectedCategory = async (newCategory) => {
 		// Find selected category in category data
 		setSelectedCategory(newCategory);
+
+		getAllCategories();
+
 		let curCategory;
 		categories.forEach((category) => {
 			if (category['name'] == newCategory) {
@@ -162,6 +165,8 @@ const EditProduct = () => {
 		if (curCategory != null) {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
+
+			console.log(namesOfActiveFields);
 
 			let object = {};
 			let validationObject = {};
@@ -235,6 +240,8 @@ const EditProduct = () => {
 
 			setFilters(filtersArray);
 
+			console.log(namesOfActiveFields);
+
 			setActiveFields(namesOfActiveFields);
 			return namesOfActiveFields;
 		}
@@ -268,11 +275,7 @@ const EditProduct = () => {
 	}, []);
 
 	useEffect(() => {
-		if (categories.length === 0) {
-			getAllCategories();
-		} else {
-			mapActiveFieldsFromSelectedCategory();
-		}
+		mapActiveFieldsFromSelectedCategory();
 	}, [categories]);
 
 	useEffect(() => {
@@ -505,7 +508,7 @@ const EditProduct = () => {
 								) : null}
 							</div>
 
-							{activeFields.length > 0 && (
+							{activeFields && (
 								<div className="product-details">
 									<div className="additional-info">
 										<h2>Product Details (Case-sensitive):</h2>
