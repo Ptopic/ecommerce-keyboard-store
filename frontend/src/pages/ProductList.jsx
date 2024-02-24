@@ -371,6 +371,7 @@ const ProductList = () => {
 	// Get new prices with useMemo only when activeFilters change
 	useMemo(() => {
 		getMinMaxPrices();
+		getProductsWithoutDebounce();
 		regenerateFilters();
 	}, [activeFilters]);
 
@@ -378,7 +379,8 @@ const ProductList = () => {
 	// If products array changes generate filters (initial load or load more data) or location changes
 	useEffect(() => {
 		// Reset filters and active filters
-		clearFilters();
+		setActiveFilters([]);
+		setFilters([]);
 
 		// getMinMaxPrices();
 		getProductsWithoutDebounce();
