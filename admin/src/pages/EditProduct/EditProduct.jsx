@@ -23,7 +23,12 @@ import 'react-quill/dist/quill.snow.css';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+	Link,
+	useLocation,
+	useNavigate,
+	useSearchParams,
+} from 'react-router-dom';
 import { admin_request, request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import Spinner from '../../components/Spinner/Spinner';
@@ -32,6 +37,12 @@ const EditProduct = () => {
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const [page, setPage] = useState(
+		searchParams ? searchParams.get('page') : null
+	);
 
 	const location = useLocation();
 	const id = location.pathname.split('/edit/')[1];
@@ -563,7 +574,7 @@ const EditProduct = () => {
 					)}
 				</Formik>
 			</div>
-			<Link to={'/products'} className="back-btn">
+			<Link to={`/products?page=${page}`} className="back-btn">
 				Back
 			</Link>
 		</div>

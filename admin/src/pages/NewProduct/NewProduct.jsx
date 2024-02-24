@@ -23,9 +23,17 @@ import { Link } from 'react-router-dom';
 import { admin_request, request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
+import { useSearchParams } from 'react-router-dom';
+
 const NewProduct = () => {
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const [page, setPage] = useState(
+		searchParams ? searchParams.get('page') : null
+	);
 
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
@@ -439,7 +447,7 @@ const NewProduct = () => {
 					)}
 				</Formik>
 			</div>
-			<Link to={'/products'} className="back-btn">
+			<Link to={`/products?page=${page}`} className="back-btn">
 				Back
 			</Link>
 		</div>

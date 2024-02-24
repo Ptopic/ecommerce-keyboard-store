@@ -90,7 +90,7 @@ function EditCategory() {
 			});
 			formikActions.resetForm();
 			setIsLoading(false);
-			navigate('/categories');
+			navigate(`/categories?page=${page}`);
 		} catch (error) {
 			console.log(error);
 			toast.error(error.response.data.error);

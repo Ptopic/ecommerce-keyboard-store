@@ -153,7 +153,7 @@ const Products = () => {
 					)}
 				</Formik>
 				<div className="add-new-container">
-					<Link to={'/products/add'} className="add-btn">
+					<Link to={`/products/add?page=${page}`} className="add-btn">
 						Add new Product
 					</Link>
 				</div>
@@ -266,7 +266,7 @@ const Products = () => {
 									<td>{product.stock}</td>
 									<td className="actions-row products">
 										<Link
-											to={`/products/edit/${product._id}`}
+											to={`/products/edit/${product._id}?page=${page}`}
 											className="action-btn"
 											title="Edit Product"
 										>
