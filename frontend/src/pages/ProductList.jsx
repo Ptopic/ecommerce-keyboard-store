@@ -23,6 +23,7 @@ import { debounce } from '../utils/debounce';
 import { Checkbox } from '@mui/material';
 
 import { IoMdCheckmark } from 'react-icons/io';
+import ProductFilters from '../components/ProductFilters/ProductFilters';
 
 const ProductList = () => {
 	const categories = useSelector((state) => state.categories.data);
@@ -66,7 +67,9 @@ const ProductList = () => {
 
 		let foundCategory = categories.find((category) => category.name === name);
 
-		if (foundCategory?.fields == undefined) {
+		if (foundCategory?.fields == []) {
+			setFilters(null);
+			setActiveFilters(null);
 			return;
 		}
 
@@ -110,8 +113,6 @@ const ProductList = () => {
 				('' + a).localeCompare(b, undefined, { numeric: true })
 			);
 
-			console.log(sortedArrayFromSet);
-
 			curSet.clear();
 
 			// Add sorted values back into set
@@ -120,9 +121,7 @@ const ProductList = () => {
 			}
 		}
 
-		console.log(filtersArray);
 		setFilters(filtersArray);
-		console.log(filters);
 
 		// Cache filters for current category in redux persist
 	};
@@ -139,9 +138,13 @@ const ProductList = () => {
 
 		let foundCategory = categories.find((category) => category.name === name);
 
-		if (foundCategory?.fields == undefined) {
+		if (foundCategory?.fields == []) {
+			setFilters(null);
+			setActiveFilters(null);
 			return;
 		}
+
+		let categoryFields = foundCategory?.fields;
 
 		let filtersArray = [];
 
@@ -418,52 +421,16 @@ const ProductList = () => {
 							</div>
 							<div className="filters-devider"></div>
 
-							{filters.map((filter, filterIndex) => {
-								return (
-									<div className="filter">
-										<div className="filter-name">{Object.keys(filter)}:</div>
-										<div className="filter-values">
-											{Object.values(filter).map((el) => {
-												return Array.from(el).map((filterValue) => {
-													return (
-														<div className="checkout-checkbox">
-															<button
-																type="button"
-																style={{
-																	background:
-																		Object.values(
-																			activeFilters[filterIndex]
-																		)[0] == filterValue
-																			? '#E81123'
-																			: '#fff',
-																	border:
-																		Object.values(activeFilters[filterIndex]) ==
-																		filterValue
-																			? 'none'
-																			: '1px solid black',
-																}}
-																onClick={() =>
-																	handleFilterCheckboxClick(
-																		filterIndex,
-																		Object.keys(activeFilters[filterIndex]),
-																		Object.values(activeFilters[filterIndex]),
-																		filterValue
-																	)
-																}
-															>
-																{activeFilters[Object.keys(filter)[0]] != '' ? (
-																	<IoMdCheckmark color={'white'} size={24} />
-																) : null}
-															</button>
-															<p>{filterValue}</p>
-														</div>
-													);
-												});
-											})}
-										</div>
-									</div>
-								);
-							})}
+							{filters.length !== 0 &&
+								filters != null &&
+								activeFilters.length !== 0 &&
+								activeFilters != null && (
+									<ProductFilters
+										filters={filters}
+										activeFilters={activeFilters}
+										handleFilterCheckboxClick={handleFilterCheckboxClick}
+									/>
+								)}
 
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
@@ -497,55 +464,16 @@ const ProductList = () => {
 					<div className="sort-container"></div>
 					<div className="products-sort-container">
 						<div className="filters-container">
-							{filters.length > 0 &&
-								filters.map((filter, filterIndex) => {
-									return (
-										<div className="filter" key={filterIndex}>
-											<div className="filter-name">{Object.keys(filter)}:</div>
-											<div className="filter-values">
-												{Object.values(filter).map((el, id) => {
-													return Array.from(el).map((filterValue) => {
-														return (
-															<div className="checkout-checkbox">
-																<button
-																	type="button"
-																	style={{
-																		background:
-																			Object.values(
-																				activeFilters[filterIndex]
-																			)[0] == filterValue
-																				? '#E81123'
-																				: '#fff',
-																		border:
-																			Object.values(
-																				activeFilters[filterIndex]
-																			) == filterValue
-																				? 'none'
-																				: '1px solid black',
-																	}}
-																	onClick={() =>
-																		handleFilterCheckboxClick(
-																			filterIndex,
-																			Object.keys(activeFilters[filterIndex]),
-																			Object.values(activeFilters[filterIndex]),
-																			filterValue
-																		)
-																	}
-																>
-																	{activeFilters[Object.keys(filter)[0]] !=
-																	'' ? (
-																		<IoMdCheckmark color={'white'} size={24} />
-																	) : null}
-																</button>
-																<p>{filterValue}</p>
-															</div>
-														);
-													});
-												})}
-											</div>
-										</div>
-									);
-								})}
+							{filters.length !== 0 &&
+								filters != null &&
+								activeFilters.length !== 0 &&
+								activeFilters != null && (
+									<ProductFilters
+										filters={filters}
+										activeFilters={activeFilters}
+										handleFilterCheckboxClick={handleFilterCheckboxClick}
+									/>
+								)}
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
 								<div className="price-ranges current">
