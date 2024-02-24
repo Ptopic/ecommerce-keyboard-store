@@ -21,7 +21,7 @@ import AddFieldModal from '../../components/AddFieldModal/AddFieldModal';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { admin_request } from '../../api';
 
 // Icons
@@ -30,6 +30,12 @@ import { FaTrash } from 'react-icons/fa';
 function NewCategory() {
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const [page, setPage] = useState(
+		searchParams ? searchParams.get('page') : null
+	);
 
 	const [latestIndex, setLatestIndex] = useState(0);
 	const [name, setName] = useState('');
@@ -171,7 +177,7 @@ function NewCategory() {
 					)}
 				</Formik>
 			</div>
-			<Link to={'/categories'} className="back-btn">
+			<Link to={`/categories?page=${page}`} className="back-btn">
 				Back
 			</Link>
 		</div>

@@ -21,7 +21,12 @@ import AddFieldModal from '../../components/AddFieldModal/AddFieldModal';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+	Link,
+	useLocation,
+	useNavigate,
+	useSearchParams,
+} from 'react-router-dom';
 import { admin_request } from '../../api';
 
 // Icons
@@ -31,6 +36,12 @@ function EditCategory() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const id = location.pathname.split('/edit/')[1];
+
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const [page, setPage] = useState(
+		searchParams ? searchParams.get('page') : null
+	);
 
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
@@ -194,7 +205,7 @@ function EditCategory() {
 					)}
 				</Formik>
 			</div>
-			<Link to={'/categories'} className="back-btn">
+			<Link to={`/categories?page=${page}`} className="back-btn">
 				Back
 			</Link>
 		</div>

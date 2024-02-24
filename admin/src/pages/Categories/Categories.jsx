@@ -147,7 +147,7 @@ function Categories() {
 					)}
 				</Formik>
 				<div className="add-new-container">
-					<Link to={'/categories/add'} className="add-btn">
+					<Link to={`/categories/add?page=${page}`} className="add-btn">
 						Add new Category
 					</Link>
 				</div>
@@ -187,7 +187,7 @@ function Categories() {
 									<td>{category.name}</td>
 									<td className="actions-row">
 										<Link
-											to={`/categories/edit/${category._id}`}
+											to={`/categories/edit/${category._id}?page=${page}`}
 											className="action-btn"
 											title="Edit Category"
 										>
