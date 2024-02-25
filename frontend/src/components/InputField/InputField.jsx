@@ -40,8 +40,8 @@ function InputField({
 					className="input-field"
 					required={required == false ? false : true}
 					placeholder={placeholder}
-					value={value}
-					onChange={onChange ? onChange : null}
+					value={value || ''}
+					onChange={onChange}
 					disabled={disabled}
 				/>
 				<label htmlFor={name} className="input-label">

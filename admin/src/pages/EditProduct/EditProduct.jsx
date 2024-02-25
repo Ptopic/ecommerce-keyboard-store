@@ -107,10 +107,7 @@ const EditProduct = () => {
 	};
 
 	const handleEditProduct = async (values, formikActions) => {
-		console.log(values);
 		if (files?.length != 0) {
-			console.log(values);
-
 			setIsLoading(true);
 			try {
 				const res = await admin_request(userToken).put('/products/' + id, {
@@ -119,8 +116,6 @@ const EditProduct = () => {
 					activeFields: activeFields,
 				});
 
-				console.log(files);
-				console.log(res);
 				toast.success('Product added successfully');
 				formikActions.resetForm();
 				setIsLoading(false);
@@ -137,8 +132,6 @@ const EditProduct = () => {
 				resetAllFormData();
 			}
 		} else {
-			console.log(values);
-
 			setIsLoading(true);
 			try {
 				const res = await admin_request(userToken).put('/products/' + id, {
@@ -146,8 +139,6 @@ const EditProduct = () => {
 					activeFields: activeFields,
 				});
 
-				console.log(files);
-				console.log(res);
 				toast.success('Product added successfully');
 				formikActions.resetForm();
 				setIsLoading(false);
@@ -174,105 +165,6 @@ const EditProduct = () => {
 		}
 	};
 
-	// const mapActiveFieldsFromSelectedCategory = async (newCategory) => {
-	// 	// Find selected category in category data
-	// 	setSelectedCategory(newCategory);
-
-	// 	getAllCategories();
-
-	// 	let curCategory;
-	// 	categories.forEach((category) => {
-	// 		if (category['name'] == newCategory) {
-	// 			curCategory = category;
-	// 		}
-	// 	});
-
-	// 	// Set fieldDetails to category details
-	// 	if (curCategory != null) {
-	// 		// Format active fields
-	// 		const namesOfActiveFields = curCategory.fields.map((field) => field.name);
-
-	// 		console.log(namesOfActiveFields);
-
-	// 		let object = {};
-	// 		let validationObject = {};
-
-	// 		// Map names of active fields as object
-	// 		for (let i = 0; i < namesOfActiveFields.length; i++) {
-	// 			object[namesOfActiveFields[i]] = '';
-	// 			validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
-	// 		}
-
-	// 		// Get all products by category to generate filters for it
-	// 		const allProductsRes = await request.get(
-	// 			`/products/filters/` + newCategory,
-	// 			{
-	// 				params: {
-	// 					activeFilters: activeFilters != [] ? activeFilters : null,
-	// 				},
-	// 			}
-	// 		);
-
-	// 		let productsData = allProductsRes.data.data;
-
-	// 		// Get category by name
-	// 		let categoryFields = curCategory.fields;
-
-	// 		let filtersArray = [];
-	// 		let initialFiltersArray = [];
-
-	// 		if (initialFiltersArray.length == 0) {
-	// 			for (let filter of categoryFields) {
-	// 				let obj = {};
-	// 				let initialFilter = {};
-	// 				obj[filter.name] = new Set([]);
-	// 				initialFilter[filter.name] = '';
-	// 				filtersArray.push(obj);
-	// 				initialFiltersArray.push(initialFilter);
-	// 			}
-	// 		}
-
-	// 		setActiveFilters(initialFiltersArray);
-
-	// 		for (let product of productsData) {
-	// 			// Loop thru all products details
-	// 			for (let i = 0; i < categoryFields.length; i++) {
-	// 				let filterName = categoryFields[i].name;
-
-	// 				let productFilter = product.details[filterName.toString()];
-
-	// 				let filterSet = filtersArray[i][filterName.toString()];
-
-	// 				filterSet.add(productFilter);
-	// 			}
-	// 		}
-
-	// 		// Loop thru all filters to sort its sets
-	// 		for (let j = 0; j < filtersArray.length; j++) {
-	// 			let curSet = Object.values(filtersArray[j])[0];
-
-	// 			// Sort filter set
-	// 			let sortedArrayFromSet = Array.from(curSet).sort((a, b) =>
-	// 				('' + a).localeCompare(b, undefined, { numeric: true })
-	// 			);
-
-	// 			curSet.clear();
-
-	// 			// Add sorted values back into set
-	// 			for (let value of sortedArrayFromSet) {
-	// 				curSet.add(value);
-	// 			}
-	// 		}
-
-	// 		setFilters(filtersArray);
-
-	// 		console.log(namesOfActiveFields);
-
-	// 		setActiveFields(namesOfActiveFields);
-	// 		return namesOfActiveFields;
-	// 	}
-	// };
-
 	const getProduct = async () => {
 		try {
 			await admin_request(userToken)
@@ -294,15 +186,10 @@ const EditProduct = () => {
 		}
 	};
 
-	const handleFiltersGeneration = async (newCategory) => {
-		// Find selected category in category data
-		newCategory ? setSelectedCategory(newCategory) : null;
-
-		getAllCategories();
-
+	const handleInitilaFiltersGeneration = async () => {
 		let curCategory;
 		categories.forEach((category) => {
-			if (category['name'] == newCategory) {
+			if (category['name'] == selectedCategory) {
 				curCategory = category;
 			}
 		});
@@ -312,7 +199,48 @@ const EditProduct = () => {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			console.log(namesOfActiveFields);
+			let object = {};
+			let validationObject = {};
+
+			// Map names of active fields as object
+			for (let i = 0; i < namesOfActiveFields.length; i++) {
+				object[namesOfActiveFields[i]] = '';
+				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
+			}
+
+			generateFilterProductAdmin(
+				selectedCategory,
+				activeFilters,
+				curCategory,
+				setFilters,
+				setActiveFilters,
+				setActiveFields,
+				namesOfActiveFields
+			);
+		}
+	};
+
+	const handleFiltersGeneration = async (newCategory) => {
+		// Find selected category in category data
+		newCategory ? setSelectedCategory(newCategory) : null;
+
+		let curCategory;
+		categories.forEach((category) => {
+			if (newCategory) {
+				if (category['name'] == newCategory) {
+					curCategory = category;
+				}
+			} else {
+				if (category['name'] == selectedCategory) {
+					curCategory = category;
+				}
+			}
+		});
+
+		// Set fieldDetails to category details
+		if (curCategory != null) {
+			// Format active fields
+			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
 			let object = {};
 			let validationObject = {};
@@ -322,8 +250,9 @@ const EditProduct = () => {
 				object[namesOfActiveFields[i]] = '';
 				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
 			}
+
 			generateFilterProductAdmin(
-				selectedCategory,
+				newCategory,
 				activeFilters,
 				curCategory,
 				setFilters,
@@ -341,12 +270,7 @@ const EditProduct = () => {
 	}, []);
 
 	useEffect(() => {
-		handleFiltersGeneration();
-		// mapActiveFieldsFromSelectedCategory();
-	}, [categories]);
-
-	useEffect(() => {
-		handleFiltersGeneration();
+		handleInitilaFiltersGeneration();
 		// mapActiveFieldsFromSelectedCategory();
 	}, [product]);
 
@@ -377,6 +301,7 @@ const EditProduct = () => {
 	const getInitialValuesForActiveFields = (product) => {
 		let initialValues = {};
 		let productDetails = product.details;
+
 		activeFields.forEach((field) => {
 			if (product && productDetails && productDetails[field]) {
 				initialValues[field] = productDetails[field];
@@ -399,8 +324,6 @@ const EditProduct = () => {
 	};
 
 	const removePreviousImage = async (e, productImageId) => {
-		console.log(productImageId);
-
 		setImageRemoveIsLoading(true);
 
 		try {
@@ -432,7 +355,6 @@ const EditProduct = () => {
 					initialValues={initialValues}
 					validationSchema={newProductSchema}
 					onSubmit={(values, formikActions) => {
-						console.log(values);
 						handleEditProduct(values, formikActions);
 					}}
 				>
@@ -522,29 +444,31 @@ const EditProduct = () => {
 								<div className="file-container">
 									<p>Current Files</p>
 									<div className="previous-images-container">
-										{previousFiles.map((prevFile, id) => {
-											return (
-												<div className="uploaded-image" key={id}>
-													<button
-														type="button"
-														className="close-img-btn"
-														onClick={(e) => removePreviousImage(e, id)}
-													>
-														{imageRemoveIsLoading === true ? (
-															<Spinner
-																width={22}
-																height={22}
-																borderWidth={2}
-																color={'#a94442'}
-															/>
-														) : (
-															<IoClose />
-														)}
-													</button>
-													<img src={prevFile.url} alt="uploaded image" />
-												</div>
-											);
-										})}
+										{previousFiles &&
+											previousFiles != [] &&
+											previousFiles.map((prevFile, id) => {
+												return (
+													<div className="uploaded-image" key={id}>
+														<button
+															type="button"
+															className="close-img-btn"
+															onClick={(e) => removePreviousImage(e, id)}
+														>
+															{imageRemoveIsLoading === true ? (
+																<Spinner
+																	width={22}
+																	height={22}
+																	borderWidth={2}
+																	color={'#a94442'}
+																/>
+															) : (
+																<IoClose />
+															)}
+														</button>
+														<img src={prevFile.url} alt="uploaded image" />
+													</div>
+												);
+											})}
 									</div>
 								</div>
 
@@ -563,13 +487,14 @@ const EditProduct = () => {
 										}}
 									>
 										<option disabled>Select category</option>
-										{categories.map((category, id) => {
-											return (
-												<option value={category.name} key={id}>
-													{category.name}
-												</option>
-											);
-										})}
+										{categories &&
+											categories.map((category, id) => {
+												return (
+													<option value={category.name} key={id}>
+														{category.name}
+													</option>
+												);
+											})}
 									</Field>
 								</div>
 								{errors.category && touched.category ? (
@@ -577,7 +502,7 @@ const EditProduct = () => {
 								) : null}
 							</div>
 
-							{activeFields && (
+							{activeFields && activeFields != [] && (
 								<div className="product-details">
 									<div className="additional-info">
 										<h2>Product Details (Case-sensitive):</h2>
@@ -602,6 +527,7 @@ const EditProduct = () => {
 											/>
 											<div className="previous-filters">
 												{filters &&
+													filters != [] &&
 													Array.from(Object.values(filters[index])[0]).map(
 														(el) => {
 															return (

@@ -9,6 +9,7 @@ export const generateFilterProductAdmin = async (
 	setActiveFileds,
 	namesOfActiveFields
 ) => {
+	console.log(selectedCategory);
 	const allProductsRes = await request.get(
 		`/products/filters/` + selectedCategory,
 		{
@@ -18,9 +19,12 @@ export const generateFilterProductAdmin = async (
 		}
 	);
 
+	console.log(selectedCategory);
 	console.log(allProductsRes);
 
 	let productsData = allProductsRes.data.data;
+
+	console.log(allProductsRes);
 
 	// Get category by name
 	let categoryFields = curCategory.fields;
@@ -40,6 +44,8 @@ export const generateFilterProductAdmin = async (
 	}
 
 	setActiveFilters(initialFiltersArray);
+
+	console.log(productsData);
 
 	for (let product of productsData) {
 		// Loop thru all products details
@@ -71,6 +77,7 @@ export const generateFilterProductAdmin = async (
 		}
 	}
 
+	console.log(filtersArray);
 	setFilters(filtersArray);
 	setActiveFileds(namesOfActiveFields);
 };
