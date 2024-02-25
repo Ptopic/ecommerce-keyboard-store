@@ -33,6 +33,9 @@ import { admin_request, request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import Spinner from '../../components/Spinner/Spinner';
 
+// Utils
+import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
+
 const EditProduct = () => {
 	const navigate = useNavigate();
 	const user = useSelector((state) => state.user);
@@ -171,9 +174,129 @@ const EditProduct = () => {
 		}
 	};
 
-	const mapActiveFieldsFromSelectedCategory = async (newCategory) => {
+	// const mapActiveFieldsFromSelectedCategory = async (newCategory) => {
+	// 	// Find selected category in category data
+	// 	setSelectedCategory(newCategory);
+
+	// 	getAllCategories();
+
+	// 	let curCategory;
+	// 	categories.forEach((category) => {
+	// 		if (category['name'] == newCategory) {
+	// 			curCategory = category;
+	// 		}
+	// 	});
+
+	// 	// Set fieldDetails to category details
+	// 	if (curCategory != null) {
+	// 		// Format active fields
+	// 		const namesOfActiveFields = curCategory.fields.map((field) => field.name);
+
+	// 		console.log(namesOfActiveFields);
+
+	// 		let object = {};
+	// 		let validationObject = {};
+
+	// 		// Map names of active fields as object
+	// 		for (let i = 0; i < namesOfActiveFields.length; i++) {
+	// 			object[namesOfActiveFields[i]] = '';
+	// 			validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
+	// 		}
+
+	// 		// Get all products by category to generate filters for it
+	// 		const allProductsRes = await request.get(
+	// 			`/products/filters/` + newCategory,
+	// 			{
+	// 				params: {
+	// 					activeFilters: activeFilters != [] ? activeFilters : null,
+	// 				},
+	// 			}
+	// 		);
+
+	// 		let productsData = allProductsRes.data.data;
+
+	// 		// Get category by name
+	// 		let categoryFields = curCategory.fields;
+
+	// 		let filtersArray = [];
+	// 		let initialFiltersArray = [];
+
+	// 		if (initialFiltersArray.length == 0) {
+	// 			for (let filter of categoryFields) {
+	// 				let obj = {};
+	// 				let initialFilter = {};
+	// 				obj[filter.name] = new Set([]);
+	// 				initialFilter[filter.name] = '';
+	// 				filtersArray.push(obj);
+	// 				initialFiltersArray.push(initialFilter);
+	// 			}
+	// 		}
+
+	// 		setActiveFilters(initialFiltersArray);
+
+	// 		for (let product of productsData) {
+	// 			// Loop thru all products details
+	// 			for (let i = 0; i < categoryFields.length; i++) {
+	// 				let filterName = categoryFields[i].name;
+
+	// 				let productFilter = product.details[filterName.toString()];
+
+	// 				let filterSet = filtersArray[i][filterName.toString()];
+
+	// 				filterSet.add(productFilter);
+	// 			}
+	// 		}
+
+	// 		// Loop thru all filters to sort its sets
+	// 		for (let j = 0; j < filtersArray.length; j++) {
+	// 			let curSet = Object.values(filtersArray[j])[0];
+
+	// 			// Sort filter set
+	// 			let sortedArrayFromSet = Array.from(curSet).sort((a, b) =>
+	// 				('' + a).localeCompare(b, undefined, { numeric: true })
+	// 			);
+
+	// 			curSet.clear();
+
+	// 			// Add sorted values back into set
+	// 			for (let value of sortedArrayFromSet) {
+	// 				curSet.add(value);
+	// 			}
+	// 		}
+
+	// 		setFilters(filtersArray);
+
+	// 		console.log(namesOfActiveFields);
+
+	// 		setActiveFields(namesOfActiveFields);
+	// 		return namesOfActiveFields;
+	// 	}
+	// };
+
+	const getProduct = async () => {
+		try {
+			await admin_request(userToken)
+				.get('/products/find/' + id)
+				.then((res) => {
+					let productData = res.data.data;
+
+					setSelectedCategory(productData?.category);
+
+					setSpecifications(productData?.specifications);
+					setDescription(productData?.description);
+
+					setProduct(productData);
+
+					setPreviousFiles(productData.images);
+				});
+		} catch (error) {
+			console.log(error.response.data.error);
+		}
+	};
+
+	const handleFiltersGeneration = async (newCategory) => {
 		// Find selected category in category data
-		setSelectedCategory(newCategory);
+		newCategory ? setSelectedCategory(newCategory) : null;
 
 		getAllCategories();
 
@@ -199,95 +322,15 @@ const EditProduct = () => {
 				object[namesOfActiveFields[i]] = '';
 				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
 			}
-
-			// Get all products by category to generate filters for it
-			const allProductsRes = await request.get(
-				`/products/filters/` + newCategory,
-				{
-					params: {
-						activeFilters: activeFilters != [] ? activeFilters : null,
-					},
-				}
+			generateFilterProductAdmin(
+				selectedCategory,
+				activeFilters,
+				curCategory,
+				setFilters,
+				setActiveFilters,
+				setActiveFields,
+				namesOfActiveFields
 			);
-
-			let productsData = allProductsRes.data.data;
-
-			// Get category by name
-			let categoryFields = curCategory.fields;
-
-			let filtersArray = [];
-			let initialFiltersArray = [];
-
-			if (initialFiltersArray.length == 0) {
-				for (let filter of categoryFields) {
-					let obj = {};
-					let initialFilter = {};
-					obj[filter.name] = new Set([]);
-					initialFilter[filter.name] = '';
-					filtersArray.push(obj);
-					initialFiltersArray.push(initialFilter);
-				}
-			}
-
-			setActiveFilters(initialFiltersArray);
-
-			for (let product of productsData) {
-				// Loop thru all products details
-				for (let i = 0; i < categoryFields.length; i++) {
-					let filterName = categoryFields[i].name;
-
-					let productFilter = product.details[filterName.toString()];
-
-					let filterSet = filtersArray[i][filterName.toString()];
-
-					filterSet.add(productFilter);
-				}
-			}
-
-			// Loop thru all filters to sort its sets
-			for (let j = 0; j < filtersArray.length; j++) {
-				let curSet = Object.values(filtersArray[j])[0];
-
-				// Sort filter set
-				let sortedArrayFromSet = Array.from(curSet).sort((a, b) =>
-					('' + a).localeCompare(b, undefined, { numeric: true })
-				);
-
-				curSet.clear();
-
-				// Add sorted values back into set
-				for (let value of sortedArrayFromSet) {
-					curSet.add(value);
-				}
-			}
-
-			setFilters(filtersArray);
-
-			console.log(namesOfActiveFields);
-
-			setActiveFields(namesOfActiveFields);
-			return namesOfActiveFields;
-		}
-	};
-
-	const getProduct = async () => {
-		try {
-			await admin_request(userToken)
-				.get('/products/find/' + id)
-				.then((res) => {
-					let productData = res.data.data;
-
-					setSelectedCategory(productData?.category);
-
-					setSpecifications(productData?.specifications);
-					setDescription(productData?.description);
-
-					setProduct(productData);
-
-					setPreviousFiles(productData.images);
-				});
-		} catch (error) {
-			console.log(error.response.data.error);
 		}
 	};
 
@@ -298,11 +341,13 @@ const EditProduct = () => {
 	}, []);
 
 	useEffect(() => {
-		mapActiveFieldsFromSelectedCategory();
+		handleFiltersGeneration();
+		// mapActiveFieldsFromSelectedCategory();
 	}, [categories]);
 
 	useEffect(() => {
-		mapActiveFieldsFromSelectedCategory();
+		handleFiltersGeneration();
+		// mapActiveFieldsFromSelectedCategory();
 	}, [product]);
 
 	const dragAndDropOnChange = (e) => {
@@ -513,7 +558,8 @@ const EditProduct = () => {
 										onChange={(e) => {
 											setFieldValue('category', e.target.value);
 											setSelectedCategory(e.target.value);
-											mapActiveFieldsFromSelectedCategory(e.target.value);
+											handleFiltersGeneration(e.target.value);
+											// mapActiveFieldsFromSelectedCategory(e.target.value);
 										}}
 									>
 										<option disabled>Select category</option>
