@@ -220,7 +220,7 @@ const EditProduct = () => {
 		}
 	};
 
-	const handleFiltersGeneration = async (newCategory) => {
+	const handleOnCategoryChangeFiltersGeneration = async (newCategory) => {
 		// Find selected category in category data
 		newCategory ? setSelectedCategory(newCategory) : null;
 
@@ -271,7 +271,6 @@ const EditProduct = () => {
 
 	useEffect(() => {
 		handleInitilaFiltersGeneration();
-		// mapActiveFieldsFromSelectedCategory();
 	}, [product]);
 
 	const dragAndDropOnChange = (e) => {
@@ -482,8 +481,7 @@ const EditProduct = () => {
 										onChange={(e) => {
 											setFieldValue('category', e.target.value);
 											setSelectedCategory(e.target.value);
-											handleFiltersGeneration(e.target.value);
-											// mapActiveFieldsFromSelectedCategory(e.target.value);
+											handleOnCategoryChangeFiltersGeneration(e.target.value);
 										}}
 									>
 										<option disabled>Select category</option>
