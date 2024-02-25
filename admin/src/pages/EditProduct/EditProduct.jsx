@@ -129,7 +129,9 @@ const EditProduct = () => {
 				} else {
 					toast.error('Something went wrong');
 				}
+				formikActions.resetForm();
 				setIsLoading(false);
+				resetAllFormData();
 			}
 		} else {
 			console.log(values);
@@ -148,8 +150,14 @@ const EditProduct = () => {
 				setIsLoading(false);
 				navigate(-1);
 			} catch (error) {
-				toast.error('Something went wrong');
+				if (error?.response?.data?.error) {
+					toast.error('Product already exists');
+				} else {
+					toast.error('Something went wrong');
+				}
+				formikActions.resetForm();
 				setIsLoading(false);
+				resetAllFormData();
 			}
 		}
 	};

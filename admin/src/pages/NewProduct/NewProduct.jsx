@@ -112,6 +112,7 @@ const NewProduct = () => {
 				} else {
 					toast.error('Something went wrong');
 				}
+				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
 			}
