@@ -235,7 +235,7 @@ const Navbar = () => {
 
 									{/* Map thru categories */}
 									{!loading &&
-										categoriesData
+										[...categoriesData]
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((category) => {
 												return (
