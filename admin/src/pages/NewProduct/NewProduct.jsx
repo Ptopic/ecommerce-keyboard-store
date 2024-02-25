@@ -108,7 +108,7 @@ const NewProduct = () => {
 				resetAllFormData();
 			} catch (error) {
 				if (error?.response?.data?.error) {
-					toast.error(error?.response?.data?.error);
+					toast.error('Product already exists');
 				} else {
 					toast.error('Something went wrong');
 				}

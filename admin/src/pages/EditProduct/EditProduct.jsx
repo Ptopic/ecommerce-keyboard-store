@@ -124,7 +124,11 @@ const EditProduct = () => {
 				resetAllFormData();
 				navigate(0);
 			} catch (error) {
-				toast.error('Something went wrong');
+				if (error?.response?.data?.error) {
+					toast.error('Product already exists');
+				} else {
+					toast.error('Something went wrong');
+				}
 				setIsLoading(false);
 			}
 		} else {
