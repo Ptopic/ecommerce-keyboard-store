@@ -22,10 +22,6 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-// Formik
-import { Formik, Form, Field, useFormik } from 'formik';
-import * as Yup from 'yup';
-
 export default function UserList() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -83,7 +79,7 @@ export default function UserList() {
 
 	useEffect(() => {
 		getUsersData();
-	}, [page, pageSize, searchTermValue, sort, direction]);
+	}, [page, pageSize, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -122,31 +118,28 @@ export default function UserList() {
 	return (
 		<>
 			<div className="user-list">
-				<Formik enableReinitialize>
-					{() => (
-						<Form>
-							<InputField
-								type={'text'}
-								name={'search'}
-								placeholder={'Search users by email'}
-								value={searchTermValue}
-								onChange={(e) => setSearchTermValue(e.target.value)}
-								width={'50%'}
-								icon={
-									<Link
-										to={`/user
-													&direction=${direction}
-													&page=${page}
-													&pageSize=${pageSize}
-													&search=${searchTermValue}`}
-									>
-										<AiOutlineSearch size={32} />
-									</Link>
-								}
-							/>
-						</Form>
-					)}
-				</Formik>
+				<InputField
+					type={'text'}
+					name={'search'}
+					placeholder={'Search users by email'}
+					value={searchTermValue}
+					onChange={(e) => setSearchTermValue(e.target.value)}
+					width={'50%'}
+					icon={
+						<Link
+							to={`/users${
+								searchTermValue
+									? `?direction=${direction}
+							&page=${0}
+							&pageSize=${pageSize}
+							&search=${searchTermValue}`
+									: ''
+							}`}
+						>
+							<AiOutlineSearch size={32} />
+						</Link>
+					}
+				/>
 				<div className="add-new-container">
 					<Link to={`/users/add?page=${page}`} className="add-btn">
 						Add new User

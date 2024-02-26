@@ -5,10 +5,6 @@ import './UserDetails.css';
 import '../pages/Checkout.css';
 import './Login.css';
 
-// Formik
-import { Formik, Form, Field, useFormik } from 'formik';
-import * as Yup from 'yup';
-
 // Components
 import Navbar from '../components/Navbar/Navbar';
 import InputField from '../components/InputField/InputField';
@@ -103,7 +99,7 @@ function UserOrders() {
 	// When page changes or page size changes rerender
 	useEffect(() => {
 		getUsersOrders();
-	}, [page, pageSize, searchTermValue, sortValue, directionValue]);
+	}, [page, pageSize, sortValue, directionValue]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -142,31 +138,28 @@ function UserOrders() {
 				<div className="user-orders-content">
 					<h1>Pregled narudžbi</h1>
 
-					<Formik enableReinitialize>
-						{() => (
-							<Form>
-								<InputField
-									type={'text'}
-									name={'search'}
-									placeholder={'Search orders by order number or date'}
-									value={searchTermValue}
-									onChange={(e) => setSearchTermValue(e.target.value)}
-									className="search-field"
-									icon={
-										<Link
-											to={`/user/orders
-													&direction=${direction}
-													&page=${page}
-													&pageSize=${pageSize}
-													&search=${searchTermValue}`}
-										>
-											<AiOutlineSearch size={32} />
-										</Link>
-									}
-								/>
-							</Form>
-						)}
-					</Formik>
+					<InputField
+						type={'text'}
+						name={'search'}
+						placeholder={'Search orders by order number or date'}
+						value={searchTermValue}
+						onChange={(e) => setSearchTermValue(e.target.value)}
+						className="search-field"
+						icon={
+							<Link
+								to={`/user/orders${
+									searchTermValue
+										? `?direction=${direction}
+																&page=${0}
+																&pageSize=${pageSize}
+																&search=${searchTermValue}`
+										: ''
+								}`}
+							>
+								<AiOutlineSearch size={32} />
+							</Link>
+						}
+					/>
 
 					<table className="table">
 						<thead className="table-head">

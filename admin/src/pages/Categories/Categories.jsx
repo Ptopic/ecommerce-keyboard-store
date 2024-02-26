@@ -21,10 +21,6 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-// Formik
-import { Formik, Form, Field, useFormik } from 'formik';
-import * as Yup from 'yup';
-
 function Categories() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -83,7 +79,7 @@ function Categories() {
 
 	useEffect(() => {
 		getCategoriesData();
-	}, [page, pageSize, searchTermValue, sort, direction]);
+	}, [page, pageSize, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -121,31 +117,28 @@ function Categories() {
 	return (
 		<>
 			<div className="categories-list">
-				<Formik enableReinitialize>
-					{() => (
-						<Form>
-							<InputField
-								type={'text'}
-								name={'search'}
-								placeholder={'Search categories by name'}
-								value={searchTermValue}
-								onChange={(e) => setSearchTermValue(e.target.value)}
-								width={'50%'}
-								icon={
-									<Link
-										to={`/categories
-													&direction=${direction}
-													&page=${page}
-													&pageSize=${pageSize}
-													&search=${searchTermValue}`}
-									>
-										<AiOutlineSearch size={32} />
-									</Link>
-								}
-							/>
-						</Form>
-					)}
-				</Formik>
+				<InputField
+					type={'text'}
+					name={'search'}
+					placeholder={'Search categories by name'}
+					value={searchTermValue}
+					onChange={(e) => setSearchTermValue(e.target.value)}
+					width={'50%'}
+					icon={
+						<Link
+							to={`/categories${
+								searchTermValue
+									? `?direction=${direction}
+							&page=${0}
+							&pageSize=${pageSize}
+							&search=${searchTermValue}`
+									: ''
+							}`}
+						>
+							<AiOutlineSearch size={32} />
+						</Link>
+					}
+				/>
 				<div className="add-new-container">
 					<Link to={`/categories/add?page=${page}`} className="add-btn">
 						Add new Category

@@ -21,10 +21,6 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-// Formik
-import { Formik, Form, Field, useFormik } from 'formik';
-import * as Yup from 'yup';
-
 // Utils
 import { formatPriceDisplay } from '../../../../frontend/src/utils/formatting';
 
@@ -86,7 +82,7 @@ const Products = () => {
 
 	useEffect(() => {
 		getProductsData();
-	}, [page, pageSize, searchTermValue, sort, direction]);
+	}, [page, pageSize, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -127,31 +123,31 @@ const Products = () => {
 	return (
 		<>
 			<div className="products-list">
-				<Formik enableReinitialize>
-					{() => (
-						<Form>
-							<InputField
-								type={'text'}
-								name={'search'}
-								placeholder={'Search products by title or category'}
-								value={searchTermValue}
-								onChange={(e) => setSearchTermValue(e.target.value)}
-								width={'50%'}
-								icon={
-									<Link
-										to={`/products
-													&direction=${direction}
-													&page=${page}
-													&pageSize=${pageSize}
-													&search=${searchTermValue}`}
-									>
-										<AiOutlineSearch size={32} />
-									</Link>
-								}
-							/>
-						</Form>
-					)}
-				</Formik>
+				<InputField
+					type={'text'}
+					name={'search'}
+					placeholder={'Search products by title or category'}
+					value={searchTermValue}
+					onChange={(e) => {
+						setSearchTermValue(e.target.value);
+					}}
+					width={'50%'}
+					icon={
+						<Link
+							to={`/products${
+								searchTermValue
+									? `?direction=${direction}
+							&page=${0}
+							&pageSize=${pageSize}
+							&search=${searchTermValue}`
+									: ''
+							}`}
+						>
+							<AiOutlineSearch size={32} />
+						</Link>
+					}
+				/>
+
 				<div className="add-new-container">
 					<Link to={`/products/add?page=${page}`} className="add-btn">
 						Add new Product

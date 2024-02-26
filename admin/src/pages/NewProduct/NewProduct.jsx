@@ -5,7 +5,7 @@ import './NewProduct.css';
 import '../../styles/forms.css';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
@@ -24,10 +24,7 @@ import { admin_request, request } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
 import { useSearchParams } from 'react-router-dom';
-import {
-	generateFilterProductAdmin,
-	generateFilters,
-} from '../../../../frontend/src/utils/filters';
+import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
 
 const NewProduct = () => {
 	const user = useSelector((state) => state.user);
@@ -181,13 +178,13 @@ const NewProduct = () => {
 		onSelectedCategoryChange();
 	}, [selectedCategory]);
 
-	const getActiveFieldsValidationSchema = () => {
-		let schema = {};
-		activeFields.forEach((field) => {
-			schema[field] = Yup.string().required(`${field} is required`);
-		});
-		return schema;
-	};
+	// const getActiveFieldsValidationSchema = () => {
+	// 	let schema = {};
+	// 	activeFields.forEach((field) => {
+	// 		schema[field] = Yup.string().required(`${field} is required`);
+	// 	});
+	// 	return schema;
+	// };
 
 	const newProductSchema = Yup.object().shape({
 		title: Yup.string().required('Title is required'),
@@ -198,16 +195,15 @@ const NewProduct = () => {
 		price: Yup.number().required('Price is required'),
 		stock: Yup.number().required('Stock is required'),
 		files: Yup.array().required('Files are required'),
-		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
 
-	const getInitialValuesForActiveFields = () => {
-		let initialValues = {};
-		activeFields.forEach((field) => {
-			initialValues[field] = '';
-		});
-		return initialValues;
-	};
+	// const getInitialValuesForActiveFields = () => {
+	// 	let initialValues = {};
+	// 	activeFields.forEach((field) => {
+	// 		initialValues[field] = '';
+	// 	});
+	// 	return initialValues;
+	// };
 
 	const initialValues = {
 		title: '',
@@ -217,8 +213,15 @@ const NewProduct = () => {
 		price: '',
 		stock: '',
 		files: [],
-		...getInitialValuesForActiveFields(),
 	};
+
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: newProductSchema,
+		onSubmit: async (values, formikActions) => {
+			handleAddNewProduct(values, formikActions);
+		},
+	});
 
 	return (
 		<div className="form">
@@ -228,176 +231,168 @@ const NewProduct = () => {
 			<div className="box">
 				<h2>Product Information:</h2>
 				<div className="seperator-line"></div>
-				<Formik
-					enableReinitialize={false}
-					initialValues={initialValues}
-					validationSchema={newProductSchema}
-					onSubmit={(values, formikActions) =>
-						handleAddNewProduct(values, formikActions)
-					}
-				>
-					{({ errors, touched, values, setFieldValue }) => (
-						<Form>
-							<div className="form-container">
-								<InputField
-									type={'text'}
-									name={'title'}
-									placeholder={'Title *'}
-									value={values.title}
-									onChange={(e) => {
-										setFieldValue('title', e.target.value);
-									}}
-									errors={errors.title}
-									touched={touched.title}
-								/>
-								<div className="row">
-									<div>
-										<InputField
-											type={'text'}
-											name={'price'}
-											placeholder={'Price *'}
-											value={values.price}
-											onChange={(e) => {
-												setFieldValue('price', e.target.value);
-											}}
-											errors={errors.price}
-											touched={touched.price}
-										/>
-									</div>
 
-									<div>
-										<InputField
-											type={'number'}
-											name={'stock'}
-											placeholder={'Stock *'}
-											value={values.stock}
-											onChange={(e) => {
-												setFieldValue('stock', e.target.value);
-											}}
-											errors={errors.stock}
-											touched={touched.stock}
-										/>
-									</div>
-								</div>
-
-								<div className="description-container">
-									<p>Specifications</p>
-									<ReactQuill
-										name="specifications"
-										theme="snow"
-										modules={modules}
-										formats={formats}
-										value={specifications}
-										onChange={(newValue) => {
-											setSpecifications(newValue);
-											setFieldValue('specifications', newValue);
-										}}
-									/>
-								</div>
-
-								<div className="description-container">
-									<p>Description</p>
-									<ReactQuill
-										name="description"
-										theme="snow"
-										modules={modules}
-										formats={formats}
-										value={description}
-										onChange={(newValue) => {
-											setDescription(newValue);
-											setFieldValue('description', newValue);
-										}}
-									/>
-								</div>
-
-								<div className="file-container">
-									<p>Files</p>
-									<DragAndDrop
-										onChange={dragAndDropOnChange}
-										setFiles={setFiles}
-										currentImages={files}
-									/>
-									{files?.length == 0 ? (
-										<div className="error">Files are required</div>
-									) : null}
-								</div>
-
-								<div className="select-container">
-									<p>Select category</p>
-									<Field
-										placeholder="Category *"
-										as="select"
-										name="category"
+				<FormikProvider value={formik}>
+					<form onSubmit={formik.handleSubmit}>
+						<div className="form-container">
+							<InputField
+								type={'text'}
+								name={'title'}
+								placeholder={'Title *'}
+								value={formik.values.title}
+								onChange={(e) => {
+									formik.setFieldValue('title', e.target.value);
+								}}
+								errors={formik.errors.title}
+								touched={formik.touched.title}
+							/>
+							<div className="row">
+								<div>
+									<InputField
+										type={'text'}
+										name={'price'}
+										placeholder={'Price *'}
+										value={formik.values.price}
 										onChange={(e) => {
-											setFieldValue('category', e.target.value);
-											setSelectedCategory(e.target.value);
+											formik.setFieldValue('price', e.target.value);
 										}}
-									>
-										<option disabled>Select category</option>
-										{categories.map((category, id) => {
-											return (
-												<option value={category.name} key={id}>
-													{category.name}
-												</option>
-											);
-										})}
-									</Field>
+										errors={formik.errors.price}
+										touched={formik.touched.price}
+									/>
 								</div>
-								{errors.category && touched.category ? (
-									<div className="error">{errors.category}</div>
+
+								<div>
+									<InputField
+										type={'number'}
+										name={'stock'}
+										placeholder={'Stock *'}
+										value={formik.values.stock}
+										onChange={(e) => {
+											formik.setFieldValue('stock', e.target.value);
+										}}
+										errors={formik.errors.stock}
+										touched={formik.touched.stock}
+									/>
+								</div>
+							</div>
+
+							<div className="description-container">
+								<p>Specifications</p>
+								<ReactQuill
+									name="specifications"
+									theme="snow"
+									modules={modules}
+									formats={formats}
+									value={formik.values.specifications}
+									onChange={(newValue) => {
+										formik.setFieldValue('specifications', newValue);
+									}}
+								/>
+							</div>
+
+							<div className="description-container">
+								<p>Description</p>
+								<ReactQuill
+									name="description"
+									theme="snow"
+									modules={modules}
+									formats={formats}
+									value={formik.values.description}
+									onChange={(newValue) => {
+										formik.setFieldValue('description', newValue);
+									}}
+								/>
+							</div>
+
+							<div className="file-container">
+								<p>Files</p>
+								<DragAndDrop
+									onChange={dragAndDropOnChange}
+									setFiles={setFiles}
+									currentImages={files}
+								/>
+								{files?.length == 0 ? (
+									<div className="error">Files are required</div>
 								) : null}
 							</div>
 
-							{activeFields.length > 0 && (
-								<div className="product-details">
-									<div className="additional-info">
-										<h2>Product Details (Case-sensitive):</h2>
-										<div className="seperator-line"></div>
-									</div>
-
-									{activeFields.map((field, index) => (
-										<>
-											<InputField
-												key={index}
-												type="text"
-												name={field}
-												placeholder={field}
-												value={values[field]}
-												onChange={(e) => setFieldValue(field, e.target.value)}
-												errors={errors[field]}
-												touched={touched[field]}
-											/>
-											<div className="previous-filters">
-												{filters &&
-													Array.from(Object.values(filters[index])[0]).map(
-														(el) => {
-															return (
-																<div
-																	className="previous-filter"
-																	onClick={() => setFieldValue(field, el)}
-																>
-																	<p>{el}</p>
-																</div>
-															);
-														}
-													)}
-											</div>
-										</>
-									))}
-								</div>
-							)}
-
-							<div>
-								<Button
-									type="submit"
-									isLoading={isLoading}
-									width="100%"
-									text="Add new Product"
-								/>
+							<div className="select-container">
+								<p>Select category</p>
+								<Field
+									placeholder="Category *"
+									as="select"
+									name="category"
+									onChange={(e) => {
+										formik.setFieldValue('category', e.target.value);
+										setSelectedCategory(e.target.value);
+									}}
+								>
+									<option disabled>Select category</option>
+									{categories.map((category, id) => {
+										return (
+											<option value={category.name} key={id}>
+												{category.name}
+											</option>
+										);
+									})}
+								</Field>
 							</div>
-						</Form>
-					)}
-				</Formik>
+							{formik.errors.category && formik.touched.category ? (
+								<div className="error">{formik.errors.category}</div>
+							) : null}
+						</div>
+
+						{activeFields.length > 0 && (
+							<div className="product-details">
+								<div className="additional-info">
+									<h2>Product Details (Case-sensitive):</h2>
+									<div className="seperator-line"></div>
+								</div>
+
+								{activeFields.map((field, index) => (
+									<>
+										<InputField
+											key={index}
+											type="text"
+											name={field}
+											placeholder={field}
+											value={formik.values[field]}
+											onChange={(e) =>
+												formik.setFieldValue(field, e.target.value)
+											}
+											errors={formik.errors[field]}
+											touched={formik.touched[field]}
+										/>
+										<div className="previous-filters">
+											{filters &&
+												Array.from(Object.values(filters[index])[0]).map(
+													(el) => {
+														return (
+															<div
+																className="previous-filter"
+																onClick={() => formik.setFieldValue(field, el)}
+															>
+																<p>{el}</p>
+															</div>
+														);
+													}
+												)}
+										</div>
+									</>
+								))}
+							</div>
+						)}
+
+						<div>
+							<Button
+								type="submit"
+								isLoading={isLoading}
+								width="100%"
+								text="Add new Product"
+							/>
+						</div>
+					</form>
+				</FormikProvider>
 			</div>
 			<Link to={`/products?page=${page}`} className="back-btn">
 				Back
