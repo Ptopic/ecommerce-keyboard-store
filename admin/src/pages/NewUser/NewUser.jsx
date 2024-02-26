@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import '../../styles/forms.css';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
@@ -55,6 +55,14 @@ function NewUser() {
 		isAdmin: 'Select role',
 	};
 
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: newUserSchema,
+		onSubmit: async (values, formikActions) => {
+			handleAddNewUser(values, formikActions);
+		},
+	});
+
 	const handleAddNewUser = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
@@ -82,102 +90,106 @@ function NewUser() {
 			<div className="box">
 				<h2>User Details:</h2>
 				<div className="seperator-line"></div>
-				<Formik
-					enableReinitialize
-					initialValues={initialValues}
-					validationSchema={newUserSchema}
-					onSubmit={(values, formikActions) =>
-						handleAddNewUser(values, formikActions)
-					}
-				>
-					{({ errors, touched, values, setFieldValue }) => (
-						<Form>
-							<div className="form-container">
-								<div className="row">
-									<div>
-										<InputField
-											type={'text'}
-											name={'firstName'}
-											placeholder={'First Name *'}
-											value={values.firstName}
-											onChange={(e) =>
-												setFieldValue('firstName', e.target.value)
-											}
-											errors={errors.firstName}
-											touched={touched.firstName}
-										/>
-									</div>
 
-									<div>
-										<InputField
-											type={'text'}
-											name={'lastName'}
-											placeholder={'Last Name *'}
-											value={values.lastName}
-											onChange={(e) =>
-												setFieldValue('lastName', e.target.value)
-											}
-											errors={errors.lastName}
-											touched={touched.lastName}
-										/>
-									</div>
+				<FormikProvider value={formik}>
+					<form onSubmit={formik.handleSubmit}>
+						<div className="form-container">
+							<div className="row">
+								<div>
+									<InputField
+										type={'text'}
+										name={'firstName'}
+										placeholder={'First Name *'}
+										value={formik.values.firstName}
+										onChange={(e) =>
+											formik.setFieldValue('firstName', e.target.value)
+										}
+										errors={formik.errors.firstName}
+										touched={formik.touched.firstName}
+									/>
 								</div>
 
-								<InputField
-									type={'text'}
-									name={'username'}
-									placeholder={'Username *'}
-									value={values.username}
-									onChange={(e) => setFieldValue('username', e.target.value)}
-									errors={errors.username}
-									touched={touched.username}
-								/>
-
-								<InputField
-									type={'email'}
-									name={'email'}
-									placeholder={'Email *'}
-									value={values.email}
-									onChange={(e) => setFieldValue('email', e.target.value)}
-									errors={errors.email}
-									touched={touched.email}
-								/>
-
-								<InputField
-									name={'password'}
-									placeholder={'Password *'}
-									passwordShow={passwordShow}
-									togglePasswordShow={() => togglePasswordShow()}
-									value={values.password}
-									onChange={(e) => setFieldValue('password', e.target.value)}
-									errors={errors.password}
-									touched={touched.password}
-								/>
-
-								<div className="select-container">
-									<p>Select role:</p>
-									<Field placeholder="Role *" as="select" name="isAdmin">
-										<option disabled>Select role</option>
-										<option value={false}>User</option>
-										<option value={true}>Admin</option>
-									</Field>
+								<div>
+									<InputField
+										type={'text'}
+										name={'lastName'}
+										placeholder={'Last Name *'}
+										value={formik.values.lastName}
+										onChange={(e) =>
+											formik.setFieldValue('lastName', e.target.value)
+										}
+										errors={formik.errors.lastName}
+										touched={formik.touched.lastName}
+									/>
 								</div>
-								{errors.isAdmin && touched.isAdmin ? (
-									<div className="error">{errors.isAdmin}</div>
-								) : null}
 							</div>
 
-							<div>
-								<Button
-									type="submit"
-									isLoading={isLoading}
-									width="100%"
-									text="Add new User"
-								/>
+							<InputField
+								type={'text'}
+								name={'username'}
+								placeholder={'Username *'}
+								value={formik.values.username}
+								onChange={(e) =>
+									formik.setFieldValue('username', e.target.value)
+								}
+								errors={formik.errors.username}
+								touched={formik.touched.username}
+							/>
+
+							<InputField
+								type={'email'}
+								name={'email'}
+								placeholder={'Email *'}
+								value={formik.values.email}
+								onChange={(e) => formik.setFieldValue('email', e.target.value)}
+								errors={formik.errors.email}
+								touched={formik.touched.email}
+							/>
+
+							<InputField
+								name={'password'}
+								placeholder={'Password *'}
+								passwordShow={passwordShow}
+								togglePasswordShow={() => togglePasswordShow()}
+								value={formik.values.password}
+								onChange={(e) =>
+									formik.setFieldValue('password', e.target.value)
+								}
+								errors={formik.errors.password}
+								touched={formik.touched.password}
+							/>
+
+							<div className="select-container">
+								<p>Select role:</p>
+								<select
+									placeholder="Role *"
+									as="select"
+									name="isAdmin"
+									value={formik.values.isAdmin}
+									onChange={(e) =>
+										formik.setFieldValue('isAdmin', e.target.value)
+									}
+								>
+									<option disabled>Select role</option>
+									<option value={false}>User</option>
+									<option value={true}>Admin</option>
+								</select>
 							</div>
-						</Form>
-					)}
-				</Formik>
+							{formik.errors.isAdmin && formik.touched.isAdmin ? (
+								<div className="error">{formik.errors.isAdmin}</div>
+							) : null}
+						</div>
+
+						<div>
+							<Button
+								type="submit"
+								isLoading={isLoading}
+								width="100%"
+								text="Add new User"
+							/>
+						</div>
+					</form>
+				</FormikProvider>
 			</div>
 			<Link to={`/users?page=${page}`} className="back-btn">
 				Back

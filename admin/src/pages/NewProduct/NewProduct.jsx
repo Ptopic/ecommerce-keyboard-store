@@ -178,14 +178,6 @@ const NewProduct = () => {
 		onSelectedCategoryChange();
 	}, [selectedCategory]);
 
-	// const getActiveFieldsValidationSchema = () => {
-	// 	let schema = {};
-	// 	activeFields.forEach((field) => {
-	// 		schema[field] = Yup.string().required(`${field} is required`);
-	// 	});
-	// 	return schema;
-	// };
-
 	const newProductSchema = Yup.object().shape({
 		title: Yup.string().required('Title is required'),
 		description: Yup.string(),
@@ -196,14 +188,6 @@ const NewProduct = () => {
 		stock: Yup.number().required('Stock is required'),
 		files: Yup.array().required('Files are required'),
 	});
-
-	// const getInitialValuesForActiveFields = () => {
-	// 	let initialValues = {};
-	// 	activeFields.forEach((field) => {
-	// 		initialValues[field] = '';
-	// 	});
-	// 	return initialValues;
-	// };
 
 	const initialValues = {
 		title: '',
@@ -242,7 +226,11 @@ const NewProduct = () => {
 								value={formik.values.title}
 								onChange={(e) => {
 									formik.setFieldValue('title', e.target.value);
+									formik.handleChange;
+									console.log(formik.errors);
+									console.log(formik.touched);
 								}}
+								onBlue={formik.handleBlur}
 								errors={formik.errors.title}
 								touched={formik.touched.title}
 							/>
@@ -255,6 +243,9 @@ const NewProduct = () => {
 										value={formik.values.price}
 										onChange={(e) => {
 											formik.setFieldValue('price', e.target.value);
+											formik.handleChange;
+											console.log(formik.errors);
+											console.log(formik.touched);
 										}}
 										errors={formik.errors.price}
 										touched={formik.touched.price}

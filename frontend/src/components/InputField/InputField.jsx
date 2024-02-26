@@ -14,6 +14,7 @@ function InputField({
 	placeholder,
 	value,
 	onChange,
+	onBlur,
 	required,
 	width,
 	fullWidth,
@@ -43,6 +44,7 @@ function InputField({
 					placeholder={placeholder}
 					value={value || ''}
 					onChange={onChange}
+					onBlur={onBlur}
 					disabled={disabled}
 					validate={validate}
 				/>
