@@ -51,11 +51,11 @@ function App() {
 								path="/products/edit/:id"
 								element={<EditProduct />}
 							/>
-							<Route
+							{/* <Route
 								exact
 								path="/products/:id/variants"
 								element={<ProductVariants />}
-							/>
+							/> */}
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</div>

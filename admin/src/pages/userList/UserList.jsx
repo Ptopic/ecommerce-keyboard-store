@@ -109,7 +109,10 @@ export default function UserList() {
 		setDeleteModal({ open: false, text: '' });
 
 		// Reset all filters
-		navigate(`/users?page=${page}`);
+		navigate(`/users?page=${page}&pageSize=${pageSize}${
+			sort != null ? '&sort=' + sort : ''
+		}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}`);
 
 		// Refresh page
 		navigate(0);
@@ -141,7 +144,13 @@ export default function UserList() {
 					}
 				/>
 				<div className="add-new-container">
-					<Link to={`/users/add?page=${page}`} className="add-btn">
+					<Link
+						to={`/users/add?page=${page}&pageSize=${pageSize}${
+							sort != null ? '&sort=' + sort : ''
+						}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
+						className="add-btn"
+					>
 						Add new User
 					</Link>
 				</div>
@@ -241,7 +250,12 @@ export default function UserList() {
 									</td>
 									<td className="actions-row">
 										<Link
-											to={`/users/edit/${user._id}?page=${page}`}
+											to={`/users/edit/${
+												user._id
+											}?page=${page}&pageSize=${pageSize}${
+												sort != null ? '&sort=' + sort : ''
+											}${direction != null ? '&direction=' + direction : ''}
+													${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
 											className="action-btn"
 											title="Edit User"
 										>

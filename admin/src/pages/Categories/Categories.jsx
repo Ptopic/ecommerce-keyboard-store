@@ -108,7 +108,10 @@ function Categories() {
 		setCategoryIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
-		navigate(`/categories?page=${page}`);
+		navigate(`/categories?page=${page}&pageSize=${pageSize}${
+			sort != null ? '&sort=' + sort : ''
+		}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}`);
 
 		// Refresh page
 		navigate(0);
@@ -140,7 +143,14 @@ function Categories() {
 					}
 				/>
 				<div className="add-new-container">
-					<Link to={`/categories/add?page=${page}`} className="add-btn">
+					<Link
+						to={`/categories/add?page=${page}&pageSize=${pageSize}${
+							sort != null ? '&sort=' + sort : ''
+						}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}
+`}
+						className="add-btn"
+					>
 						Add new Category
 					</Link>
 				</div>
@@ -180,7 +190,13 @@ function Categories() {
 									<td>{category.name}</td>
 									<td className="actions-row">
 										<Link
-											to={`/categories/edit/${category._id}?page=${page}`}
+											to={`/categories/edit/${
+												category._id
+											}?page=${page}&pageSize=${pageSize}${
+												sort != null ? '&sort=' + sort : ''
+											}${direction != null ? '&direction=' + direction : ''}
+													${searchTermValue != null ? '&search=' + searchTermValue : ''}
+									`}
 											className="action-btn"
 											title="Edit Category"
 										>

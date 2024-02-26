@@ -39,9 +39,12 @@ function EditCategory() {
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	const [page, setPage] = useState(
-		searchParams ? searchParams.get('page') : null
-	);
+	// Query params from url
+	const page = searchParams ? searchParams.get('page') : null;
+	const pageSize = searchParams ? searchParams.get('pageSize') : null;
+	const sort = searchParams ? searchParams.get('sort') : null;
+	const direction = searchParams ? searchParams.get('direction') : null;
+	const searchTermValue = searchParams ? searchParams.get('search') : null;
 
 	const user = useSelector((state) => state.user);
 	let userToken = user.currentUser.token;
@@ -218,7 +221,13 @@ function EditCategory() {
 					</Form>
 				</FormikProvider>
 			</div>
-			<Link to={`/categories?page=${page}`} className="back-btn">
+			<Link
+				to={`/categories?page=${page}&pageSize=${pageSize}${
+					sort != null ? '&sort=' + sort : ''
+				}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
+				className="back-btn"
+			>
 				Back
 			</Link>
 		</div>

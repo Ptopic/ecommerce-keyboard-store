@@ -46,6 +46,8 @@ const Products = () => {
 		searchParams.get('search') == null ? '' : searchParams.get('search')
 	);
 
+	const search = searchParams ? searchParams.get('search') : null;
+
 	// Sorting params
 	const sort = searchParams.get('sort');
 	const direction = searchParams.get('direction');
@@ -82,7 +84,7 @@ const Products = () => {
 
 	useEffect(() => {
 		getProductsData();
-	}, [page, pageSize, sort, direction]);
+	}, [page, pageSize, sort, search, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -114,7 +116,10 @@ const Products = () => {
 		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
-		navigate(`/products?page=${page}`);
+		navigate(`/products?page=${page}&pageSize=${pageSize}${
+			sort != null ? '&sort=' + sort : ''
+		}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}`);
 
 		// Refresh page
 		navigate(0);
@@ -149,7 +154,14 @@ const Products = () => {
 				/>
 
 				<div className="add-new-container">
-					<Link to={`/products/add?page=${page}`} className="add-btn">
+					<Link
+						to={`/products/add?page=${page}&pageSize=${pageSize}${
+							sort != null ? '&sort=' + sort : ''
+						}${direction != null ? '&direction=' + direction : ''}
+				${searchTermValue != null ? '&search=' + searchTermValue : ''}
+`}
+						className="add-btn"
+					>
 						Add new Product
 					</Link>
 				</div>
@@ -173,12 +185,12 @@ const Products = () => {
 									{filterDirectionIcons('title')}
 								</a>
 							</th>
-							<th>
+							{/* <th>
 								<a href="">
 									<div className="seperator"></div>
 									<h1>Variants</h1>
 								</a>
-							</th>
+							</th> */}
 							<th>
 								<a
 									href={`/products
@@ -247,7 +259,7 @@ const Products = () => {
 											<div className="title-and-variants">{product.title}</div>
 										</div>
 									</td>
-									<td className="variants-container">
+									{/* <td className="variants-container">
 										<div className="variants">
 											<Link
 												to={`/products/${product._id}/variants`}
@@ -256,13 +268,19 @@ const Products = () => {
 												Variants
 											</Link>
 										</div>
-									</td>
+									</td> */}
 									<td>{product.category}</td>
 									<td>€{formatPriceDisplay(product.price)}</td>
 									<td>{product.stock}</td>
 									<td className="actions-row products">
 										<Link
-											to={`/products/edit/${product._id}?page=${page}`}
+											to={`/products/edit/${
+												product._id
+											}?page=${page}&pageSize=${pageSize}${
+												sort != null ? '&sort=' + sort : ''
+											}${direction != null ? '&direction=' + direction : ''}
+													${searchTermValue != null ? '&search=' + searchTermValue : ''}
+									`}
 											className="action-btn"
 											title="Edit Product"
 										>
