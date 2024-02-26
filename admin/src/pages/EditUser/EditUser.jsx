@@ -102,8 +102,11 @@ function EditUser() {
 			setIsLoading(false);
 			navigate('/users');
 		} catch (error) {
-			console.log(error);
-			toast.error(error.response.data.error);
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 			setIsLoading(false);
 		}
 	};

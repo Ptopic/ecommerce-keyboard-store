@@ -109,11 +109,17 @@ exports.createCategory = async (req, res) => {
 };
 
 exports.editCategory = async (req, res) => {
+	const { name, selectedFields } = req.body;
+	console.log(req.body);
+
 	try {
 		const updatedCategory = await Category.findByIdAndUpdate(
 			req.params.id,
 			{
-				$set: req.body,
+				$set: {
+					name: name,
+					fields: selectedFields,
+				},
 			},
 			{ new: true }
 		);

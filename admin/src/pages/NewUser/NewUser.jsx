@@ -73,7 +73,11 @@ function NewUser() {
 			formikActions.resetForm();
 			setIsLoading(false);
 		} catch (error) {
-			toast.error(error.response.data.error);
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 			setIsLoading(false);
 		}
 	};

@@ -83,7 +83,11 @@ const ProductVariants = () => {
 			setSizes(productRes.sizes);
 			setMaterials(productRes.materials);
 		} catch (error) {
-			toast.error('Something went wrong');
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 		}
 	};
 
@@ -96,7 +100,11 @@ const ProductVariants = () => {
 			let variationsRes = res.data.data;
 			setOldVariants(variationsRes);
 		} catch (error) {
-			toast.error('Something went wrong');
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 		}
 	};
 
@@ -269,7 +277,11 @@ const ProductVariants = () => {
 
 			setIsLoading(false);
 		} catch (error) {
-			toast.error('Something went wrong');
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 			setIsLoading(false);
 		}
 	};

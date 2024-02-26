@@ -46,16 +46,18 @@ const Login = () => {
 	};
 
 	const handleLogin = async (values, formikActions) => {
-		const res = await login(dispatch, { ...values });
-		if (res.success == true && res.data.isAdmin == true) {
-			formikActions.resetForm();
-			// Redirect to main page
-			navigate('/');
-		} else if (res.success == false) {
-			toast.error(res.error);
-		} else {
-			toast.error('User is not an Admin, Try another user.');
-		}
+		try {
+			const res = await login(dispatch, { ...values });
+			if (res.success == true && res.data.isAdmin == true) {
+				formikActions.resetForm();
+				// Redirect to main page
+				navigate('/');
+			} else if (res.success == false) {
+				toast.error(res.error);
+			} else {
+				toast.error('User is not an Admin, Try another user.');
+			}
+		} catch (error) {}
 	};
 
 	const togglePasswordShow = () => {

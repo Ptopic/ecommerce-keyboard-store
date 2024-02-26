@@ -160,11 +160,11 @@ const EditProduct = () => {
 				resetAllFormData();
 				navigate(0);
 			} catch (error) {
-				if (error?.response?.data?.error) {
-					toast.error('Product already exists');
-				} else {
-					toast.error('Something went wrong');
-				}
+				toast.error(
+					error.response.data.error
+						? 'Product already exists'
+						: 'Something went wrong'
+				);
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
@@ -182,11 +182,12 @@ const EditProduct = () => {
 				setIsLoading(false);
 				navigate(-1);
 			} catch (error) {
-				if (error?.response?.data?.error) {
-					toast.error('Product already exists');
-				} else {
-					toast.error('Something went wrong');
-				}
+				toast.error(
+					error.response.data.error
+						? 'Product already exists'
+						: 'Something went wrong'
+				);
+
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
@@ -346,7 +347,11 @@ const EditProduct = () => {
 					navigate(0);
 				});
 		} catch (error) {
-			toast.error('Something went wrong');
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 		}
 
 		setImageRemoveIsLoading(false);

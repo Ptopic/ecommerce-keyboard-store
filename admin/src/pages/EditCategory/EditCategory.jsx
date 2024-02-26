@@ -5,7 +5,7 @@ import './EditCategory.css';
 import '../../styles/forms.css';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
@@ -65,19 +65,37 @@ function EditCategory() {
 		fields: selectedFields,
 	};
 
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: newCategorySchema,
+		onSubmit: async (values, formikActions) => {
+			handleEditCategory(values, formikActions);
+		},
+	});
+
 	const fetchCategoryById = async () => {
 		try {
 			const res = await admin_request(userToken).get('/categories/' + id);
 			let fields = res.data.data.fields;
-			setCategoryData(res.data.data);
-			setName(res.data.data.name);
+			let data = res.data.data;
+			setCategoryData(data);
+
+			formik.initialValues.name = data.name;
+			formik.initialValues.fields = fields;
+
+			// setName(data.name);
 			setSelectedFields(fields);
 
 			// Set latest index to latest field id
 
 			setLatestIndex(fields.length);
 		} catch (error) {
-			console.log(error.response.data.error);
+			console.log(error);
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Failed to fetch data'
+			);
 		}
 	};
 
@@ -93,7 +111,11 @@ function EditCategory() {
 			navigate(`/categories?page=${page}`);
 		} catch (error) {
 			console.log(error);
-			toast.error(error.response.data.error);
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
 			setIsLoading(false);
 		}
 	};
@@ -125,85 +147,76 @@ function EditCategory() {
 			<div className="box">
 				<h2>Category Details:</h2>
 				<div className="seperator-line"></div>
-				<Formik
-					enableReinitialize
-					initialValues={initialValues}
-					validationSchema={newCategorySchema}
-					onSubmit={(values, formikActions) =>
-						handleEditCategory(values, formikActions)
-					}
-				>
-					{({ errors, touched, values, setFieldValue }) => (
-						<Form className="form-container">
-							<div>
-								<InputField
-									type={'text'}
-									name={'name'}
-									placeholder={'Category Name *'}
-									value={name}
-									onChange={(e) => {
-										setFieldValue('name', e.target.value);
-										setName(e.target.value);
-									}}
-									errors={errors.name}
-									touched={touched.name}
+
+				<FormikProvider value={formik}>
+					<Form className="form-container">
+						<div>
+							<InputField
+								type={'text'}
+								name={'name'}
+								placeholder={'Category Name *'}
+								value={formik.values.name}
+								onChange={(e) => {
+									formik.setFieldValue('name', e.target.value);
+								}}
+								errors={formik.errors.name}
+								touched={formik.touched.name}
+							/>
+						</div>
+
+						<div className="additional-info">
+							<h2>Fields For Filtering:</h2>
+							<div className="seperator-line"></div>
+						</div>
+
+						<div className="filter-fields-container">
+							<button
+								className="add-field-btn"
+								type="button"
+								onClick={() => openAddFieldModal()}
+							>
+								+
+							</button>
+
+							<div className="filter-fields">
+								{selectedFields.length > 0 &&
+									selectedFields.map((field, id) => {
+										return (
+											<div className="filter-field" key={id}>
+												<h2>{field.name}</h2>
+												<button
+													className="delete-btn"
+													type="button"
+													onClick={() => removeSelectedItem(field.id)}
+												>
+													<FaTrash />
+												</button>
+											</div>
+										);
+									})}
+							</div>
+
+							{addFieldModalVisible && (
+								<AddFieldModal
+									closeModal={closeAddFieldModal}
+									selectedFields={selectedFields}
+									setSelectedFields={setSelectedFields}
+									latestIndex={latestIndex}
+									setLatestIndex={setLatestIndex}
 								/>
-							</div>
+							)}
+						</div>
 
-							<div className="additional-info">
-								<h2>Fields For Filtering:</h2>
-								<div className="seperator-line"></div>
-							</div>
-
-							<div className="filter-fields-container">
-								<button
-									className="add-field-btn"
-									type="button"
-									onClick={() => openAddFieldModal()}
-								>
-									+
-								</button>
-
-								<div className="filter-fields">
-									{selectedFields.length > 0 &&
-										selectedFields.map((field, id) => {
-											return (
-												<div className="filter-field" key={id}>
-													<h2>{field.name}</h2>
-													<button
-														className="delete-btn"
-														type="button"
-														onClick={() => removeSelectedItem(field.id)}
-													>
-														<FaTrash />
-													</button>
-												</div>
-											);
-										})}
-								</div>
-
-								{addFieldModalVisible && (
-									<AddFieldModal
-										closeModal={closeAddFieldModal}
-										selectedFields={selectedFields}
-										setSelectedFields={setSelectedFields}
-										latestIndex={latestIndex}
-										setLatestIndex={setLatestIndex}
-									/>
-								)}
-							</div>
-
-							<div className="login-form-submit">
-								<Button
-									type="submit"
-									isLoading={isLoading}
-									width="100%"
-									text="Edit Category"
-								/>
-							</div>
-						</Form>
-					)}
-				</Formik>
+						<div className="login-form-submit">
+							<Button
+								type="submit"
+								isLoading={isLoading}
+								width="100%"
+								text="Edit Category"
+							/>
+						</div>
+					</Form>
+				</FormikProvider>
 			</div>
 			<Link to={`/categories?page=${page}`} className="back-btn">
 				Back

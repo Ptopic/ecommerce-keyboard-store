@@ -105,11 +105,11 @@ const NewProduct = () => {
 				setIsLoading(false);
 				resetAllFormData();
 			} catch (error) {
-				if (error?.response?.data?.error) {
-					toast.error('Product already exists');
-				} else {
-					toast.error('Something went wrong');
-				}
+				toast.error(
+					error.response.data.error
+						? 'Product already exists'
+						: 'Something went wrong'
+				);
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
