@@ -106,6 +106,14 @@ const EditProduct = () => {
 		setActiveFields([]);
 	};
 
+	const getActiveFieldsValidationSchema = () => {
+		let schema = {};
+		activeFields.forEach((field) => {
+			schema[field] = Yup.string().required(`${field} is required`);
+		});
+		return schema;
+	};
+
 	const newProductSchema = Yup.object().shape({
 		title: Yup.string().required('Title is required'),
 		description: Yup.string(),
@@ -115,6 +123,7 @@ const EditProduct = () => {
 		price: Yup.number().required('Price is required'),
 		stock: Yup.number().required('Stock is required'),
 		files: Yup.array(),
+		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
 
 	const initialValues = {
@@ -513,6 +522,7 @@ const EditProduct = () => {
 											onChange={(e) => {
 												formik.setFieldValue(field, e.target.value);
 											}}
+											onBlur={formik.handleBlur}
 											errors={formik.errors[field]}
 											touched={formik.touched[field]}
 										/>

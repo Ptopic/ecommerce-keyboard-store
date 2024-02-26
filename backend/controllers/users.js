@@ -104,6 +104,7 @@ exports.changeUserInfo = async (req, res) => {
 exports.getUser = async (req, res) => {
 	try {
 		const user = await User.findById(req.params.id);
+		// Seperate password from other info to hide it
 		const { password, ...otherInfo } = user._doc;
 		return res.status(200).send({ success: true, data: otherInfo });
 	} catch (err) {

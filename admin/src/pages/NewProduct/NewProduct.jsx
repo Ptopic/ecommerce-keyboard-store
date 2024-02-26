@@ -41,9 +41,6 @@ const NewProduct = () => {
 
 	const [activeFields, setActiveFields] = useState([]);
 
-	const [specifications, setSpecifications] = useState('');
-	const [description, setDescription] = useState('');
-
 	const [files, setFiles] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -178,15 +175,25 @@ const NewProduct = () => {
 		onSelectedCategoryChange();
 	}, [selectedCategory]);
 
+	const getActiveFieldsValidationSchema = () => {
+		let schema = {};
+		activeFields.forEach((field) => {
+			schema[field] = Yup.string().required(`${field} is required`);
+		});
+		return schema;
+	};
+
 	const newProductSchema = Yup.object().shape({
 		title: Yup.string().required('Title is required'),
 		description: Yup.string(),
+		specifications: Yup.string(),
 		category: Yup.string()
 			.required('Category is required')
 			.notOneOf(['Select category'], 'Please select a category'),
 		price: Yup.number().required('Price is required'),
 		stock: Yup.number().required('Stock is required'),
 		files: Yup.array().required('Files are required'),
+		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
 
 	const initialValues = {
@@ -226,11 +233,8 @@ const NewProduct = () => {
 								value={formik.values.title}
 								onChange={(e) => {
 									formik.setFieldValue('title', e.target.value);
-									formik.handleChange;
-									console.log(formik.errors);
-									console.log(formik.touched);
 								}}
-								onBlue={formik.handleBlur}
+								onBlur={formik.handleBlur}
 								errors={formik.errors.title}
 								touched={formik.touched.title}
 							/>
@@ -243,10 +247,8 @@ const NewProduct = () => {
 										value={formik.values.price}
 										onChange={(e) => {
 											formik.setFieldValue('price', e.target.value);
-											formik.handleChange;
-											console.log(formik.errors);
-											console.log(formik.touched);
 										}}
+										onBlur={formik.handleBlur}
 										errors={formik.errors.price}
 										touched={formik.touched.price}
 									/>
@@ -261,6 +263,7 @@ const NewProduct = () => {
 										onChange={(e) => {
 											formik.setFieldValue('stock', e.target.value);
 										}}
+										onBlur={formik.handleBlur}
 										errors={formik.errors.stock}
 										touched={formik.touched.stock}
 									/>
@@ -317,6 +320,7 @@ const NewProduct = () => {
 										formik.setFieldValue('category', e.target.value);
 										setSelectedCategory(e.target.value);
 									}}
+									onBlur={formik.handleBlur}
 								>
 									<option disabled>Select category</option>
 									{categories.map((category, id) => {
@@ -348,9 +352,10 @@ const NewProduct = () => {
 											name={field}
 											placeholder={field}
 											value={formik.values[field]}
-											onChange={(e) =>
-												formik.setFieldValue(field, e.target.value)
-											}
+											onChange={(e) => {
+												formik.setFieldValue(field, e.target.value);
+											}}
+											onBlur={formik.handleBlur}
 											errors={formik.errors[field]}
 											touched={formik.touched[field]}
 										/>

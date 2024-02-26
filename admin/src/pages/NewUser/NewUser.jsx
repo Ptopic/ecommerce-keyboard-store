@@ -101,9 +101,10 @@ function NewUser() {
 										name={'firstName'}
 										placeholder={'First Name *'}
 										value={formik.values.firstName}
-										onChange={(e) =>
-											formik.setFieldValue('firstName', e.target.value)
-										}
+										onChange={(e) => {
+											formik.setFieldValue('firstName', e.target.value);
+										}}
+										onBlur={formik.handleBlur}
 										errors={formik.errors.firstName}
 										touched={formik.touched.firstName}
 									/>
@@ -115,9 +116,10 @@ function NewUser() {
 										name={'lastName'}
 										placeholder={'Last Name *'}
 										value={formik.values.lastName}
-										onChange={(e) =>
-											formik.setFieldValue('lastName', e.target.value)
-										}
+										onChange={(e) => {
+											formik.setFieldValue('lastName', e.target.value);
+										}}
+										onBlur={formik.handleBlur}
 										errors={formik.errors.lastName}
 										touched={formik.touched.lastName}
 									/>
@@ -129,9 +131,10 @@ function NewUser() {
 								name={'username'}
 								placeholder={'Username *'}
 								value={formik.values.username}
-								onChange={(e) =>
-									formik.setFieldValue('username', e.target.value)
-								}
+								onChange={(e) => {
+									formik.setFieldValue('username', e.target.value);
+								}}
+								onBlur={formik.handleBlur}
 								errors={formik.errors.username}
 								touched={formik.touched.username}
 							/>
@@ -141,7 +144,10 @@ function NewUser() {
 								name={'email'}
 								placeholder={'Email *'}
 								value={formik.values.email}
-								onChange={(e) => formik.setFieldValue('email', e.target.value)}
+								onChange={(e) => {
+									formik.setFieldValue('email', e.target.value);
+								}}
+								onBlur={formik.handleBlur}
 								errors={formik.errors.email}
 								touched={formik.touched.email}
 							/>
@@ -152,9 +158,10 @@ function NewUser() {
 								passwordShow={passwordShow}
 								togglePasswordShow={() => togglePasswordShow()}
 								value={formik.values.password}
-								onChange={(e) =>
-									formik.setFieldValue('password', e.target.value)
-								}
+								onChange={(e) => {
+									formik.setFieldValue('password', e.target.value);
+								}}
+								onBlur={formik.handleBlur}
 								errors={formik.errors.password}
 								touched={formik.touched.password}
 							/>
@@ -166,9 +173,10 @@ function NewUser() {
 									as="select"
 									name="isAdmin"
 									value={formik.values.isAdmin}
-									onChange={(e) =>
-										formik.setFieldValue('isAdmin', e.target.value)
-									}
+									onChange={(e) => {
+										formik.setFieldValue('isAdmin', e.target.value);
+									}}
+									onBlur={formik.handleBlur}
 								>
 									<option disabled>Select role</option>
 									<option value={false}>User</option>
