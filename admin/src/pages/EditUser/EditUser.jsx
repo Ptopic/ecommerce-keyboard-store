@@ -198,7 +198,6 @@ function EditUser() {
 								onBlur={formik.handleBlur}
 								errors={formik.errors.password}
 								touched={formik.touched.password}
-								required={false}
 							/>
 
 							<div className="select-container">
