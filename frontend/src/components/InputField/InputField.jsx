@@ -23,6 +23,7 @@ function InputField({
 	errors,
 	touched,
 	disabled,
+	validate,
 }) {
 	return (
 		<>
@@ -32,7 +33,7 @@ function InputField({
 				}`}
 				style={{ width: fullWidth ? '100%' : width }}
 			>
-				<Field
+				<input
 					type={type ? type : passwordShow ? 'text' : 'password'}
 					id={name}
 					name={name}
@@ -43,6 +44,7 @@ function InputField({
 					value={value || ''}
 					onChange={onChange}
 					disabled={disabled}
+					validate={validate}
 				/>
 				<label htmlFor={name} className="input-label">
 					{placeholder}

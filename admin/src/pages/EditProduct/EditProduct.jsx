@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 // Styles
 import './EditProduct.css';
@@ -9,7 +9,7 @@ import '../../styles/forms.css';
 import { IoClose } from 'react-icons/io5';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
@@ -56,7 +56,6 @@ const EditProduct = () => {
 	const [selectedCategory, setSelectedCategory] = useState('');
 
 	const [activeFields, setActiveFields] = useState([]);
-	const [activeFieldsValues, setActiveFieldsValues] = useState({});
 
 	const [specifications, setSpecifications] = useState('');
 	const [description, setDescription] = useState('');
@@ -69,6 +68,7 @@ const EditProduct = () => {
 
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
+	const [isFiltersLoading, setIsFiltersLoading] = useState(null);
 
 	const modules = {
 		toolbar: [
@@ -105,6 +105,35 @@ const EditProduct = () => {
 		setFiles([]);
 		setActiveFields([]);
 	};
+
+	const newProductSchema = Yup.object().shape({
+		title: Yup.string().required('Title is required'),
+		description: Yup.string(),
+		category: Yup.string()
+			.required('Category is required')
+			.notOneOf(['Select category'], 'Please select a category'),
+		price: Yup.number().required('Price is required'),
+		stock: Yup.number().required('Stock is required'),
+		files: Yup.array(),
+	});
+
+	const initialValues = {
+		title: '',
+		description: '',
+		specifications: '',
+		category: 'Select category',
+		price: '',
+		stock: '',
+		files: [],
+	};
+
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: newProductSchema,
+		onSubmit: async (values, formikActions) => {
+			handleEditProduct(values, formikActions);
+		},
+	});
 
 	const handleEditProduct = async (values, formikActions) => {
 		if (files?.length != 0) {
@@ -172,21 +201,33 @@ const EditProduct = () => {
 				.then((res) => {
 					let productData = res.data.data;
 
+					formik.initialValues.title = productData?.title;
+					formik.initialValues.price = productData?.price;
+					formik.initialValues.stock = productData?.stock;
+					formik.initialValues.category = productData?.category;
+					formik.initialValues.specifications = productData?.specifications;
+					formik.initialValues.description = productData?.description;
 					setSelectedCategory(productData?.category);
-
-					setSpecifications(productData?.specifications);
-					setDescription(productData?.description);
 
 					setProduct(productData);
 
 					setPreviousFiles(productData.images);
+
+					// Set form values as product details values
+					for (let detailsKey of Object.keys(productData.details)) {
+						formik.setFieldValue(detailsKey, productData.details[detailsKey]);
+						console.log(productData.details[detailsKey]);
+					}
+
+					console.log(formik.values);
 				});
 		} catch (error) {
-			console.log(error.response.data.error);
+			console.log(error);
 		}
 	};
 
 	const handleInitilaFiltersGeneration = async () => {
+		setIsFiltersLoading(true);
 		let curCategory;
 		categories.forEach((category) => {
 			if (category['name'] == selectedCategory) {
@@ -215,7 +256,8 @@ const EditProduct = () => {
 				setFilters,
 				setActiveFilters,
 				setActiveFields,
-				namesOfActiveFields
+				namesOfActiveFields,
+				setIsFiltersLoading
 			);
 		}
 	};
@@ -267,59 +309,20 @@ const EditProduct = () => {
 	useEffect(() => {
 		getAllCategories();
 		getProduct();
+
+		handleInitilaFiltersGeneration();
 	}, []);
 
-	useEffect(() => {
+	useMemo(() => {
 		handleInitilaFiltersGeneration();
-	}, [product]);
+	}, [product, selectedCategory]);
+
+	// useEffect(() => {
+	// 	handleInitilaFiltersGeneration();
+	// }, [product, selectedCategory]);
 
 	const dragAndDropOnChange = (e) => {
-		setFieldValue('files', e.target.files[0]);
-	};
-
-	const getActiveFieldsValidationSchema = () => {
-		let schema = {};
-		activeFields.forEach((field) => {
-			schema[field] = Yup.string().required(`${field} is required`);
-		});
-		return schema;
-	};
-
-	const newProductSchema = Yup.object().shape({
-		title: Yup.string().required('Title is required'),
-		description: Yup.string(),
-		category: Yup.string()
-			.required('Category is required')
-			.notOneOf(['Select category'], 'Please select a category'),
-		price: Yup.number().required('Price is required'),
-		stock: Yup.number().required('Stock is required'),
-		files: Yup.array(),
-		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
-	});
-
-	const getInitialValuesForActiveFields = (product) => {
-		let initialValues = {};
-		let productDetails = product.details;
-
-		activeFields.forEach((field) => {
-			if (product && productDetails && productDetails[field]) {
-				initialValues[field] = productDetails[field];
-			} else {
-				initialValues[field] = '';
-			}
-		});
-		return initialValues;
-	};
-
-	const initialValues = {
-		title: product ? product.title : '',
-		description: product ? product.description : '',
-		specifications: product ? product.specifications : '',
-		category: product ? product.category : 'Select category',
-		price: product ? product.price : '',
-		stock: product ? product.stock : '',
-		files: [],
-		...getInitialValuesForActiveFields(product),
+		formik.setFieldValue('files', e.target.files[0]);
 	};
 
 	const removePreviousImage = async (e, productImageId) => {
@@ -331,7 +334,6 @@ const EditProduct = () => {
 					data: { productImageId: productImageId },
 				})
 				.then((res) => {
-					console.log(res);
 					navigate(0);
 				});
 		} catch (error) {
@@ -349,212 +351,202 @@ const EditProduct = () => {
 			<div className="box">
 				<h2>Product Information:</h2>
 				<div className="seperator-line"></div>
-				<Formik
-					enableReinitialize={true}
-					initialValues={initialValues}
-					validationSchema={newProductSchema}
-					onSubmit={(values, formikActions) => {
-						handleEditProduct(values, formikActions);
-					}}
-				>
-					{({ errors, touched, values, setFieldValue }) => (
-						<Form>
-							<div className="form-container">
-								<InputField
-									type={'text'}
-									name={'title'}
-									placeholder={'Title *'}
-									value={values.title}
-									onChange={(e) => {
-										setFieldValue('title', e.target.value);
-									}}
-									errors={errors.title}
-									touched={touched.title}
-								/>
-								<div className="row">
-									<div>
-										<InputField
-											type={'text'}
-											name={'price'}
-											placeholder={'Price *'}
-											value={values.price}
-											onChange={(e) => {
-												setFieldValue('price', e.target.value);
-											}}
-											errors={errors.price}
-											touched={touched.price}
-										/>
-									</div>
 
-									<div>
-										<InputField
-											type={'number'}
-											name={'stock'}
-											placeholder={'Stock *'}
-											value={values.stock}
-											onChange={(e) => {
-												setFieldValue('stock', e.target.value);
-											}}
-											errors={errors.stock}
-											touched={touched.stock}
-										/>
-									</div>
-								</div>
-
-								<div className="description-container">
-									<p>Specifications</p>
-									<ReactQuill
-										name="specifications"
-										theme="snow"
-										modules={modules}
-										formats={formats}
-										value={specifications}
-										onChange={(newValue) => {
-											setSpecifications(newValue);
-											setFieldValue('specifications', newValue);
-										}}
-									/>
-								</div>
-
-								<div className="description-container">
-									<p>Description</p>
-									<ReactQuill
-										name="description"
-										theme="snow"
-										modules={modules}
-										formats={formats}
-										value={description}
-										onChange={(newValue) => {
-											setDescription(newValue);
-											setFieldValue('description', newValue);
-										}}
-									/>
-								</div>
-
-								<div className="file-container">
-									<p>Files</p>
-									<DragAndDrop
-										onChange={dragAndDropOnChange}
-										setFiles={setFiles}
-										currentImages={files}
-									/>
-								</div>
-
-								<div className="file-container">
-									<p>Current Files</p>
-									<div className="previous-images-container">
-										{previousFiles &&
-											previousFiles != [] &&
-											previousFiles.map((prevFile, id) => {
-												return (
-													<div className="uploaded-image" key={id}>
-														<button
-															type="button"
-															className="close-img-btn"
-															onClick={(e) => removePreviousImage(e, id)}
-														>
-															{imageRemoveIsLoading === true ? (
-																<Spinner
-																	width={22}
-																	height={22}
-																	borderWidth={2}
-																	color={'#a94442'}
-																/>
-															) : (
-																<IoClose />
-															)}
-														</button>
-														<img src={prevFile.url} alt="uploaded image" />
-													</div>
-												);
-											})}
-									</div>
-								</div>
-
-								<div className="select-container">
-									<p>Select category</p>
-									<Field
-										placeholder="Category *"
-										as="select"
-										name="category"
-										value={selectedCategory}
+				<FormikProvider value={formik}>
+					<form onSubmit={formik.handleSubmit}>
+						<div className="form-container">
+							<InputField
+								type={'text'}
+								name={'title'}
+								placeholder={'Title *'}
+								value={formik.values.title}
+								onChange={(e) => {
+									formik.setFieldValue('title', e.target.value);
+								}}
+								errors={formik.errors.title}
+								touched={formik.touched.title}
+							/>
+							<div className="row">
+								<div>
+									<InputField
+										type={'text'}
+										name={'price'}
+										placeholder={'Price *'}
+										value={formik.values.price}
 										onChange={(e) => {
-											setFieldValue('category', e.target.value);
-											setSelectedCategory(e.target.value);
-											handleOnCategoryChangeFiltersGeneration(e.target.value);
+											formik.setFieldValue('price', e.target.value);
 										}}
-									>
-										<option disabled>Select category</option>
-										{categories &&
-											categories.map((category, id) => {
-												return (
-													<option value={category.name} key={id}>
-														{category.name}
-													</option>
-												);
-											})}
-									</Field>
+										errors={formik.errors.price}
+										touched={formik.touched.price}
+									/>
 								</div>
-								{errors.category && touched.category ? (
-									<div className="error">{errors.category}</div>
-								) : null}
+
+								<div>
+									<InputField
+										type={'number'}
+										name={'stock'}
+										placeholder={'Stock *'}
+										value={formik.values.stock}
+										onChange={(e) => {
+											formik.setFieldValue('stock', e.target.value);
+										}}
+										errors={formik.errors.stock}
+										touched={formik.touched.stock}
+									/>
+								</div>
 							</div>
 
-							{activeFields && activeFields != [] && (
-								<div className="product-details">
-									<div className="additional-info">
-										<h2>Product Details (Case-sensitive):</h2>
-										<div className="seperator-line"></div>
-									</div>
-
-									{activeFields.map((field, index) => (
-										<>
-											<InputField
-												key={index}
-												type="text"
-												name={field}
-												placeholder={field}
-												value={values[field]}
-												onChange={(e) => {
-													{
-														setFieldValue(field, e.target.value);
-													}
-												}}
-												errors={errors[field]}
-												touched={touched[field]}
-											/>
-											<div className="previous-filters">
-												{filters &&
-													filters != [] &&
-													Array.from(Object.values(filters[index])[0]).map(
-														(el) => {
-															return (
-																<div
-																	className="previous-filter"
-																	onClick={() => setFieldValue(field, el)}
-																>
-																	<p>{el}</p>
-																</div>
-															);
-														}
-													)}
-											</div>
-										</>
-									))}
-								</div>
-							)}
-
-							<div>
-								<Button
-									type="submit"
-									isLoading={isLoading}
-									width="100%"
-									text="Edit Product"
+							<div className="description-container">
+								<p>Specifications</p>
+								<ReactQuill
+									name="specifications"
+									theme="snow"
+									modules={modules}
+									formats={formats}
+									value={formik.values.specifications}
+									onChange={(newValue) => {
+										formik.setFieldValue('specifications', newValue);
+									}}
 								/>
 							</div>
-						</Form>
-					)}
-				</Formik>
+
+							<div className="description-container">
+								<p>Description</p>
+								<ReactQuill
+									name="description"
+									theme="snow"
+									modules={modules}
+									formats={formats}
+									value={formik.values.description}
+									onChange={(newValue) => {
+										formik.setFieldValue('description', newValue);
+									}}
+								/>
+							</div>
+
+							<div className="file-container">
+								<p>Files</p>
+								<DragAndDrop
+									onChange={dragAndDropOnChange}
+									setFiles={setFiles}
+									currentImages={files}
+								/>
+							</div>
+
+							<div className="file-container">
+								<p>Current Files</p>
+								<div className="previous-images-container">
+									{previousFiles &&
+										previousFiles != [] &&
+										previousFiles.map((prevFile, id) => {
+											return (
+												<div className="uploaded-image" key={id}>
+													<button
+														type="button"
+														className="close-img-btn"
+														onClick={(e) => removePreviousImage(e, id)}
+													>
+														{imageRemoveIsLoading === true ? (
+															<Spinner
+																width={22}
+																height={22}
+																borderWidth={2}
+																color={'#a94442'}
+															/>
+														) : (
+															<IoClose />
+														)}
+													</button>
+													<img src={prevFile.url} alt="uploaded image" />
+												</div>
+											);
+										})}
+								</div>
+							</div>
+
+							<div className="select-container">
+								<p>Select category</p>
+								<Field
+									placeholder="Category *"
+									as="select"
+									name="category"
+									value={selectedCategory}
+									onChange={(e) => {
+										formik.setFieldValue('category', e.target.value);
+										setSelectedCategory(e.target.value);
+										handleOnCategoryChangeFiltersGeneration(e.target.value);
+									}}
+								>
+									<option disabled>Select category</option>
+									{categories &&
+										categories.map((category, id) => {
+											return (
+												<option value={category.name} key={id}>
+													{category.name}
+												</option>
+											);
+										})}
+								</Field>
+							</div>
+							{formik.errors.category && formik.touched.category ? (
+								<div className="error">{formik.errors.category}</div>
+							) : null}
+						</div>
+
+						{isFiltersLoading && <div>Loading</div>}
+
+						{activeFields && isFiltersLoading == false && (
+							<div className="product-details">
+								<div className="additional-info">
+									<h2>Product Details (Case-sensitive):</h2>
+									<div className="seperator-line"></div>
+								</div>
+
+								{activeFields.map((field, index) => (
+									<>
+										<InputField
+											key={index}
+											type="text"
+											name={field}
+											placeholder={field}
+											value={formik.values[field]}
+											onChange={(e) => {
+												formik.setFieldValue(field, e.target.value);
+											}}
+											errors={formik.errors[field]}
+											touched={formik.touched[field]}
+										/>
+										<div className="previous-filters">
+											{filters &&
+												filters != [] &&
+												Array.from(Object.values(filters[index])[0]).map(
+													(el) => {
+														return (
+															<div
+																className="previous-filter"
+																onClick={() => formik.setFieldValue(field, el)}
+															>
+																<p>{el}</p>
+															</div>
+														);
+													}
+												)}
+										</div>
+									</>
+								))}
+							</div>
+						)}
+
+						<div>
+							<Button
+								type="submit"
+								isLoading={isLoading}
+								width="100%"
+								text="Edit Product"
+							/>
+						</div>
+					</form>
+				</FormikProvider>
 			</div>
 			<Link to={`/products?page=${page}`} className="back-btn">
 				Back
