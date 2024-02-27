@@ -69,3 +69,8 @@
 .configurator-products-container>.pagination-controls>.prev-btn {
    margin: 0;
 }
+
+.configurator-products-table-head {
+   display: grid;
+   /* grid-template-columns: 4fr 1fr 1fr 1fr 1fr 1fr 1fr; */
+}

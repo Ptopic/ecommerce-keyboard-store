@@ -341,6 +341,37 @@ const ConfiguratorModal = ({
 						</button>
 					</div>
 					<div className="configurator-products-container">
+						<div className="configurator-products-table">
+							<div
+								className="configurator-products-table-head"
+								style={{
+									gridTemplateColumns:
+										products.length > 0
+											? '4fr ' +
+											  `repeat(${
+													Object.keys(products[0].details).length
+											  }, 1fr)` +
+											  ' 1fr'
+											: null,
+								}}
+							>
+								<div className="configurator-products-table-head-cell">
+									Naziv
+								</div>
+								{products &&
+									products.length > 0 &&
+									Object.keys(products[0].details).map((detail) => {
+										return (
+											<div className="configurator-products-table-head-cell">
+												{detail}
+											</div>
+										);
+									})}
+								<div className="configurator-products-table-head-cell">
+									Cijena
+								</div>
+							</div>
+						</div>
 						{products.map((product) => {
 							return <p>{product.title}</p>;
 						})}
