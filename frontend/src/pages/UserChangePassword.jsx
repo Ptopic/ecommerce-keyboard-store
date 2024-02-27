@@ -5,7 +5,7 @@ import './UserDetails.css';
 import '../pages/Checkout.css';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Icons
@@ -44,6 +44,14 @@ function UserChangePassword() {
 		currentPassword: '',
 		newPassword: '',
 	};
+
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: passwordSchema,
+		onSubmit: async (values, formikActions) => {
+			handleChangePassword(values, formikActions);
+		},
+	});
 
 	const togglePasswordShow = () => {
 		setPasswordShow(!passwordShow);
@@ -87,54 +95,53 @@ function UserChangePassword() {
 
 				<div className="user-password-content">
 					<h1>Promjena lozinke</h1>
+					<FormikProvider value={formik}>
+						<form
+							className="login-form"
+							style={{ width: '100%' }}
+							onSubmit={formik.handleSubmit}
+						>
+							<div className="login-form-inputs">
+								<InputField
+									name={'currentPassword'}
+									placeholder={'Current Password *'}
+									passwordShow={passwordShow}
+									togglePasswordShow={() => togglePasswordShow()}
+									value={formik.values.currentPassword}
+									onChange={(e) =>
+										formik.setFieldValue('currentPassword', e.target.value)
+									}
+									onBlur={formik.handleBlur}
+									errors={formik.errors.currentPassword}
+									touched={formik.touched.currentPassword}
+								/>
 
-					<Formik
-						initialValues={initialValues}
-						validationSchema={passwordSchema}
-						onSubmit={(values, formikActions) =>
-							handleChangePassword(values, formikActions)
-						}
-					>
-						{({ errors, touched, setFieldValue }) => (
-							<Form className="login-form" style={{ width: '100%' }}>
-								<div className="login-form-inputs">
-									<InputField
-										name={'currentPassword'}
-										placeholder={'Current Password *'}
-										passwordShow={passwordShow}
-										togglePasswordShow={() => togglePasswordShow()}
-										onChange={(e) =>
-											setFieldValue('currentPassword', e.target.value)
-										}
-										errors={errors.currentPassword}
-										touched={touched.currentPassword}
-									/>
+								<InputField
+									name={'newPassword'}
+									placeholder={'New Password *'}
+									passwordShow={newPasswordShow}
+									togglePasswordShow={() => toggleNewPasswordShow()}
+									value={formik.values.newPassword}
+									onChange={(e) =>
+										formik.setFieldValue('newPassword', e.target.value)
+									}
+									onBlur={formik.handleBlur}
+									errors={formik.errors.newPassword}
+									touched={formik.touched.newPassword}
+								/>
+							</div>
 
-									<InputField
-										name={'newPassword'}
-										placeholder={'New Password *'}
-										passwordShow={newPasswordShow}
-										togglePasswordShow={() => toggleNewPasswordShow()}
-										onChange={(e) =>
-											setFieldValue('newPassword', e.target.value)
-										}
-										errors={errors.newPassword}
-										touched={touched.newPassword}
-									/>
-								</div>
+							{error ? <div className="error">{error}</div> : null}
 
-								{error ? <div className="error">{error}</div> : null}
-
-								<div className="reset-form-submit">
-									<Button
-										text="Reset password"
-										type="submit"
-										isLoading={isLoading}
-									/>
-								</div>
-							</Form>
-						)}
-					</Formik>
+							<div className="reset-form-submit">
+								<Button
+									text="Reset password"
+									type="submit"
+									isLoading={isLoading}
+								/>
+							</div>
+						</form>
+					</FormikProvider>
 				</div>
 			</div>
 		</div>

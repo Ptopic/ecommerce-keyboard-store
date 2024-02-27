@@ -6,7 +6,7 @@ import { request } from '../api';
 import { toast, Toaster } from 'react-hot-toast';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
@@ -26,6 +26,14 @@ function ForgotPassword() {
 	const initialValues = {
 		email: '',
 	};
+
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: forgotPasswordSchema,
+		onSubmit: async (values, formikActions) => {
+			handleForgotPassword(values, formikActions);
+		},
+	});
 
 	const handleForgotPassword = async (values, formikActions) => {
 		setIsLoading(true);
@@ -55,39 +63,32 @@ function ForgotPassword() {
 				<div className="login-header">
 					<p>Forgot password</p>
 				</div>
-				<Formik
-					initialValues={initialValues}
-					validationSchema={forgotPasswordSchema}
-					onSubmit={(values, formikActions) =>
-						handleForgotPassword(values, formikActions)
-					}
-				>
-					{({ values, errors, touched, setFieldValue }) => (
-						<Form className="login-form">
-							<div className="login-form-inputs">
-								<InputField
-									type={'email'}
-									name={'email'}
-									placeholder={'Email *'}
-									value={values.email}
-									onChange={(e) => setFieldValue('email', e.target.value)}
-									errors={errors.email}
-									touched={touched.email}
-								/>
-							</div>
-							<Link to="/login">Remembered your password? Login</Link>
+				<FormikProvider value={formik}>
+					<form className="login-form" onSubmit={formik.handleSubmit}>
+						<div className="login-form-inputs">
+							<InputField
+								type={'email'}
+								name={'email'}
+								placeholder={'Email *'}
+								value={formik.values.email}
+								onChange={(e) => formik.setFieldValue('email', e.target.value)}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.email}
+								touched={formik.touched.email}
+							/>
+						</div>
+						<Link to="/login">Remembered your password? Login</Link>
 
-							<div className="login-form-submit">
-								<Button
-									type="submit"
-									text="Reset password"
-									isLoading={isLoading}
-									width="100%"
-								/>
-							</div>
-						</Form>
-					)}
-				</Formik>
+						<div className="login-form-submit">
+							<Button
+								type="submit"
+								text="Reset password"
+								isLoading={isLoading}
+								width="100%"
+							/>
+						</div>
+					</form>
+				</FormikProvider>
 			</div>
 		</>
 	);

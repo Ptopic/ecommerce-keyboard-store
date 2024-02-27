@@ -6,7 +6,7 @@ import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { request } from '../api';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Icons
@@ -38,6 +38,14 @@ function ForgotPassword() {
 	const initialValues = {
 		password: '',
 	};
+
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: passwordSchema,
+		onSubmit: async (values, formikActions) => {
+			handleForgotPassword(values, formikActions);
+		},
+	});
 
 	const handleForgotPassword = async (values, formikActions) => {
 		try {
@@ -109,40 +117,36 @@ function ForgotPassword() {
 				<div className="login-header">
 					<p>Reset password</p>
 				</div>
-				<Formik
-					initialValues={initialValues}
-					validationSchema={passwordSchema}
-					onSubmit={(values, formikActions) =>
-						handleForgotPassword(values, formikActions)
-					}
-				>
-					{({ values, errors, touched, setFieldValue }) => (
-						<Form className="login-form">
-							<div className="login-form-inputs">
-								<InputField
-									name={'password'}
-									placeholder={'Password *'}
-									passwordShow={passwordShow}
-									togglePasswordShow={() => togglePasswordShow()}
-									value={values.password}
-									onChange={(e) => setFieldValue('password', e.target.value)}
-									errors={errors.password}
-									touched={touched.password}
-								/>
-							</div>
-							<Link to="/login">Remembered your password? Login</Link>
 
-							<div className="login-form-submit">
-								<Button
-									text="Reset password"
-									type="submit"
-									isLoading={isLoading}
-									width="100%"
-								/>
-							</div>
-						</Form>
-					)}
-				</Formik>
+				<FormikProvider value={formik}>
+					<form className="login-form" onSubmit={formik.handleSubmit}>
+						<div className="login-form-inputs">
+							<InputField
+								name={'password'}
+								placeholder={'Password *'}
+								passwordShow={passwordShow}
+								togglePasswordShow={() => togglePasswordShow()}
+								value={formik.values.password}
+								onChange={(e) =>
+									formik.setFieldValue('password', e.target.value)
+								}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.password}
+								touched={formik.touched.password}
+							/>
+						</div>
+						<Link to="/login">Remembered your password? Login</Link>
+
+						<div className="login-form-submit">
+							<Button
+								text="Reset password"
+								type="submit"
+								isLoading={isLoading}
+								width="100%"
+							/>
+						</div>
+					</form>
+				</FormikProvider>
 			</div>
 		</>
 	);

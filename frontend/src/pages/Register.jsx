@@ -3,7 +3,7 @@ import { register } from '../redux/apiCalls';
 import { Link } from 'react-router-dom';
 
 // Formik
-import { Formik, Form, Field, useFormik } from 'formik';
+import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
@@ -54,6 +54,14 @@ const Register = () => {
 		username: '',
 	};
 
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: registerSchema,
+		onSubmit: async (values, formikActions) => {
+			handleRegister(values, formikActions);
+		},
+	});
+
 	const handleRegister = async (values, formikActions) => {
 		setIsLoading(true);
 		const res = await register(dispatch, {
@@ -100,76 +108,82 @@ const Register = () => {
 						<img src={apple} alt="" />
 					</button>
 				</div> */}
-				<Formik
-					initialValues={initialValues}
-					validationSchema={registerSchema}
-					onSubmit={(values, formikActions) =>
-						handleRegister(values, formikActions)
-					}
-				>
-					{({ errors, touched, values, setFieldValue }) => (
-						<Form className="login-form">
-							<div className="login-form-inputs">
-								<InputField
-									type={'text'}
-									name={'firstName'}
-									placeholder={'First Name *'}
-									value={values.firstName}
-									onChange={(e) => setFieldValue('firstName', e.target.value)}
-									errors={errors.firstName}
-									touched={touched.firstName}
-								/>
-								<InputField
-									type={'text'}
-									name={'lastName'}
-									placeholder={'Last Name *'}
-									value={values.lastName}
-									onChange={(e) => setFieldValue('lastName', e.target.value)}
-									errors={errors.lastName}
-									touched={touched.lastName}
-								/>
-								<InputField
-									type={'text'}
-									name={'username'}
-									placeholder={'Username *'}
-									value={values.username}
-									onChange={(e) => setFieldValue('username', e.target.value)}
-									errors={errors.username}
-									touched={touched.username}
-								/>
-								<InputField
-									type={'text'}
-									name={'email'}
-									placeholder={'Email *'}
-									value={values.email}
-									onChange={(e) => setFieldValue('email', e.target.value)}
-									errors={errors.email}
-									touched={touched.email}
-								/>
-								<InputField
-									name={'password'}
-									placeholder={'Password *'}
-									passwordShow={passwordShow}
-									togglePasswordShow={() => togglePasswordShow()}
-									value={values.password}
-									onChange={(e) => setFieldValue('password', e.target.value)}
-									errors={errors.password}
-									touched={touched.password}
-								/>
-							</div>
 
-							<div className="login-form-submit">
-								<Button
-									type="submit"
-									isLoading={isLoading}
-									width="100%"
-									text="Register"
-								/>
-								<Link to={'/login'}>Already have an account? Login</Link>
-							</div>
-						</Form>
-					)}
-				</Formik>
+				<FormikProvider value={formik}>
+					<form className="login-form" onSubmit={formik.handleSubmit}>
+						<div className="login-form-inputs">
+							<InputField
+								type={'text'}
+								name={'firstName'}
+								placeholder={'First Name *'}
+								value={formik.values.firstName}
+								onChange={(e) =>
+									formik.setFieldValue('firstName', e.target.value)
+								}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.firstName}
+								touched={formik.touched.firstName}
+							/>
+							<InputField
+								type={'text'}
+								name={'lastName'}
+								placeholder={'Last Name *'}
+								value={formik.values.lastName}
+								onChange={(e) =>
+									formik.setFieldValue('lastName', e.target.value)
+								}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.lastName}
+								touched={formik.touched.lastName}
+							/>
+							<InputField
+								type={'text'}
+								name={'username'}
+								placeholder={'Username *'}
+								value={formik.values.username}
+								onChange={(e) =>
+									formik.setFieldValue('username', e.target.value)
+								}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.username}
+								touched={formik.touched.username}
+							/>
+							<InputField
+								type={'text'}
+								name={'email'}
+								placeholder={'Email *'}
+								value={formik.values.email}
+								onChange={(e) => formik.setFieldValue('email', e.target.value)}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.email}
+								touched={formik.touched.email}
+							/>
+							<InputField
+								name={'password'}
+								placeholder={'Password *'}
+								passwordShow={passwordShow}
+								togglePasswordShow={() => togglePasswordShow()}
+								value={formik.values.password}
+								onChange={(e) =>
+									formik.setFieldValue('password', e.target.value)
+								}
+								onBlur={formik.handleBlur}
+								errors={formik.errors.password}
+								touched={formik.touched.password}
+							/>
+						</div>
+
+						<div className="login-form-submit">
+							<Button
+								type="submit"
+								isLoading={isLoading}
+								width="100%"
+								text="Register"
+							/>
+							<Link to={'/login'}>Already have an account? Login</Link>
+						</div>
+					</form>
+				</FormikProvider>
 			</div>
 		</>
 	);
