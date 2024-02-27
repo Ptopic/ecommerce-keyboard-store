@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 function Slider() {
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [paused, setPaused] = useState(true);
+	const [paused, setPaused] = useState(false);
 
 	const handleNext = () => {
 		setActiveIndex((prevIndex) => (prevIndex + 1) % 3);
