@@ -8,7 +8,6 @@ const ProductFilters = ({
 	activeFilters,
 	handleFilterCheckboxClick,
 }) => {
-	console.log(activeFilters);
 	return (
 		<>
 			{filters.map((filter, filterIndex) => {

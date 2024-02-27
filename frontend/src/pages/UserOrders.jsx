@@ -35,6 +35,8 @@ function UserOrders() {
 		searchParams.get('search') == null ? '' : searchParams.get('search')
 	);
 
+	const search = searchParams ? searchParams.get('search') : null;
+
 	// Sorting params
 	const sort = searchParams.get('sort');
 	const direction = searchParams.get('direction');
@@ -99,7 +101,7 @@ function UserOrders() {
 	// When page changes or page size changes rerender
 	useEffect(() => {
 		getUsersOrders();
-	}, [page, pageSize, sortValue, directionValue]);
+	}, [page, pageSize, sortValue, search, directionValue]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {

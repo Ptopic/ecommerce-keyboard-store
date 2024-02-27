@@ -382,8 +382,16 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 
 exports.getAllProductsByCategory = async (req, res) => {
 	let { category } = req.params;
-	let { sort, direction, page, pageSize, minPrice, maxPrice, activeFilters } =
-		req.query;
+	let {
+		sort,
+		direction,
+		page,
+		pageSize,
+		minPrice,
+		maxPrice,
+		activeFilters,
+		search,
+	} = req.query;
 
 	// If sort and direction is null use default
 	if (sort == null && direction == null) {
@@ -392,7 +400,18 @@ exports.getAllProductsByCategory = async (req, res) => {
 
 	let query = {};
 	if (minPrice && maxPrice) {
-		query = { price: { $gte: minPrice, $lte: maxPrice }, category: category };
+		if (search) {
+			query = {
+				price: { $gte: minPrice, $lte: maxPrice },
+				category: category,
+				title: { $regex: search, $options: 'i' },
+			};
+		} else {
+			query = {
+				price: { $gte: minPrice, $lte: maxPrice },
+				category: category,
+			};
+		}
 	} else {
 		query = { category: category };
 	}

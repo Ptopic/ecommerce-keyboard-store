@@ -1,0 +1,70 @@
+.modal-overlay {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100dvh;
+   z-index: 3000;
+}
+
+.configurator-modal {
+   background-color: white;
+   padding: 1rem;
+   border-radius: .4rem;
+   font-size: 1.6rem;
+   width: 100%;
+   height: 100dvh;
+}
+
+.configurator-modal-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin-bottom: 2rem;
+}
+
+.configurator-modal-header>p {
+   font-size: 2.4rem;
+   font-weight: 600;
+}
+
+.configurator-modal-header>.close-btn {
+   border: none;
+   margin: 0;
+   background-color: var(--error-bg);
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   padding: 1rem;
+   color: var(--error-text);
+   transition: .4s all ease;
+   width: 50px;
+   height: 50px;
+}
+
+.configurator-modal-header>.close-btn:hover {
+   background-color: var(--primary200);
+   transition: .4s all ease;
+}
+
+.configurator-modal-body {
+   display: grid;
+   grid-template-columns: 1fr 6fr;
+   background: white;
+}
+
+.configurator-filters-container {}
+
+.configurator-products-container>.pagination-controls {
+   margin-top: 2rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.configurator-products-container>.pagination-controls>.prev-btn {
+   margin: 0;
+}

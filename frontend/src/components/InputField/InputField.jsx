@@ -25,6 +25,7 @@ function InputField({
 	touched,
 	disabled,
 	validate,
+	refValue,
 }) {
 	return (
 		<>
@@ -47,6 +48,7 @@ function InputField({
 					onBlur={onBlur}
 					disabled={disabled}
 					validate={validate}
+					ref={refValue}
 				/>
 				<label htmlFor={name} className="input-label">
 					{placeholder}
