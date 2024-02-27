@@ -53,6 +53,7 @@
 .configurator-modal-body {
    display: grid;
    grid-template-columns: 1fr 6fr;
+   gap: 2rem;
    background: white;
 }
 
