@@ -46,6 +46,14 @@ const Login = () => {
 		password: '',
 	};
 
+	const formik = useFormik({
+		initialValues: initialValues,
+		validationSchema: loginSchema,
+		onSubmit: async (values, formikActions) => {
+			handleLogin(values, formikActions);
+		},
+	});
+
 	const handleLogin = async (values, formikActions) => {
 		const res = await login(dispatch, { ...values });
 		if (res.success == false) {
@@ -89,51 +97,42 @@ const Login = () => {
 						<img src={apple} alt="" />
 					</button>
 				</div> */}
-				<Formik
-					enableReinitialize
-					initialValues={initialValues}
-					validationSchema={loginSchema}
-					onSubmit={(values, formikActions) =>
-						handleLogin(values, formikActions)
-					}
-				>
-					{({ errors, touched, values, setFieldValue }) => (
-						<Form className="login-form">
-							<div className="login-form-inputs">
-								<InputField
-									type={'email'}
-									name={'email'}
-									placeholder={'Email *'}
-									value={values.email}
-									onChange={(e) => setFieldValue('email', e.target.value)}
-									errors={errors.email}
-									touched={touched.email}
-								/>
-								<InputField
-									name={'password'}
-									placeholder={'Password *'}
-									passwordShow={passwordShow}
-									togglePasswordShow={() => togglePasswordShow()}
-									value={values.password}
-									onChange={(e) => setFieldValue('password', e.target.value)}
-									errors={errors.password}
-									touched={touched.password}
-								/>
-							</div>
-							<Link to="/forgot-password">Forgot your password?</Link>
+				<form className="login-form" onClick={formik.handleSubmit}>
+					<div className="login-form-inputs">
+						<InputField
+							type={'email'}
+							name={'email'}
+							placeholder={'Email *'}
+							value={formik.values.email}
+							onChange={(e) => formik.setFieldValue('email', e.target.value)}
+							onBlur={formik.handleBlur}
+							errors={formik.errors.email}
+							touched={formik.touched.email}
+						/>
+						<InputField
+							name={'password'}
+							placeholder={'Password *'}
+							passwordShow={passwordShow}
+							togglePasswordShow={() => togglePasswordShow()}
+							value={formik.values.password}
+							onChange={(e) => formik.setFieldValue('password', e.target.value)}
+							onBlur={formik.handleBlur}
+							errors={formik.errors.password}
+							touched={formik.touched.password}
+						/>
+					</div>
+					<Link to="/forgot-password">Forgot your password?</Link>
 
-							<div className="login-form-submit">
-								<Button
-									width="100%"
-									text="Sign in"
-									isLoading={isFetching}
-									type="submit"
-								/>
-								<Link to={'/register'}>Create account</Link>
-							</div>
-						</Form>
-					)}
-				</Formik>
+					<div className="login-form-submit">
+						<Button
+							width="100%"
+							text="Sign in"
+							isLoading={isFetching}
+							type="submit"
+						/>
+						<Link to={'/register'}>Create account</Link>
+					</div>
+				</form>
 			</div>
 		</>
 	);
