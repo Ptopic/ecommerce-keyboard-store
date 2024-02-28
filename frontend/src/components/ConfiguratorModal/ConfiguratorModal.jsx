@@ -3,6 +3,7 @@ import './ConfiguratorModal.css';
 
 import { motion as m, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 // Icons
 import { IoClose } from 'react-icons/io5';
@@ -15,12 +16,13 @@ import { useSelector } from 'react-redux/es/hooks/useSelector';
 
 // Components
 import ReactSlider from 'react-slider';
-import ProductFilters from '../../components/ProductFilters/ProductFilters';
-import InputField from '../../components/InputField/InputField';
+import ProductFilters from '../ProductFilters/ProductFilters';
+import InputField from '../InputField/InputField';
 
 // Utils
 import { generateFilters, regenerateFilters } from '../../utils/filters';
 import { request } from '../../api';
+import { formatPriceDisplay } from '../../utils/formatting';
 
 /**
  * Mode param will define if data is pushed or set into configurator modal values
@@ -29,9 +31,11 @@ import { request } from '../../api';
 
 const ConfiguratorModal = ({
 	configuratorModalValues,
+	setConfiguratorModalValues,
 	toggleOpenConfiugratorModal,
 	displayType,
 	categoryName,
+	subCategory,
 	mode,
 }) => {
 	const categories = useSelector((state) => state.categories.data);
@@ -59,6 +63,8 @@ const ConfiguratorModal = ({
 	// Other filters
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
+
+	console.log(configuratorModalValues);
 
 	const getMinMaxPrices = async () => {
 		try {
@@ -213,6 +219,30 @@ const ConfiguratorModal = ({
 		getProducts();
 	}, [priceSliderValues, sort, direction, page, search]);
 
+	const addProductToConfiguration = (product) => {
+		if (subCategory) {
+			setConfiguratorModalValues({
+				...configuratorModalValues,
+				[subCategory]: configuratorModalValues[subCategory]
+					? [...Array.from(configuratorModalValues[subCategory]), product]
+					: [product],
+				displayType: '',
+				categoryName: '',
+				open: false,
+			});
+		} else {
+			setConfiguratorModalValues({
+				...configuratorModalValues,
+				[categoryName]: configuratorModalValues[categoryName]
+					? [...Array.from(configuratorModalValues[categoryName]), product]
+					: [product],
+				displayType: '',
+				categoryName: '',
+				open: false,
+			});
+		}
+	};
+
 	return (
 		<div class="modal-overlay">
 			<Toaster />
@@ -282,7 +312,9 @@ const ConfiguratorModal = ({
 
 			<div class="configurator-modal">
 				<div className="configurator-modal-header">
-					<p>Odaberi {displayType}</p>
+					<p>
+						Odaberi {displayType} - {subCategory}
+					</p>
 					<InputField
 						type={'text'}
 						name={'search'}
@@ -340,62 +372,108 @@ const ConfiguratorModal = ({
 							Izbriši Filtere
 						</button>
 					</div>
-					<div className="configurator-products-container">
-						<div className="configurator-products-table">
-							<div
-								className="configurator-products-table-head"
-								style={{
-									gridTemplateColumns:
-										products.length > 0
-											? '4fr ' +
-											  `repeat(${
-													Object.keys(products[0].details).length
-											  }, 1fr)` +
-											  ' 1fr'
-											: null,
-								}}
-							>
-								<div className="configurator-products-table-head-cell">
-									Naziv
-								</div>
-								{products &&
-									products.length > 0 &&
-									Object.keys(products[0].details).map((detail) => {
-										return (
-											<div className="configurator-products-table-head-cell">
-												{detail}
-											</div>
-										);
-									})}
-								<div className="configurator-products-table-head-cell">
-									Cijena
+					{products.length > 0 ? (
+						<div className="configurator-products-container">
+							<div className="configurator-products-table">
+								<div
+									className="configurator-products-table-head"
+									style={{
+										/* Set header grid columns as number of keys in details object */
+										gridTemplateColumns:
+											products.length > 0
+												? '4fr ' +
+												  `repeat(${
+														Object.keys(products[0].details).length
+												  }, 1fr)` +
+												  ' 1.5fr'
+												: null,
+									}}
+								>
+									<div className="configurator-products-table-head-cell">
+										Naziv
+									</div>
+									{/* Display product details keys - for table head */}
+									{products &&
+										products.length > 0 &&
+										Object.keys(products[0].details).map((detail) => {
+											return (
+												<div className="configurator-products-table-head-cell">
+													{detail}
+												</div>
+											);
+										})}
+									<div className="configurator-products-table-head-cell">
+										Cijena
+									</div>
 								</div>
 							</div>
-						</div>
-						{products.map((product) => {
-							return <p>{product.title}</p>;
-						})}
 
-						<div className="pagination-controls">
-							{page != 0 && totalPages > 0 && (
-								<button
-									onClick={() => setPage((prevPage) => prevPage - 1)}
-									className="prev-btn"
-								>
-									<FaChevronLeft />
-								</button>
-							)}
-							<p className="current-page">{pageDisplay}</p>
-							{page != totalPages - 1 && totalPages > 0 && (
-								<button
-									onClick={() => setPage((prevPage) => prevPage + 1)}
-									className="next-btn"
-								>
-									<FaChevronRight />
-								</button>
-							)}
+							<div className="configurator-products-table-body">
+								{/* Loop thru products and display them as table rows */}
+								{products.map((product, i) => {
+									return (
+										<div
+											className="configurator-products-table-body-row"
+											style={{
+												gridTemplateColumns:
+													products.length > 0
+														? '4fr ' +
+														  `repeat(${
+																Object.keys(products[0].details).length
+														  }, 1fr)` +
+														  ' 1.5fr'
+														: null,
+											}}
+										>
+											<div className="configurator-products-table-body-row-cell naziv">
+												<img src={product.images[0].url} alt="" />
+												<Link to={`/product/${product._id}`}>
+													{product.title}
+												</Link>
+											</div>
+											{Object.keys(product.details).map((productDetail) => {
+												return (
+													<div className="configurator-products-table-body-row-cell">
+														{product.details[productDetail]}
+													</div>
+												);
+											})}
+											<div className="configurator-products-table-body-row-cell price">
+												<p>€{formatPriceDisplay(product.price)}</p>
+												<button
+													onClick={() => addProductToConfiguration(product)}
+												>
+													Add
+												</button>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+
+							<div className="pagination-controls">
+								{page != 0 && totalPages > 0 && (
+									<button
+										onClick={() => setPage((prevPage) => prevPage - 1)}
+										className="prev-btn"
+									>
+										<FaChevronLeft />
+									</button>
+								)}
+								<p className="current-page">{pageDisplay}</p>
+								{page != totalPages - 1 && totalPages > 0 && (
+									<button
+										onClick={() => setPage((prevPage) => prevPage + 1)}
+										className="next-btn"
+									>
+										<FaChevronRight />
+									</button>
+								)}
+							</div>
 						</div>
-					</div>
+					) : (
+						<div>No products to show</div>
+					)}
 				</div>
 			</div>
 		</div>
