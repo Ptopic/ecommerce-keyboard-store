@@ -110,6 +110,13 @@ exports.updateProduct = async (req, res) => {
 				imagesArray.push(uploadRes);
 			}
 
+			// Clear any existing keys in details that are not in new detauks array
+			Object.keys(details).forEach((key) => {
+				if (!activeFields.includes(key)) {
+					delete details[key];
+				}
+			});
+
 			let updatedProduct = await Product.findByIdAndUpdate(
 				req.params.id,
 				{
@@ -128,20 +135,6 @@ exports.updateProduct = async (req, res) => {
 					},
 					$push: {
 						images: { $each: imagesArray },
-					},
-				},
-				{ new: true }
-			);
-			return res.status(200).send({ success: true, data: updatedProduct });
-		} else if (colors || materials || sizes || names) {
-			let updatedProduct = await Product.findByIdAndUpdate(
-				req.params.id,
-				{
-					$set: {
-						materials: materials,
-						colors: colors,
-						sizes: sizes,
-						variationNames: names,
 					},
 				},
 				{ new: true }

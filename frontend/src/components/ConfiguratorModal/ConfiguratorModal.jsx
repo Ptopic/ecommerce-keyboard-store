@@ -69,8 +69,6 @@ const ConfiguratorModal = ({
 			let minPrice = 0;
 			let maxPrice = 0;
 
-			let constraints = configuratorModalValues['Constraints'];
-
 			// Get min max prices of products
 			const resPrices = await request.get('/products/prices/' + categoryName, {
 				params: {
@@ -104,8 +102,6 @@ const ConfiguratorModal = ({
 		if (initial) {
 			setPage(0);
 		}
-
-		let constraints = configuratorModalValues['Constraints'];
 
 		try {
 			const res = await request.get(`/products/category/` + categoryName, {
@@ -222,6 +218,7 @@ const ConfiguratorModal = ({
 	// Get new prices with useMemo only when activeFilters change
 	useMemo(() => {
 		let constraints = configuratorModalValues['Constraints'];
+		console.log(constraints);
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
 		// console.log(constraintsArray);
 		// console.log(constraints);
@@ -267,6 +264,7 @@ const ConfiguratorModal = ({
 	const addProductToConfiguration = (product) => {
 		let productDetails = Array.from(Object.keys(product.details));
 		let newConfiguratorValue = configuratorModalValues;
+		console.log(newConfiguratorValue);
 		if (
 			productDetails.includes('Podnožje') &&
 			productDetails.includes('Vrsta Memorije') &&
