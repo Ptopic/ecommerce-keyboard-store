@@ -43,6 +43,8 @@
 .configurator-table-body-cell.price {
    display: flex;
    justify-content: space-between;
+   font-size: 1.8rem;
+   font-weight: 700;
 }
 
 .configurator-table-body-cell.price>svg {
@@ -111,7 +113,7 @@
 
 .configurator-table-body-cell-data.multiple>button {
    display: flex;
-   width: auto;
+   width: fit-content;
 }
 
 .configurator-table-body-row button {

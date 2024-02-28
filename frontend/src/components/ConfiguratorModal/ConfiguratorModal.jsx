@@ -294,22 +294,22 @@ const ConfiguratorModal = ({
 		}
 
 		if (subCategory) {
-			if (newConfiguratorValue[subCategory] != null) {
-				newConfiguratorValue[subCategory] = [
-					...Array.from(newConfiguratorValue[subCategory]),
+			if (newConfiguratorValue['configuration'][subCategory] != null) {
+				newConfiguratorValue['configuration'][subCategory] = [
+					...Array.from(newConfiguratorValue['configuration'][subCategory]),
 					product,
 				];
 			} else {
-				newConfiguratorValue[subCategory] = [product];
+				newConfiguratorValue['configuration'][subCategory] = [product];
 			}
 		} else {
-			if (newConfiguratorValue[categoryName]) {
-				newConfiguratorValue[categoryName] = [
-					...Array.from(newConfiguratorValue[categoryName]),
+			if (newConfiguratorValue['configuration'][categoryName]) {
+				newConfiguratorValue['configuration'][categoryName] = [
+					...Array.from(newConfiguratorValue['configuration'][categoryName]),
 					product,
 				];
 			} else {
-				newConfiguratorValue[categoryName] = [product];
+				newConfiguratorValue['configuration'][categoryName] = [product];
 			}
 		}
 		newConfiguratorValue.displayType = '';

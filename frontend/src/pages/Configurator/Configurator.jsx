@@ -45,15 +45,18 @@ const Configurator = () => {
 
 	const removeProductFromConfigurator = (id, subCategory) => {
 		const filteredConfiguratorValues = Array.from(
-			configuratorModalValues[subCategory]
+			configuratorModalValues['configuration'][subCategory]
 		).filter((_, index) => index != id);
 
+		let newConfiguratorValue = configuratorModalValues;
+		newConfiguratorValue.displayType = '';
+		newConfiguratorValue.categoryName = '';
+		newConfiguratorValue.open = false;
+
+		newConfiguratorValue['configuration'][subCategory] =
+			filteredConfiguratorValues;
 		setConfiguratorModalValues({
-			...configuratorModalValues,
-			[subCategory]: filteredConfiguratorValues,
-			displayType: '',
-			categoryName: '',
-			open: false,
+			...newConfiguratorValue,
 		});
 	};
 
@@ -179,30 +182,28 @@ const Configurator = () => {
 						<div className="configurator-table-body-row">
 							<div className="configurator-table-body-cell">Periferija</div>
 							<div className="configurator-table-body-cell ostalo">
-								{configuratorModalValues['Periferija'] &&
-									Array.from(configuratorModalValues['Periferija']).map(
-										(item, i) => {
-											return (
-												<div className="product">
-													<div className="configurator-table-body-cell-data product">
-														<img src={item.images[0].url} alt="" />
-														<Link to={`/product/${item._id}`}>
-															{item.title}
-														</Link>
-													</div>
-													<div className="configurator-table-body-cell price">
-														€{formatPriceDisplay(item.price)}
-														<IoClose
-															size={32}
-															onClick={() =>
-																removeProductFromConfigurator(i, 'Periferija')
-															}
-														/>
-													</div>
+								{configuratorModalValues['configuration']['Periferija'] &&
+									Array.from(
+										configuratorModalValues['configuration']['Periferija']
+									).map((item, i) => {
+										return (
+											<div className="product">
+												<div className="configurator-table-body-cell-data product">
+													<img src={item.images[0].url} alt="" />
+													<Link to={`/product/${item._id}`}>{item.title}</Link>
 												</div>
-											);
-										}
-									)}
+												<div className="configurator-table-body-cell price">
+													€{formatPriceDisplay(item.price)}
+													<IoClose
+														size={32}
+														onClick={() =>
+															removeProductFromConfigurator(i, 'Periferija')
+														}
+													/>
+												</div>
+											</div>
+										);
+									})}
 								<div className="buttons">
 									<ConfiguratorSelectBtn
 										openConfiguratorModal={openConfiguratorModal}
@@ -238,30 +239,28 @@ const Configurator = () => {
 						<div className="configurator-table-body-row">
 							<div className="configurator-table-body-cell">Ostalo</div>
 							<div className="configurator-table-body-cell ostalo">
-								{configuratorModalValues['Ostalo'] &&
-									Array.from(configuratorModalValues['Ostalo']).map(
-										(item, i) => {
-											return (
-												<div className="product">
-													<div className="configurator-table-body-cell-data product">
-														<img src={item.images[0].url} alt="" />
-														<Link to={`/product/${item._id}`}>
-															{item.title}
-														</Link>
-													</div>
-													<div className="configurator-table-body-cell price">
-														€{formatPriceDisplay(item.price)}
-														<IoClose
-															size={32}
-															onClick={() =>
-																removeProductFromConfigurator(i, 'Ostalo')
-															}
-														/>
-													</div>
+								{configuratorModalValues['configuration']['Ostalo'] &&
+									Array.from(
+										configuratorModalValues['configuration']['Ostalo']
+									).map((item, i) => {
+										return (
+											<div className="product">
+												<div className="configurator-table-body-cell-data product">
+													<img src={item.images[0].url} alt="" />
+													<Link to={`/product/${item._id}`}>{item.title}</Link>
 												</div>
-											);
-										}
-									)}
+												<div className="configurator-table-body-cell price">
+													€{formatPriceDisplay(item.price)}
+													<IoClose
+														size={32}
+														onClick={() =>
+															removeProductFromConfigurator(i, 'Ostalo')
+														}
+													/>
+												</div>
+											</div>
+										);
+									})}
 								<div className="buttons">
 									<ConfiguratorSelectBtn
 										openConfiguratorModal={openConfiguratorModal}

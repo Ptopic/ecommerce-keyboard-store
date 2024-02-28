@@ -23,8 +23,10 @@ const ConfiguratorRow = ({
 		// Remove product constraints
 		let rowItems = null;
 
-		if (newConfiguratorValues[categoryName] != null) {
-			rowItems = Array.from(configuratorModalValues[categoryName]);
+		if (newConfiguratorValues['configuration'][categoryName] != null) {
+			rowItems = Array.from(
+				configuratorModalValues['configuration'][categoryName]
+			);
 		}
 
 		let product = rowItems[id];
@@ -49,33 +51,7 @@ const ConfiguratorRow = ({
 			productDetails.includes('Veličina')
 		) {
 			newConfiguratorValues['Constraints'] = {};
-		}
-		// // If its a processor or ram or kućište dont remove other motherbaord constraints
-		// else if (
-		// 	(productDetails.includes('Podnožje') &&
-		// 		!productDetails.includes('Vrsta Memorije') &&
-		// 		!productDetails.includes('Veličina')) ||
-		// 	(!productDetails.includes('Podnožje') &&
-		// 		productDetails.includes('Vrsta Memorije') &&
-		// 		!productDetails.includes('Veličina')) ||
-		// 	(!productDetails.includes('Podnožje') &&
-		// 		!productDetails.includes('Vrsta Memorije') &&
-		// 		productDetails.includes('Veličina'))
-		// ) {
-		// 	// Just remove item without touching constraints
-		// 	const filteredConfiguratorValues = Array.from(
-		// 		configuratorModalValues[categoryName]
-		// 	).filter((_, index) => index != id);
-
-		// 	newConfiguratorValues[categoryName] = filteredConfiguratorValues;
-		// 	newConfiguratorValues.displayType = '';
-		// 	newConfiguratorValues.categoryName = '';
-		// 	newConfiguratorValues.open = false;
-
-		// 	setConfiguratorModalValues({ ...newConfiguratorValues });
-		// 	return;
-		// }
-		else if (
+		} else if (
 			productDetails.includes('Podnožje') ||
 			productDetails.includes('Vrsta Memorije') ||
 			productDetails.includes('Veličina')
@@ -104,10 +80,11 @@ const ConfiguratorRow = ({
 		} else {
 			// Just remove item without touching constraints
 			const filteredConfiguratorValues = Array.from(
-				configuratorModalValues[categoryName]
+				configuratorModalValues['configuration'][categoryName]
 			).filter((_, index) => index != id);
 
-			newConfiguratorValues[categoryName] = filteredConfiguratorValues;
+			newConfiguratorValues['configuration'][categoryName] =
+				filteredConfiguratorValues;
 			newConfiguratorValues.displayType = '';
 			newConfiguratorValues.categoryName = '';
 			newConfiguratorValues.open = false;
@@ -117,10 +94,11 @@ const ConfiguratorRow = ({
 		}
 
 		const filteredConfiguratorValues = Array.from(
-			configuratorModalValues[categoryName]
+			configuratorModalValues['configuration'][categoryName]
 		).filter((_, index) => index != id);
 
-		newConfiguratorValues[categoryName] = filteredConfiguratorValues;
+		newConfiguratorValues['configuration'][categoryName] =
+			filteredConfiguratorValues;
 		newConfiguratorValues.displayType = '';
 		newConfiguratorValues.categoryName = '';
 		newConfiguratorValues.open = false;
@@ -130,26 +108,32 @@ const ConfiguratorRow = ({
 
 	const renderRowData = () => {
 		if (
-			configuratorModalValues[categoryName] != null &&
-			Array.from(configuratorModalValues[categoryName]).length > 0 &&
+			configuratorModalValues['configuration'][categoryName] != null &&
+			Array.from(configuratorModalValues['configuration'][categoryName])
+				.length > 0 &&
 			singular == true
 		) {
 			return (
 				<>
 					<div className="configurator-table-body-cell-data product">
 						<img
-							src={configuratorModalValues[categoryName][0].images[0].url}
+							src={
+								configuratorModalValues['configuration'][categoryName][0]
+									.images[0].url
+							}
 							alt=""
 						/>
 						<Link
-							to={`/product/${configuratorModalValues[categoryName][0]._id}`}
+							to={`/product/${configuratorModalValues['configuration'][categoryName][0]._id}`}
 						>
-							{configuratorModalValues[categoryName][0].title}
+							{configuratorModalValues['configuration'][categoryName][0].title}
 						</Link>
 					</div>
 					<div className="configurator-table-body-cell price">
 						€
-						{formatPriceDisplay(configuratorModalValues[categoryName][0].price)}
+						{formatPriceDisplay(
+							configuratorModalValues['configuration'][categoryName][0].price
+						)}
 						<IoClose
 							size={32}
 							onClick={() => removeProductFromConfigurator(0)}
@@ -158,31 +142,32 @@ const ConfiguratorRow = ({
 				</>
 			);
 		} else if (
-			configuratorModalValues[categoryName] != null &&
-			Array.from(configuratorModalValues[categoryName]).length > 0
+			configuratorModalValues['configuration'][categoryName] != null &&
+			Array.from(configuratorModalValues['configuration'][categoryName])
+				.length > 0
 		) {
 			return (
 				<>
 					<div className="configurator-table-body-cell-data multiple">
-						{Array.from(configuratorModalValues[categoryName]).map(
-							(item, i) => {
-								return (
-									<>
-										<div className="configurator-table-body-cell-data product">
-											<img src={item.images[0].url} alt="" />
-											<Link to={`/product/${item._id}`}>{item.title}</Link>
-										</div>
-										<div className="configurator-table-body-cell price">
-											€{formatPriceDisplay(item.price)}
-											<IoClose
-												size={32}
-												onClick={() => removeProductFromConfigurator(i)}
-											/>
-										</div>
-									</>
-								);
-							}
-						)}
+						{Array.from(
+							configuratorModalValues['configuration'][categoryName]
+						).map((item, i) => {
+							return (
+								<>
+									<div className="configurator-table-body-cell-data product">
+										<img src={item.images[0].url} alt="" />
+										<Link to={`/product/${item._id}`}>{item.title}</Link>
+									</div>
+									<div className="configurator-table-body-cell price">
+										€{formatPriceDisplay(item.price)}
+										<IoClose
+											size={32}
+											onClick={() => removeProductFromConfigurator(i)}
+										/>
+									</div>
+								</>
+							);
+						})}
 						<ConfiguratorSelectBtn
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={displayName}
