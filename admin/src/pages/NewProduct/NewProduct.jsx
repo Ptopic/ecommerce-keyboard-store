@@ -340,7 +340,7 @@ const NewProduct = () => {
 							) : null}
 						</div>
 
-						{activeFields.length > 0 && (
+						{activeFields && activeFields.length > 0 && (
 							<div className="product-details">
 								<div className="additional-info">
 									<h2>Product Details (Case-sensitive):</h2>

@@ -348,11 +348,10 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 	let { category } = req.params;
-	let { activeFilters } = req.query;
-
-	console.log(req.params);
+	let { activeFilters, constraints } = req.query;
 
 	let query = { category: category };
+
 	if (activeFilters != null) {
 		for (let activeFilter of activeFilters) {
 			if (Object.values(activeFilter)[0] != '') {
@@ -362,7 +361,17 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 		}
 	}
 
-	console.log(query);
+	// console.log(req.query);
+	// let constraintsQuerys = [];
+	// if (constraints != null) {
+	// 	// console.log(constraints);
+	// 	for (let constraint of Object.keys(constraints)) {
+	// 		let queryObj = {};
+	// 		queryObj[`details.${constraint}`] = constraints[constraint];
+	// 		constraintsQuerys.push(queryObj);
+	// 	}
+	// 	console.log(constraintsQuerys);
+	// }
 
 	try {
 		let products;
@@ -391,6 +400,7 @@ exports.getAllProductsByCategory = async (req, res) => {
 		maxPrice,
 		activeFilters,
 		search,
+		constraints,
 	} = req.query;
 
 	// If sort and direction is null use default

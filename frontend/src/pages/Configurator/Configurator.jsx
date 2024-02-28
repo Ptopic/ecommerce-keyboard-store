@@ -23,6 +23,7 @@ const Configurator = () => {
 		displayType: '',
 		categoryName: '',
 		configuration: [],
+		Constraints: {},
 	});
 
 	const openConfiguratorModal = (displayType, categoryName, subCategory) => {
