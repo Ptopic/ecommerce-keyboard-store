@@ -64,8 +64,6 @@ const ConfiguratorModal = ({
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
 
-	console.log(configuratorModalValues);
-
 	const getMinMaxPrices = async () => {
 		try {
 			let minPrice = 0;
@@ -120,8 +118,6 @@ const ConfiguratorModal = ({
 
 			let data = res.data;
 
-			console.log(data);
-
 			setProducts(data.data);
 			setTotalPages(data.totalPages);
 		} catch (error) {
@@ -144,6 +140,7 @@ const ConfiguratorModal = ({
 		setLoading(true);
 		// If new filter value is equal to current filter value then remove current value
 		let updatedFilters = [...activeFilters];
+
 		if (newFilterValue == curFilterValue) {
 			// Reset filter value
 			updatedFilters[filterIndex][filterKey] = '';
@@ -186,6 +183,7 @@ const ConfiguratorModal = ({
 	};
 
 	useEffect(() => {
+		console.log(configuratorModalValues);
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
 		setLoading(true);
@@ -213,6 +211,8 @@ const ConfiguratorModal = ({
 			setFilters,
 			setActiveFilters
 		);
+
+		console.log(activeFilters);
 	}, [activeFilters]);
 
 	useEffect(() => {
@@ -220,27 +220,129 @@ const ConfiguratorModal = ({
 	}, [priceSliderValues, sort, direction, page, search]);
 
 	const addProductToConfiguration = (product) => {
-		if (subCategory) {
+		let productDetails = Array.from(Object.keys(product.details));
+		if (
+			productDetails.includes('Podnožje') &&
+			productDetails.includes('Vrsta Memorije') &&
+			productDetails.includes('Veličina')
+		) {
 			setConfiguratorModalValues({
 				...configuratorModalValues,
-				[subCategory]: configuratorModalValues[subCategory]
-					? [...Array.from(configuratorModalValues[subCategory]), product]
-					: [product],
+				['Constraints']: configuratorModalValues['Constraints']
+					? [
+							...Array.from(configuratorModalValues['Constraints']),
+							{ ['Podnožje']: product.details['Podnožje'] },
+							{ ['Vrsta Memorije']: product.details['Vrsta Memorije'] },
+							{ ['Veličina']: product.details['Veličina'] },
+					  ]
+					: [
+							{ ['Podnožje']: product.details['Podnožje'] },
+							{ ['Vrsta Memorije']: product.details['Vrsta Memorije'] },
+							{ ['Veličina']: product.details['Veličina'] },
+					  ],
 				displayType: '',
 				categoryName: '',
 				open: false,
 			});
-		} else {
-			setConfiguratorModalValues({
-				...configuratorModalValues,
-				[categoryName]: configuratorModalValues[categoryName]
-					? [...Array.from(configuratorModalValues[categoryName]), product]
-					: [product],
-				displayType: '',
-				categoryName: '',
-				open: false,
-			});
+			// console.log(product.details['Podnožje']);
+			// console.log(product.details['Vrsta Memorije']);
+			// console.log(product.details['Veličina']);
+		} else if (
+			productDetails.includes('Podnožje') ||
+			productDetails.includes('Vrsta Memorije') ||
+			productDetails.includes('Veličina')
+		) {
+			if (product.details['Podnožje']) {
+				setConfiguratorModalValues({
+					...configuratorModalValues,
+					['Constraints']: configuratorModalValues['Constraints']
+						? [
+								...Array.from(configuratorModalValues['Constraints']),
+								{ ['Podnožje']: product.details['Podnožje'] },
+						  ]
+						: [{ ['Podnožje']: product.details['Podnožje'] }],
+					displayType: '',
+					categoryName: '',
+					open: false,
+				});
+				console.log(product.details['Podnožje']);
+			} else if (product.details['Vrsta Memorije']) {
+				setConfiguratorModalValues({
+					...configuratorModalValues,
+					['Constraints']: configuratorModalValues['Constraints']
+						? [
+								...Array.from(configuratorModalValues['Constraints']),
+								{ ['Vrsta Memorije']: product.details['Vrsta Memorije'] },
+						  ]
+						: [{ ['Vrsta Memorije']: product.details['Vrsta Memorije'] }],
+					displayType: '',
+					categoryName: '',
+					open: false,
+				});
+				console.log(product.details['Vrsta Memorije']);
+			} else {
+				setConfiguratorModalValues({
+					...configuratorModalValues,
+					['Constraints']: configuratorModalValues['Constraints']
+						? [
+								...Array.from(configuratorModalValues['Constraints']),
+								{ ['Veličina']: product.details['Veličina'] },
+						  ]
+						: [{ ['Veličina']: product.details['Veličina'] }],
+					displayType: '',
+					categoryName: '',
+					open: false,
+				});
+				console.log(product.details['Veličina']);
+			}
 		}
+
+		console.log(configuratorModalValues);
+		// if (
+		// 	filterKey[0] === 'Podnožje' ||
+		// 	filterKey[0] === 'Veličina' ||
+		// 	filterKey[0] === 'Vrsta Memorije'
+		// ) {
+		// 	// Set constraints in configurator values
+		// setConfiguratorModalValues({
+		// 	...configuratorModalValues,
+		// 	['Constraints']: [
+		// 		configuratorModalValues['Constraints']
+		// 			? [
+		// 					...Array.from(configuratorModalValues['Constraints']),
+		// 					{ [filterKey[0]]: newFilterValue },
+		// 			  ]
+		// 			: [{ [filterKey[0]]: newFilterValue }],
+		// 	],
+		// 	displayType: '',
+		// 	categoryName: '',
+		// 	open: false,
+		// });
+		// 	console.log(filterKey);
+		// 	console.log(configuratorModalValues);
+		// }
+
+		// if (subCategory) {
+		// 	setConfiguratorModalValues({
+		// 		...configuratorModalValues,
+		// 		[subCategory]: configuratorModalValues[subCategory]
+		// 			? [...Array.from(configuratorModalValues[subCategory]), product]
+		// 			: [product],
+		// 		displayType: '',
+		// 		categoryName: '',
+		// 		open: false,
+		// 	});
+		// } else {
+		// 	setConfiguratorModalValues({
+		// 		...configuratorModalValues,
+		// 		[categoryName]: configuratorModalValues[categoryName]
+		// 			? [...Array.from(configuratorModalValues[categoryName]), product]
+		// 			: [product],
+		// 		displayType: '',
+		// 		categoryName: '',
+		// 		open: false,
+		// 	});
+		// }
 	};
 
 	return (
