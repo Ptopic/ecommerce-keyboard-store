@@ -10,6 +10,15 @@
     justify-content: center;
 }
 
+.input-container.full.error {
+    margin-bottom: 2rem;
+}
+
+.input-container.error {
+    border-color: var(--error);
+    margin-bottom: 2rem;
+}
+
 .input-container>button {
     background: none;
     border: none;
@@ -53,19 +62,25 @@
     transform: translateY(-50%);
 }
 
+.input-label.error {
+    color: var(--error);
+}
+
 .input-field:focus+.input-label,
 .input-field:not(:placeholder-shown)+.input-label {
     top: -1.6rem;
     left: 0;
 }
 
-.error {
+.error-msg {
+    position: absolute;
+    top: 5rem;
     display: flex;
     width: 100%;
+    height: fit-content;
     align-items: flex-start;
     justify-content: flex-start;
     color: var(--error);
-    margin-bottom: 2rem;
 }
 
 .input-container svg {
@@ -73,4 +88,10 @@
     font-size: 2.4rem;
     display: flex;
     align-items: center;
+}
+
+.password-button-icons {
+    display: flex;
+    gap: 1rem;
+    margin-right: 1rem;
 }

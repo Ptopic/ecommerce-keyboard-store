@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../Cart/Cart.css';
+import './QuantityBtn.css';
 
 const QuantityBtn = ({
 	product,
@@ -35,17 +35,17 @@ const QuantityBtn = ({
 		setConfiguratorModalValues({ ...newConfiguratorValue });
 	};
 	return (
-		<div className="change-quantity">
-			<div className="change-quantity-btns">
+		<div className="configurator-change-quantity">
+			<div className="configurator-change-quantity-btns">
 				<button
-					className="quantity-btn"
+					className="configurator-quantity-btn"
 					onClick={() => changeQuantity(product, 'decrease')}
 				>
 					-
 				</button>
 				<p>{quantity}</p>
 				<button
-					className="quantity-btn"
+					className="configurator-quantity-btn"
 					onClick={() => changeQuantity(product, 'increase')}
 				>
 					+

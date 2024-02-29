@@ -82,6 +82,12 @@
    display: flex;
 }
 
+.configurator-table-body-cell.quantity {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
 .configurator-table-body-cell-data {
    display: flex;
    gap: 2rem;
@@ -120,7 +126,7 @@
    width: fit-content;
 }
 
-.configurator-table-body-row button {
+.configurator-select-btn {
    width: auto;
    display: flex;
    align-items: center;

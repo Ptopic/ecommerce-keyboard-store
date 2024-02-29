@@ -1,0 +1,28 @@
+.configurator-change-quantity {
+   width: 100%;
+   margin: 1rem;
+   display: grid;
+   grid-template-columns: 2fr 1fr;
+   align-items: center;
+}
+
+.configurator-change-quantity-btns {
+   display: flex;
+   width: 150px;
+   align-items: center;
+   justify-content: space-between;
+   border: 1px solid var(--black);
+   padding: 1.5rem;
+}
+
+.configurator-change-quantity-btns p {
+   font-size: 1.4rem;
+}
+
+.configurator-quantity-btn {
+   background: none;
+   border: none;
+   outline: none;
+   font-size: 1.4rem;
+   margin: 0;
+}

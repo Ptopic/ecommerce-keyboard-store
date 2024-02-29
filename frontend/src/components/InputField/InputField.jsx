@@ -3,10 +3,9 @@ import React from 'react';
 // Styles
 import './InputField.css';
 
-import { Field } from 'formik';
-
 // Icons
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+import { MdError } from 'react-icons/md';
 
 function InputField({
 	name,
@@ -27,12 +26,19 @@ function InputField({
 	validate,
 	refValue,
 }) {
+	const renderPasswordVisibility = () => {
+		if (passwordShow) {
+			return <FaRegEyeSlash size={22} />;
+		} else {
+			return <FaRegEye size={22} />;
+		}
+	};
 	return (
 		<>
 			<div
 				className={`input-container ${fullWidth ? 'full' : ''} ${
 					disabled ? 'disabled' : ''
-				}`}
+				} ${errors && touched ? 'error' : ''}`}
 				style={{ width: fullWidth ? '100%' : width }}
 			>
 				<input
@@ -40,7 +46,7 @@ function InputField({
 					id={name}
 					name={name}
 					autoCapitalize="off"
-					className="input-field"
+					className={errors && touched ? 'input-field error' : 'input-field'}
 					required={required == false ? false : true}
 					placeholder={placeholder}
 					value={value || ''}
@@ -50,21 +56,20 @@ function InputField({
 					validate={validate}
 					ref={refValue}
 				/>
-				<label htmlFor={name} className="input-label">
+				<label
+					htmlFor={name}
+					className={errors && touched ? 'input-label error' : 'input-label'}
+				>
 					{placeholder}
 				</label>
 				{passwordShow != null && (
 					<button type="button" onClick={() => togglePasswordShow()}>
-						{passwordShow ? (
-							<FaRegEyeSlash size={22} />
-						) : (
-							<FaRegEye size={22} />
-						)}
+						{errors && touched && renderPasswordVisibility()}
 					</button>
 				)}
-				{icon && icon}
+				{errors && touched ? <MdError color={'#ff3333'} /> : icon ? icon : null}
+				{errors && touched ? <p className="error-msg">{errors}</p> : null}
 			</div>
-			{errors && touched ? <div className="error">{errors}</div> : null}
 		</>
 	);
 }

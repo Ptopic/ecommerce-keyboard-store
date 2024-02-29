@@ -82,9 +82,6 @@ function PaymentForm() {
 									{product.title}
 								</div>
 								<p className="cart-product-price">{product.quantity} kom</p>
-								{product.color.length > 0 && (
-									<p style={{ fontSize: '1.6rem' }}>Color: {product.color}</p>
-								)}
 							</div>
 
 							<div className="cart-product-right">

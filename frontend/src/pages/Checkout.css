@@ -29,6 +29,8 @@ button {
     grid-template-columns: 1fr 1fr;
     padding: 2rem 0;
     column-gap: 3rem;
+    white-space: nowrap;
+    min-height: 0;
 }
 
 .checkout-form-left {
@@ -47,6 +49,7 @@ button {
 
 .checkout-form input {
     width: 100%;
+    overflow: hidden;
 }
 
 .checkout-input.full {

@@ -11,6 +11,7 @@ const ConfiguratorSelectBtn = ({
 }) => {
 	return (
 		<button
+			className="configurator-select-btn"
 			onClick={() =>
 				openConfiguratorModal(displayName, categoryName, subCategory)
 			}

@@ -124,6 +124,7 @@
    border: none;
    outline: none;
    font-size: 1.4rem;
+   margin: 0;
 }
 
 .remove-btn {

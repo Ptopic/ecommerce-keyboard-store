@@ -134,6 +134,8 @@ const Configurator = () => {
 
 						<div className="configurator-table-head-cell">Selekcija</div>
 
+						<div className="configurator-table-head-cell">Količina</div>
+
 						<div className="configurator-table-head-cell">Cijena</div>
 					</div>
 
