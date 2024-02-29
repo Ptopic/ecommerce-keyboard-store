@@ -301,7 +301,7 @@ const ConfiguratorModal = ({
 		newConfiguratorValue.categoryName = '';
 		newConfiguratorValue.open = false;
 
-		newConfiguratorValue.total += product.price;
+		newConfiguratorValue.total += product.price * product.quantity;
 
 		setConfiguratorModalValues({
 			...newConfiguratorValue,

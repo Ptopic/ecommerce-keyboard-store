@@ -8,6 +8,7 @@ import ConfiguratorSelectBtn from '../ConfiguratorSelectBtn/ConfiguratorSelectBt
 
 // Utils
 import { formatPriceDisplay } from '../../utils/formatting';
+import QuantityBtn from '../QuantityBtn/QuantityBtn';
 
 const ConfiguratorRow = ({
 	configuratorModalValues,
@@ -114,7 +115,7 @@ const ConfiguratorRow = ({
 			newConfiguratorValues.categoryName = '';
 			newConfiguratorValues.open = false;
 
-			newConfiguratorValues.total -= product.price;
+			newConfiguratorValues.total -= product.price * product.quantity;
 
 			setConfiguratorModalValues({ ...newConfiguratorValues });
 			return;
@@ -130,7 +131,7 @@ const ConfiguratorRow = ({
 		newConfiguratorValues.categoryName = '';
 		newConfiguratorValues.open = false;
 
-		newConfiguratorValues.total -= product.price;
+		newConfiguratorValues.total -= product.price * product.quantity;
 
 		setConfiguratorModalValues({ ...newConfiguratorValues });
 	};
@@ -159,10 +160,22 @@ const ConfiguratorRow = ({
 						</Link>
 					</div>
 					<div className="configurator-table-body-cell price">
-						€
-						{formatPriceDisplay(
-							configuratorModalValues['configuration'][categoryName][0].price
-						)}
+						<QuantityBtn
+							product={
+								configuratorModalValues['configuration'][categoryName][0]
+							}
+							categoryName={categoryName}
+							id={0}
+							configuratorModalValues={configuratorModalValues}
+							setConfiguratorModalValues={setConfiguratorModalValues}
+						/>
+						{'€' +
+							formatPriceDisplay(
+								configuratorModalValues['configuration'][categoryName][0]
+									.price *
+									configuratorModalValues['configuration'][categoryName][0]
+										.quantity
+							)}
 						<IoClose
 							size={32}
 							onClick={() => removeProductFromConfigurator(0)}
@@ -188,7 +201,14 @@ const ConfiguratorRow = ({
 										<Link to={`/product/${item._id}`}>{item.title}</Link>
 									</div>
 									<div className="configurator-table-body-cell price">
-										€{formatPriceDisplay(item.price)}
+										<QuantityBtn
+											product={item}
+											categoryName={categoryName}
+											id={i}
+											configuratorModalValues={configuratorModalValues}
+											setConfiguratorModalValues={setConfiguratorModalValues}
+										/>
+										{'€' + formatPriceDisplay(item.price * item.quantity)}
 										<IoClose
 											size={32}
 											onClick={() => removeProductFromConfigurator(i)}

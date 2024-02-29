@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../Navbar/Navbar.css';
+import './Cart.css';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { request } from '../../api';
@@ -112,7 +113,7 @@ function Cart() {
 												</p>
 											)} */}
 											<div className="change-quantity">
-												<div className="change-quantity-form">
+												<div className="change-quantity-btns">
 													<button
 														className="quantity-btn"
 														onClick={() => changeQuantity(product, 'decrease')}
