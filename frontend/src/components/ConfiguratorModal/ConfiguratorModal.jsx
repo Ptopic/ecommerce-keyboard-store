@@ -188,8 +188,6 @@ const ConfiguratorModal = ({
 	useEffect(() => {
 		let constraints = configuratorModalValues['Constraints'];
 
-		console.log(constraints);
-
 		for (let constraint of Array.of(Object.keys(constraints))) {
 			for (let i = 0; i < activeFilters.length; i++) {
 				if (Object.keys(activeFilters[i]).toString() == constraint) {
@@ -218,10 +216,7 @@ const ConfiguratorModal = ({
 	// Get new prices with useMemo only when activeFilters change
 	useMemo(() => {
 		let constraints = configuratorModalValues['Constraints'];
-		console.log(constraints);
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
-		// console.log(constraintsArray);
-		// console.log(constraints);
 
 		for (let i = 0; i < constraintsArray.length; i++) {
 			for (let j = 0; j < activeFilters.length; j++) {
@@ -233,18 +228,7 @@ const ConfiguratorModal = ({
 						constraints[constraintsArray[i]];
 				}
 			}
-			// console.log(activeFilters);
 		}
-
-		// for (let constraint of Array.of(Object.keys(constraints))) {
-		// 	for (let i = 0; i < activeFilters.length; i++) {
-		// 		console.log(Object.keys(activeFilters[i])[0] + ' ' + constraint[0]);
-		// 		if (Object.keys(activeFilters[i])[0] === constraint[0]) {
-		// 			activeFilters[i][constraint] = constraints[constraint];
-		// 		}
-		// 	}
-		// 	console.log(activeFilters);
-		// }
 
 		getMinMaxPrices();
 		regenerateFilters(
@@ -262,6 +246,7 @@ const ConfiguratorModal = ({
 	}, [priceSliderValues, sort, direction, page, search]);
 
 	const addProductToConfiguration = (product) => {
+		product['quantity'] = 1;
 		let productDetails = Array.from(Object.keys(product.details));
 		let newConfiguratorValue = configuratorModalValues;
 		console.log(newConfiguratorValue);
@@ -315,6 +300,8 @@ const ConfiguratorModal = ({
 		newConfiguratorValue.displayType = '';
 		newConfiguratorValue.categoryName = '';
 		newConfiguratorValue.open = false;
+
+		newConfiguratorValue.total += product.price;
 
 		setConfiguratorModalValues({
 			...newConfiguratorValue,

@@ -23,6 +23,8 @@ const cartSlice = createSlice({
 			console.log(action.payload);
 			state.quantity += action.payload.quantity;
 			state.products.push(action.payload);
+			console.log(action.payload.price);
+			console.log(action.payload.quantity);
 			state.totalPrice += action.payload.price * action.payload.quantity;
 		},
 		removeProduct: (state, action) => {

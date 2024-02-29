@@ -106,11 +106,11 @@ function Cart() {
 											<p className="cart-product-price">
 												€{formatPriceDisplay(product.price)}
 											</p>
-											{product.color.length > 0 && (
+											{/* {product.color.length > 0 && (
 												<p style={{ fontSize: '1.6rem' }}>
 													Color: {product.color}
 												</p>
-											)}
+											)} */}
 											<div className="change-quantity">
 												<div className="change-quantity-form">
 													<button

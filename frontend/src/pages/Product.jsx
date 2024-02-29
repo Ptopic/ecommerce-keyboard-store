@@ -5,10 +5,13 @@ import Navbar from '../components/Navbar/Navbar';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { request } from '../api';
-import { addProduct } from '../redux/cartRedux';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { openCart, incrementProductQuantity } from '../redux/cartRedux';
+import {
+	openCart,
+	addProduct,
+	incrementProductQuantity,
+} from '../redux/cartRedux';
 
 import './Product.css';
 
@@ -181,9 +184,6 @@ const Product = () => {
 	};
 
 	const handleAddToCart = () => {
-		// Format string price to float price
-		product.price = product.price;
-
 		setIsLoading(true);
 		// Check if product is already in cart if it is just increment its quantity
 		var productAlreadyInCart = false;
@@ -200,17 +200,6 @@ const Product = () => {
 			toast.error('Quantity cannot be greater than stock');
 			setIsLoading(false);
 			return;
-		}
-		if (!color && product?.color?.length > 0) {
-			toast.error('Please select a color');
-			setIsLoading(false);
-		}
-		// Check if color is selected if not display error
-		else if (color && !productAlreadyInCart) {
-			dispatch(addProduct({ ...product, quantity, color, size }));
-			// Open cart when product is added
-			dispatch(openCart());
-			setIsLoading(false);
 		} else if (productAlreadyInCart) {
 			dispatch(
 				incrementProductQuantity({
@@ -222,7 +211,7 @@ const Product = () => {
 			dispatch(openCart());
 			setIsLoading(false);
 		} else {
-			dispatch(addProduct({ ...product, quantity, color, size }));
+			dispatch(addProduct({ ...product, quantity }));
 			// Open cart when product is added
 			dispatch(openCart());
 			setIsLoading(false);

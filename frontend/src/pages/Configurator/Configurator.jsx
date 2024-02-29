@@ -11,6 +11,14 @@ import { IoClose } from 'react-icons/io5';
 // Utils
 import { formatPriceDisplay } from '../../utils/formatting';
 
+// Redux
+import { useDispatch, useSelector } from 'react-redux';
+import {
+	openCart,
+	addProduct,
+	incrementProductQuantity,
+} from '../../redux/cartRedux';
+
 // Components
 import Navbar from '../../components/Navbar/Navbar';
 import ConfiguratorModal from '../../components/ConfiguratorModal/ConfiguratorModal';
@@ -18,12 +26,16 @@ import ConfiguratorRow from '../../components/ConfiguratorRow/ConfiguratorRow';
 import ConfiguratorSelectBtn from '../../components/ConfiguratorSelectBtn/ConfiguratorSelectBtn';
 
 const Configurator = () => {
+	const cartProducts = useSelector((state) => state.cart.products);
+	const dispatch = useDispatch();
+
 	const [configuratorModalValues, setConfiguratorModalValues] = useState({
 		open: false,
 		displayType: '',
 		categoryName: '',
 		configuration: [],
 		Constraints: {},
+		total: 0,
 	});
 
 	const openConfiguratorModal = (displayType, categoryName, subCategory) => {
@@ -58,6 +70,45 @@ const Configurator = () => {
 		setConfiguratorModalValues({
 			...newConfiguratorValue,
 		});
+	};
+
+	const buyConfiguration = () => {
+		// Loop thru products in configuration
+		// Check if product is already in cart if it is just increment its quantity
+		for (let configurationProductsData of Object.keys(
+			configuratorModalValues['configuration']
+		)) {
+			for (let product of configuratorModalValues['configuration'][
+				configurationProductsData
+			]) {
+				let quantity = product.quantity;
+				var productAlreadyInCart = false;
+				for (var i = 0; i < cartProducts.length; i++) {
+					if (cartProducts[i]._id == product._id) {
+						productAlreadyInCart = true;
+					}
+				}
+				// Check if quantity is greater than stock if it is display message
+				if (quantity > product.stock) {
+					toast.error('Quantity cannot be greater than stock');
+					setIsLoading(false);
+					return;
+				} else if (productAlreadyInCart) {
+					dispatch(
+						incrementProductQuantity({
+							id: product._id,
+							product,
+						})
+					);
+					// Open cart when product is added
+					dispatch(openCart());
+				} else {
+					dispatch(addProduct({ ...product, quantity }));
+					// Open cart when product is added
+					dispatch(openCart());
+				}
+			}
+		}
 	};
 
 	return (
@@ -276,6 +327,17 @@ const Configurator = () => {
 										subCategory={'Ostalo'}
 									/>
 								</div>
+							</div>
+						</div>
+						<div className="configurator-total">
+							<div className="configurator-total-content">
+								<div className="configurator-total-content-price">
+									<h2>Ukupno:</h2>
+									<p>€{formatPriceDisplay(configuratorModalValues.total)}</p>
+								</div>
+								<button onClick={() => buyConfiguration()}>
+									Kupi Konfiguraciju
+								</button>
 							</div>
 						</div>
 					</div>
