@@ -14,13 +14,16 @@ const QuantityBtn = ({
 		let newConfiguratorValue = configuratorModalValues;
 
 		if (type === 'increase') {
-			product.quantity += 1;
 			// Increase configuration total
 			newConfiguratorValue.total += product.price;
+			product.quantity += 1;
 		} else {
-			product.quantity = product.quantity > 1 ? product.quantity - 1 : 1;
 			// Decrease configuration total
-			newConfiguratorValue.total -= product.price;
+			newConfiguratorValue.total =
+				product.quantity > 1
+					? newConfiguratorValue.total - product.price
+					: newConfiguratorValue.total;
+			product.quantity = product.quantity > 1 ? product.quantity - 1 : 1;
 		}
 		setQuantity(product.quantity);
 

@@ -159,7 +159,7 @@ const ConfiguratorRow = ({
 							{configuratorModalValues['configuration'][categoryName][0].title}
 						</Link>
 					</div>
-					<div className="configurator-table-body-cell price">
+					<div className="configurator-table-body-cell quantity">
 						<QuantityBtn
 							product={
 								configuratorModalValues['configuration'][categoryName][0]
@@ -169,6 +169,8 @@ const ConfiguratorRow = ({
 							configuratorModalValues={configuratorModalValues}
 							setConfiguratorModalValues={setConfiguratorModalValues}
 						/>
+					</div>
+					<div className="configurator-table-body-cell price">
 						{'€' +
 							formatPriceDisplay(
 								configuratorModalValues['configuration'][categoryName][0]
@@ -200,7 +202,7 @@ const ConfiguratorRow = ({
 										<img src={item.images[0].url} alt="" />
 										<Link to={`/product/${item._id}`}>{item.title}</Link>
 									</div>
-									<div className="configurator-table-body-cell price">
+									<div className="configurator-table-body-cell quantity">
 										<QuantityBtn
 											product={item}
 											categoryName={categoryName}
@@ -208,6 +210,8 @@ const ConfiguratorRow = ({
 											configuratorModalValues={configuratorModalValues}
 											setConfiguratorModalValues={setConfiguratorModalValues}
 										/>
+									</div>
+									<div className="configurator-table-body-cell price">
 										{'€' + formatPriceDisplay(item.price * item.quantity)}
 										<IoClose
 											size={32}

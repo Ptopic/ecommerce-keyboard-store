@@ -16,7 +16,7 @@
 
 .configurator-table-head {
    display: grid;
-   grid-template-columns: 150px auto 150px;
+   grid-template-columns: 150px auto 150px 150px;
    gap: 2rem;
    border-bottom: 1px solid #E0E0E0;
    padding-bottom: .4rem;
@@ -29,7 +29,7 @@
 .configurator-table-body-row {
    padding: 1rem 0;
    display: grid;
-   grid-template-columns: 150px auto 150px;
+   grid-template-columns: 150px auto 150px 150px;
    gap: 2rem;
    border-bottom: 1px solid #E0E0E0;
 }
@@ -110,9 +110,9 @@
 
 .configurator-table-body-cell-data.multiple {
    display: grid;
-   grid-template-columns: auto 150px;
+   grid-template-columns: auto 150px 150px;
    width: 100%;
-   grid-column: 2/4;
+   grid-column: 2/5;
 }
 
 .configurator-table-body-cell-data.multiple>button {
