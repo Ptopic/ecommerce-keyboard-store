@@ -123,8 +123,6 @@ const ConfiguratorModal = ({
 
 			let data = res.data;
 
-			console.log(data);
-
 			setProducts(data.data);
 			setTotalPages(data.totalPages);
 		} catch (error) {
@@ -224,10 +222,7 @@ const ConfiguratorModal = ({
 
 		for (let i = 0; i < constraintsArray.length; i++) {
 			for (let j = 0; j < activeFilters.length; j++) {
-				console.log(constraintsArray[i]);
-				console.log(Object.keys(activeFilters[j])[0]);
 				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-					console.log('hit');
 					activeFilters[j][constraintsArray[i]] =
 						constraints[constraintsArray[i]];
 				}
@@ -253,7 +248,7 @@ const ConfiguratorModal = ({
 		product['quantity'] = 1;
 		let productDetails = Array.from(Object.keys(product.details));
 		let newConfiguratorValue = configuratorModalValues;
-		console.log(newConfiguratorValue);
+
 		if (
 			productDetails.includes('Podnožje') &&
 			productDetails.includes('Vrsta Memorije') &&
@@ -496,7 +491,7 @@ const ConfiguratorModal = ({
 									{/* Display product details keys - for table head */}
 									{products &&
 										products.length > 0 &&
-										Object.keys(products[0].details).map((detail) => {
+										Object.keys(products[0].details).map((detail, i) => {
 											return (
 												<Link
 													to={`/configurator
@@ -506,6 +501,7 @@ const ConfiguratorModal = ({
 												&pageSize=${PAGE_SIZE}
 												&search=${search}`}
 													className="configurator-products-table-head-cell"
+													key={i}
 												>
 													{filterDirectionIcons('details.' + detail)}
 													{detail}
@@ -543,6 +539,7 @@ const ConfiguratorModal = ({
 														  ' 1.5fr'
 														: null,
 											}}
+											key={product._id}
 										>
 											<div className="configurator-products-table-body-row-cell naziv">
 												<img src={product.images[0].url} alt="" />
@@ -550,9 +547,12 @@ const ConfiguratorModal = ({
 													{product.title}
 												</Link>
 											</div>
-											{Object.keys(product.details).map((productDetail) => {
+											{Object.keys(product.details).map((productDetail, i) => {
 												return (
-													<div className="configurator-products-table-body-row-cell">
+													<div
+														className="configurator-products-table-body-row-cell"
+														key={i}
+													>
 														{product.details[productDetail]}
 													</div>
 												);

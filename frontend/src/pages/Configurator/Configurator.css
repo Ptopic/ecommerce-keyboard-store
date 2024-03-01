@@ -34,10 +34,6 @@
    border-bottom: 1px solid #E0E0E0;
 }
 
-/* .configurator-table-body-row.multiple {
-   grid-template-columns: auto 150px;
-} */
-
 .configurator-table-body-cell {
    font-size: 1.4rem;
    display: flex;
@@ -65,7 +61,7 @@
 }
 
 .configurator-table-body-cell.ostalo {
-   grid-column: 2/4;
+   grid-column: 2/5;
    display: flex;
    flex-direction: column;
    align-items: start;
@@ -73,9 +69,10 @@
 
 .configurator-table-body-cell.ostalo>.product {
    display: grid;
-   grid-template-columns: auto 150px;
+   grid-template-columns: auto 150px 150px;
    width: 100%;
    margin-bottom: 2rem;
+   gap: 2rem;
 }
 
 .configurator-table-body-cell.ostalo>.buttons {

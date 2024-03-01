@@ -24,6 +24,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import ConfiguratorModal from '../../components/ConfiguratorModal/ConfiguratorModal';
 import ConfiguratorRow from '../../components/ConfiguratorRow/ConfiguratorRow';
 import ConfiguratorSelectBtn from '../../components/ConfiguratorSelectBtn/ConfiguratorSelectBtn';
+import QuantityBtn from '../../components/QuantityBtn/QuantityBtn';
 
 const Configurator = () => {
 	const cartProducts = useSelector((state) => state.cart.products);
@@ -73,6 +74,7 @@ const Configurator = () => {
 	};
 
 	const buyConfiguration = () => {
+		console.log(configuratorModalValues);
 		// Loop thru products in configuration
 		// Check if product is already in cart if it is just increment its quantity
 		for (let configurationProductsData of Object.keys(
@@ -245,8 +247,19 @@ const Configurator = () => {
 													<img src={item.images[0].url} alt="" />
 													<Link to={`/product/${item._id}`}>{item.title}</Link>
 												</div>
+												<div className="configurator-table-body-cell quantity">
+													<QuantityBtn
+														product={item}
+														categoryName={'Periferija'}
+														id={i}
+														configuratorModalValues={configuratorModalValues}
+														setConfiguratorModalValues={
+															setConfiguratorModalValues
+														}
+													/>
+												</div>
 												<div className="configurator-table-body-cell price">
-													€{formatPriceDisplay(item.price)}
+													€{formatPriceDisplay(item.price * item.quantity)}
 													<IoClose
 														size={32}
 														onClick={() =>
@@ -302,8 +315,19 @@ const Configurator = () => {
 													<img src={item.images[0].url} alt="" />
 													<Link to={`/product/${item._id}`}>{item.title}</Link>
 												</div>
+												<div className="configurator-table-body-cell quantity">
+													<QuantityBtn
+														product={item}
+														categoryName={'Ostalo'}
+														id={i}
+														configuratorModalValues={configuratorModalValues}
+														setConfiguratorModalValues={
+															setConfiguratorModalValues
+														}
+													/>
+												</div>
 												<div className="configurator-table-body-cell price">
-													€{formatPriceDisplay(item.price)}
+													€{formatPriceDisplay(item.price * item.quantity)}
 													<IoClose
 														size={32}
 														onClick={() =>

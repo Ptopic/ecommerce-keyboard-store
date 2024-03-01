@@ -31,95 +31,6 @@ const ConfiguratorRow = ({
 		}
 
 		let product = rowItems[id];
-		let productDetails = Array.from(Object.keys(product.details));
-
-		// If product is motherboard remove these 3 constrains
-		if (
-			productDetails.includes('Podnožje') &&
-			productDetails.includes('Vrsta Memorije') &&
-			productDetails.includes('Veličina')
-		) {
-			// If none are selected delete all
-			if (
-				configuratorModalValues['configuration']['Procesori'].length == 0 &&
-				configuratorModalValues['configuration']['Radna memorija (RAM)']
-					.length == 0 &&
-				configuratorModalValues['configuration']['Kućišta'].length == 0
-			) {
-				newConfiguratorValues['Constraints'] = {};
-			} else {
-				delete newConfiguratorValues['Constraints'][categoryName];
-			}
-
-			// Remove only constraints of values that are not selected
-			// Example.
-			// Remove Podnožje if procesor is not selected
-			// TODO fix this not working
-			// if (
-			// 	configuratorModalValues['configuration']['Procesori'].length > 0 &&
-			// 	configuratorModalValues['configuration']['Radna memorija (RAM)']
-			// 		.length == 0 &&
-			// 	configuratorModalValues['configuration']['Kućišta'].length == 0
-			// ) {
-			// 	delete newConfiguratorValues['Constraints']['Podnožje'];
-			// } else if (
-			// 	configuratorModalValues['configuration']['Radna memorija (RAM)']
-			// 		.length > 0 &&
-			// 	configuratorModalValues['configuration']['Procesori'].length == 0 &&
-			// 	configuratorModalValues['configuration']['Kućišta'].length == 0
-			// ) {
-			// 	delete newConfiguratorValues['Constraints']['Vrsta Memorije'];
-			// } else if (
-			// 	configuratorModalValues['configuration']['Kućišta'].length > 0 &&
-			// 	configuratorModalValues['configuration']['Procesori'].length == 0 &&
-			// 	configuratorModalValues['configuration']['Radna memorija (RAM)']
-			// 		.length == 0
-			// ) {
-			// 	delete newConfiguratorValues['Constraints']['Veličina'];
-			// }
-		} else if (
-			productDetails.includes('Podnožje') ||
-			productDetails.includes('Vrsta Memorije') ||
-			productDetails.includes('Veličina')
-		) {
-			// If maticna ploca is not selected then delete (all maticna ploca constraints are not present)
-			if (
-				(Object.keys(newConfiguratorValues['Constraints']).includes(
-					'Podnožje'
-				) &&
-					Object.keys(newConfiguratorValues['Constraints']).includes(
-						'Vrsta Memorije'
-					) &&
-					Object.keys(newConfiguratorValues['Constraints']).includes(
-						'Veličina'
-					)) == false
-			) {
-				if (product.details['Podnožje']) {
-					// Pop element from object of constraints
-					delete newConfiguratorValues['Constraints']['Podnožje'];
-				} else if (product.details['Vrsta Memorije']) {
-					delete newConfiguratorValues['Constraints']['Vrsta Memorije'];
-				} else {
-					delete newConfiguratorValues['Constraints']['Veličina'];
-				}
-			}
-		} else {
-			// Just remove item without touching constraints
-			const filteredConfiguratorValues = Array.from(
-				configuratorModalValues['configuration'][categoryName]
-			).filter((_, index) => index != id);
-
-			newConfiguratorValues['configuration'][categoryName] =
-				filteredConfiguratorValues;
-			newConfiguratorValues.displayType = '';
-			newConfiguratorValues.categoryName = '';
-			newConfiguratorValues.open = false;
-
-			newConfiguratorValues.total -= product.price * product.quantity;
-
-			setConfiguratorModalValues({ ...newConfiguratorValues });
-			return;
-		}
 
 		const filteredConfiguratorValues = Array.from(
 			configuratorModalValues['configuration'][categoryName]
@@ -132,6 +43,55 @@ const ConfiguratorRow = ({
 		newConfiguratorValues.open = false;
 
 		newConfiguratorValues.total -= product.price * product.quantity;
+
+		// Remove all constraints then remap them from remaining products (cpu, ram, motherboard or case)
+		newConfiguratorValues['Constraints'] = {};
+
+		// Get all products with constraints
+		for (let category of Object.keys(newConfiguratorValues['configuration'])) {
+			if (
+				category == 'Procesori' ||
+				category == 'Matične ploče' ||
+				category == 'Radna memorija (RAM)' ||
+				category == 'Kućišta'
+			) {
+				let productsFromCategory =
+					newConfiguratorValues['configuration'][category];
+
+				// Loop thru products
+				for (let product of productsFromCategory) {
+					let productDetails = Array.from(Object.keys(product.details));
+
+					if (
+						productDetails.includes('Podnožje') &&
+						productDetails.includes('Vrsta Memorije') &&
+						productDetails.includes('Veličina')
+					) {
+						newConfiguratorValues['Constraints']['Podnožje'] =
+							product.details['Podnožje'];
+						newConfiguratorValues['Constraints']['Vrsta Memorije'] =
+							product.details['Vrsta Memorije'];
+						newConfiguratorValues['Constraints']['Veličina'] =
+							product.details['Veličina'];
+					} else if (
+						productDetails.includes('Podnožje') ||
+						productDetails.includes('Vrsta Memorije') ||
+						productDetails.includes('Veličina')
+					) {
+						if (product.details['Podnožje']) {
+							newConfiguratorValues['Constraints']['Podnožje'] =
+								product.details['Podnožje'];
+						} else if (product.details['Vrsta Memorije']) {
+							newConfiguratorValues['Constraints']['Vrsta Memorije'] =
+								product.details['Vrsta Memorije'];
+						} else {
+							newConfiguratorValues['Constraints']['Veličina'] =
+								product.details['Veličina'];
+						}
+					}
+				}
+			}
+		}
 
 		setConfiguratorModalValues({ ...newConfiguratorValues });
 	};
