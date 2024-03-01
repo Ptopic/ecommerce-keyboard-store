@@ -3,11 +3,12 @@ import './ConfiguratorModal.css';
 
 import { motion as m, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 // Icons
 import { IoClose } from 'react-icons/io5';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
@@ -48,12 +49,15 @@ const ConfiguratorModal = ({
 
 	const [products, setProducts] = useState([]);
 
-	const [sort, setSort] = useState('createdAt');
-	const [direction, setDirection] = useState('desc');
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 	const [searchTermValue, setSearchTermValue] = useState('');
 	const [search, setSearch] = useState('');
 	const searchInputRef = useRef(null);
+
+	// Sorting params
+	const [searchParams, setSearchParams] = useSearchParams();
+	const sort = searchParams.get('sort');
+	const direction = searchParams.get('direction');
 
 	// Price filters
 	const [priceSliderValues, setPriceSliderValues] = useState([0, 0]);
@@ -308,6 +312,29 @@ const ConfiguratorModal = ({
 		});
 	};
 
+	const filterDirectionIcons = (fieldName) => {
+		if (sort == fieldName) {
+			if (direction == 'asc') {
+				return <IoIosArrowDown color="black" size={20} />;
+			} else {
+				return <IoIosArrowUp color="black" size={20} />;
+			}
+		} else {
+			return <IoIosArrowDown color="black" size={20} />;
+		}
+	};
+
+	const closeConfiguratorModal = () => {
+		// Clear search params
+		searchParams.delete('sort');
+		searchParams.delete('direction');
+		searchParams.delete('search');
+		setSearchParams(searchParams);
+
+		// Close modal
+		toggleOpenConfiugratorModal();
+	};
+
 	return (
 		<div class="modal-overlay">
 			<Toaster />
@@ -398,7 +425,7 @@ const ConfiguratorModal = ({
 					<button
 						type="button"
 						className="close-btn"
-						onClick={() => toggleOpenConfiugratorModal()}
+						onClick={() => closeConfiguratorModal()}
 					>
 						<IoClose size={32} />
 					</button>
@@ -454,22 +481,49 @@ const ConfiguratorModal = ({
 												: null,
 									}}
 								>
-									<div className="configurator-products-table-head-cell">
+									<Link
+										to={`/configurator
+										?sort=title
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${PAGE_SIZE}
+										&search=${search}`}
+										className="configurator-products-table-head-cell"
+									>
+										{filterDirectionIcons('title')}
 										Naziv
-									</div>
+									</Link>
 									{/* Display product details keys - for table head */}
 									{products &&
 										products.length > 0 &&
 										Object.keys(products[0].details).map((detail) => {
 											return (
-												<div className="configurator-products-table-head-cell">
+												<Link
+													to={`/configurator
+												?sort=${'details.' + detail}
+												&direction=${direction == 'asc' ? 'desc' : 'asc'}
+												&page=${page}
+												&pageSize=${PAGE_SIZE}
+												&search=${search}`}
+													className="configurator-products-table-head-cell"
+												>
+													{filterDirectionIcons('details.' + detail)}
 													{detail}
-												</div>
+												</Link>
 											);
 										})}
-									<div className="configurator-products-table-head-cell">
+									<Link
+										to={`/configurator
+										?sort=price
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${PAGE_SIZE}
+										&search=${search}`}
+										className="configurator-products-table-head-cell"
+									>
+										{filterDirectionIcons('price')}
 										Cijena
-									</div>
+									</Link>
 								</div>
 							</div>
 
