@@ -244,6 +244,26 @@ const ConfiguratorModal = ({
 		getProducts();
 	}, [priceSliderValues, sort, direction, page, search]);
 
+	const filterDirectionIcons = (fieldName) => {
+		if (sort == fieldName) {
+			if (direction == 'asc') {
+				return <IoIosArrowDown color="black" size={20} />;
+			} else {
+				return <IoIosArrowUp color="black" size={20} />;
+			}
+		} else {
+			return <IoIosArrowDown color="black" size={20} />;
+		}
+	};
+
+	const clearSearchParams = () => {
+		// Clear search params
+		searchParams.delete('sort');
+		searchParams.delete('direction');
+		searchParams.delete('search');
+		setSearchParams(searchParams);
+	};
+
 	const addProductToConfiguration = (product) => {
 		product['quantity'] = 1;
 		let productDetails = Array.from(Object.keys(product.details));
@@ -305,26 +325,12 @@ const ConfiguratorModal = ({
 		setConfiguratorModalValues({
 			...newConfiguratorValue,
 		});
-	};
 
-	const filterDirectionIcons = (fieldName) => {
-		if (sort == fieldName) {
-			if (direction == 'asc') {
-				return <IoIosArrowDown color="black" size={20} />;
-			} else {
-				return <IoIosArrowUp color="black" size={20} />;
-			}
-		} else {
-			return <IoIosArrowDown color="black" size={20} />;
-		}
+		clearSearchParams();
 	};
 
 	const closeConfiguratorModal = () => {
-		// Clear search params
-		searchParams.delete('sort');
-		searchParams.delete('direction');
-		searchParams.delete('search');
-		setSearchParams(searchParams);
+		clearSearchParams();
 
 		// Close modal
 		toggleOpenConfiugratorModal();
