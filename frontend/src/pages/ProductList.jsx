@@ -227,15 +227,30 @@ const ProductList = () => {
 		setActiveFilters(initialFiltersArray);
 	};
 
+	const getCategories = async () => {};
+
+	// Initial page load and redux state load
 	useEffect(() => {
 		setLoading(true);
 		getMinMaxPrices();
 		getProductsWithoutDebounce();
-		setLoading(false);
-	}, []);
 
-	// Get new prices with useMemo only when activeFilters change
-	useMemo(() => {
+		// Reset filters and active filters
+		setActiveFilters([]);
+		setFilters([]);
+
+		generateFilters(
+			name,
+			activeFilters,
+			categories,
+			setFilters,
+			setActiveFilters
+		);
+		setLoading(false);
+	}, [categories]);
+
+	// Get new prices and regenerate filters only when activeFilters change
+	useEffect(() => {
 		getMinMaxPrices();
 		getProductsWithoutDebounce();
 		regenerateFilters(

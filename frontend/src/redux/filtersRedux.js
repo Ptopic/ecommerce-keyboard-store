@@ -7,7 +7,14 @@ const filtersSlice = createSlice({
 	},
 	reducers: {
 		addFilter: (state, action) => {
-			state.data = [...state.data, action.payload];
+			const filtersData = {};
+			filtersData['filters'] = action.payload.filters;
+			filtersData['activeFilters'] = action.payload.activeFilters;
+			const obj = {};
+			obj[action.payload.categoryName] = filtersData;
+
+			console.log(obj);
+			state.filters = [...state.filters, obj];
 		},
 		getFilter: (state, action) => {
 			return state.data;
