@@ -80,6 +80,7 @@
 
 .configurator-table-body-cell.ostalo>.buttons {
    display: flex;
+   width: 100%;
 }
 
 .configurator-table-body-cell.quantity {
@@ -299,10 +300,9 @@
       gap: 2rem;
    }
 
-   .configurator-table-body-cell.ostalo>.product>.configurator-table-body-cell.quantity {}
-
    .configurator-table-body-cell.ostalo>.product>.configurator-table-body-cell.price {
-      grid-column: 1/1
+      grid-column: 1/1;
+      width: 100%;
    }
 
    .configurator-table-body-cell.ostalo>.product>.configurator-table-body-cell.quantity {
