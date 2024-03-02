@@ -19,9 +19,9 @@ const persistConfig = {
 	key: 'root',
 	version: 1,
 	storage: new CookieStorage(Cookies, {
-		// expiration: {
-		// 	default: 100,
-		// },
+		expiration: {
+			'persist:root': 600,
+		},
 	}),
 };
 

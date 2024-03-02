@@ -3,6 +3,7 @@ import cartReducer from './cartRedux';
 import userReducer from './userRedux';
 import paymentReducer from './paymentRedux';
 import categorisReducer from './categoriesRedux';
+import filtersRedux from './filtersRedux';
 
 import {
 	persistStore,
@@ -25,9 +26,9 @@ const persistConfig = {
 	// blacklist: ['payment'],
 	version: 1,
 	storage: new CookieStorage(Cookies, {
-		// expiration: {
-		// 	default: 100,
-		// },
+		expiration: {
+			'persist:root': 600,
+		},
 	}),
 };
 
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
 	cart: cartReducer,
 	payment: paymentReducer,
 	categories: categorisReducer,
+	filters: filtersRedux,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
