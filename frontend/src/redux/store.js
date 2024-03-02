@@ -25,11 +25,7 @@ const persistConfig = {
 	// Add blocklist in production
 	// blacklist: ['payment'],
 	version: 1,
-	storage: new CookieStorage(Cookies, {
-		expiration: {
-			'persist:root': 600,
-		},
-	}),
+	storage: new CookieStorage(Cookies),
 };
 
 const rootReducer = combineReducers({
