@@ -103,6 +103,10 @@ export const generateFilters = async (
 
 	let foundCategory = categories.find((category) => category.name === name);
 
+	console.log(categories);
+
+	console.log(foundCategory);
+
 	if (foundCategory?.fields == []) {
 		setFilters(null);
 		setActiveFilters(null);
