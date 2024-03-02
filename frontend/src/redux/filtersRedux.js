@@ -4,17 +4,22 @@ const filtersSlice = createSlice({
 	name: 'filters',
 	initialState: {
 		filters: [],
+		activeFilters: [],
 	},
 	reducers: {
 		addFilter: (state, action) => {
-			const filtersData = {};
-			filtersData['filters'] = action.payload.filters;
-			filtersData['activeFilters'] = action.payload.activeFilters;
-			const obj = {};
-			obj[action.payload.categoryName] = filtersData;
+			// const filtersData = {};
+			// filtersData['filters'] = action.payload.filters;
+			// filtersData['activeFilters'] = action.payload.activeFilters;
+			const objFilters = {};
+			objFilters[action.payload.categoryName] = action.payload.filters;
 
-			console.log(obj);
-			state.filters = [...state.filters, obj];
+			const objActiveFilters = {};
+			objActiveFilters[action.payload.categoryName] =
+				action.payload.activeFilters;
+
+			state.filters.push(objFilters);
+			state.activeFilters.push(objActiveFilters);
 		},
 		getFilter: (state, action) => {
 			return state.data;

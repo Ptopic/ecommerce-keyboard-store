@@ -103,10 +103,6 @@ export const generateFilters = async (
 
 	let foundCategory = categories.find((category) => category.name === name);
 
-	console.log(categories);
-
-	console.log(foundCategory);
-
 	if (foundCategory?.fields == []) {
 		setFilters(null);
 		setActiveFilters(null);
@@ -163,7 +159,12 @@ export const generateFilters = async (
 
 	setFilters(filtersArray);
 
-	// Cache filters for current category in redux persist
+	let returnObj = {};
+
+	returnObj['filters'] = filtersArray;
+	returnObj['activeFilters'] = initialFiltersArray;
+
+	return returnObj;
 };
 
 export const regenerateFilters = async (
