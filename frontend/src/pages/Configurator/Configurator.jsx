@@ -259,7 +259,9 @@ const Configurator = () => {
 													/>
 												</div>
 												<div className="configurator-table-body-cell price">
-													€{formatPriceDisplay(item.price * item.quantity)}
+													<p>
+														€{formatPriceDisplay(item.price * item.quantity)}
+													</p>
 													<IoClose
 														size={32}
 														onClick={() =>
@@ -327,7 +329,9 @@ const Configurator = () => {
 													/>
 												</div>
 												<div className="configurator-table-body-cell price">
-													€{formatPriceDisplay(item.price * item.quantity)}
+													<p>
+														€{formatPriceDisplay(item.price * item.quantity)}
+													</p>
 													<IoClose
 														size={32}
 														onClick={() =>

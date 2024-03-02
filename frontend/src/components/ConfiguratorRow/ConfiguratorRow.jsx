@@ -131,13 +131,15 @@ const ConfiguratorRow = ({
 						/>
 					</div>
 					<div className="configurator-table-body-cell price">
-						{'€' +
-							formatPriceDisplay(
-								configuratorModalValues['configuration'][categoryName][0]
-									.price *
+						<p>
+							{'€' +
+								formatPriceDisplay(
 									configuratorModalValues['configuration'][categoryName][0]
-										.quantity
-							)}
+										.price *
+										configuratorModalValues['configuration'][categoryName][0]
+											.quantity
+								)}
+						</p>
 						<IoClose
 							size={32}
 							onClick={() => removeProductFromConfigurator(0)}
@@ -172,7 +174,9 @@ const ConfiguratorRow = ({
 										/>
 									</div>
 									<div className="configurator-table-body-cell price">
-										{'€' + formatPriceDisplay(item.price * item.quantity)}
+										<p>
+											{'€' + formatPriceDisplay(item.price * item.quantity)}
+										</p>
 										<IoClose
 											size={32}
 											onClick={() => removeProductFromConfigurator(i)}

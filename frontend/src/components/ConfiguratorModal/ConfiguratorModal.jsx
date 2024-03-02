@@ -6,6 +6,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import { Link, useSearchParams } from 'react-router-dom';
 
 // Icons
+import { AiOutlineClose } from 'react-icons/ai';
 import { IoClose } from 'react-icons/io5';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
@@ -406,8 +407,14 @@ const ConfiguratorModal = ({
 			<div class="configurator-modal">
 				<div className="configurator-modal-header">
 					<p>
-						Odaberi {displayType} - {subCategory}
+						Odaberi {displayType} {subCategory && `- ${subCategory}`}
 					</p>
+					<button
+						className="filters-btn-mobile"
+						onClick={() => setMobileFiltersOpen(true)}
+					>
+						Izbor Filtera
+					</button>
 					<InputField
 						type={'text'}
 						name={'search'}
@@ -420,7 +427,6 @@ const ConfiguratorModal = ({
 								<AiOutlineSearch size={32} />
 							</button>
 						}
-						width={'50%'}
 						refValue={searchInputRef}
 					/>
 					<button
@@ -553,16 +559,26 @@ const ConfiguratorModal = ({
 													{product.title}
 												</Link>
 											</div>
-											{Object.keys(product.details).map((productDetail, i) => {
-												return (
-													<div
-														className="configurator-products-table-body-row-cell"
-														key={i}
-													>
-														{product.details[productDetail]}
-													</div>
-												);
-											})}
+											<div className="product-details">
+												{Object.keys(product.details).map(
+													(productDetail, i) => {
+														return (
+															<div
+																className="configurator-products-table-body-row-cell"
+																key={i}
+															>
+																<div className="product-detail">
+																	<p className="detail-name">{productDetail}</p>
+																	<p className="detail-value">
+																		{product.details[productDetail]}
+																	</p>
+																</div>
+															</div>
+														);
+													}
+												)}
+											</div>
+
 											<div className="configurator-products-table-body-row-cell price">
 												<p>€{formatPriceDisplay(product.price)}</p>
 												<button
