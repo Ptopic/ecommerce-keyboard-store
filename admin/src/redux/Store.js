@@ -18,11 +18,7 @@ import Cookies from 'cookies-js';
 const persistConfig = {
 	key: 'root',
 	version: 1,
-	storage: new CookieStorage(Cookies, {
-		// expiration: {
-		// 	default: 100,
-		// },
-	}),
+	storage: new CookieStorage(Cookies),
 };
 
 const rootReducer = combineReducers({ user: userReducer });
