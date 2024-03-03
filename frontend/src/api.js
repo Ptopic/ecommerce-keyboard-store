@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { Cookies } from 'react-cookie';
 
-const BASE_URL = import.meta.env.VITE_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // Get token from cookie
 const cookies = new Cookies();

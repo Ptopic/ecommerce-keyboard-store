@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { admin_request } from '../../api';
+import { userRequest } from '../../api';
 
 export default function Home() {
 	const dispatch = useDispatch();
@@ -26,11 +26,9 @@ export default function Home() {
 	const [ordersPercentage, setOrdersPercentage] = useState(0);
 	const [latestOrders, setLatestOrders] = useState([]);
 
-	let userToken = user.currentUser.token;
-
 	const getSalesData = async () => {
 		try {
-			const res = await admin_request(userToken).get('/orders/income');
+			const res = await userRequest.get('/orders/income');
 			setSales(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -39,7 +37,7 @@ export default function Home() {
 
 	const getUsersData = async () => {
 		try {
-			const res = await admin_request(userToken).get('/user/count');
+			const res = await userRequest.get('/user/count');
 			setUsers(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -48,7 +46,7 @@ export default function Home() {
 
 	const getOrdersData = async () => {
 		try {
-			const res = await admin_request(userToken).get('/orders/count');
+			const res = await userRequest.get('/orders/count');
 			setOrders(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -57,9 +55,7 @@ export default function Home() {
 
 	const getLatestOrders = async () => {
 		try {
-			const res = await admin_request(userToken).get(
-				'/orders/?pageSize=4&page=0'
-			);
+			const res = await userRequest.get('/orders/?pageSize=4&page=0');
 			setLatestOrders(res.data.data);
 		} catch (err) {
 			console.log(err);

@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_URL;
-let TOKEN = '';
-if (localStorage.getItem('persist:root') != undefined) {
-	let userObj = JSON.parse(localStorage.getItem('persist:root')).user;
-	TOKEN = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user)
-		.currentUser?.token;
-}
+import { Cookies } from 'react-cookie';
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+console.log(BASE_URL);
+
+// Get token from cookie
+const cookies = new Cookies();
+let TOKEN = cookies.cookies.token;
+console.log(TOKEN);
 
 export const request = axios.create({
 	baseURL: BASE_URL,
@@ -17,32 +19,23 @@ export const request = axios.create({
 // 	headers: { token: TOKEN },
 // });
 
+export const userRequest = axios.create({
+	baseURL: BASE_URL,
+	headers: { Authorization: `Bearer ${TOKEN}` },
+});
+
 export const user_request = (tokenVal) => {
-	if (tokenVal) {
-		return axios.create({
-			baseURL: BASE_URL,
-			headers: { token: tokenVal },
-		});
-	} else {
-		return axios.create({
-			baseURL: BASE_URL,
-			headers: { token: TOKEN },
-		});
-	}
+	return axios.create({
+		baseURL: BASE_URL,
+		headers: { Authorization: `Bearer ${tokenVal}` },
+	});
 };
 
 export const admin_request = (tokenVal) => {
-	if (tokenVal) {
-		return axios.create({
-			baseURL: BASE_URL,
-			headers: { token: tokenVal },
-		});
-	} else {
-		return axios.create({
-			baseURL: BASE_URL,
-			headers: { token: TOKEN },
-		});
-	}
+	return axios.create({
+		baseURL: BASE_URL,
+		headers: { Authorization: `Bearer ${tokenVal}` },
+	});
 };
 
 // user_request.defaults.headers.token = TOKEN;

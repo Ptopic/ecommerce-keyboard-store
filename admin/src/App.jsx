@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import Sidebar from './components/sidebar/Sidebar';
 import Topbar from './components/topbar/Topbar';
 import './App.css';
@@ -5,7 +6,8 @@ import Home from './pages/Home/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login/Login';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserData } from './redux/userRedux';
 import Analytics from './pages/Analytics/Analytics';
 import UserList from './pages/UserList/UserList';
 import NewUser from './pages/NewUser/NewUser';
@@ -20,15 +22,35 @@ import NotFound from './pages/NotFound/NotFound';
 import ProductVariants from './pages/ProductVariants/ProductVariants';
 import EditProduct from './pages/EditProduct/EditProduct';
 
-function App() {
-	const user = useSelector((state) => state.user.currentUser);
-	let admin = user?.data?.isAdmin;
+import { useCookies } from 'react-cookie';
 
-	console.log(user);
+import { jwtDecode } from 'jwt-decode';
+
+function App() {
+	const [cookies, setCookie] = useCookies();
+
+	const user = useSelector((state) => state.user.currentUser);
+	let admin = null;
+
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		// check if token cookie is available
+		let token = cookies.token;
+
+		if (token) {
+			admin = user?.isAdmin;
+		} else {
+			// if it isnt set user data to null
+			dispatch(setUserData(null));
+		}
+		console.log(user);
+		console.log(admin);
+	}, []);
 
 	return (
 		<Router>
-			{user && admin ? (
+			{user && user?.isAdmin == true ? (
 				<>
 					<Topbar />
 					<div className="container">

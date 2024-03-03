@@ -71,7 +71,6 @@ const Login = () => {
 
 			formikActions.resetForm();
 			navigate('/');
-			window.location.reload();
 		} else {
 			toast.error(res.error);
 		}

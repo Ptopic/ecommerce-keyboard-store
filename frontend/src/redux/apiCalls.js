@@ -4,7 +4,6 @@ import { request } from '../api';
 export const API_URL = import.meta.env.VITE_URL;
 
 export const login = async (dispatch, userCredentials) => {
-	// const res = await request.post('/auth/login', userCredentials);
 	dispatch(loginStart());
 	const res = await fetch(`${API_URL}auth/login`, {
 		method: 'POST',

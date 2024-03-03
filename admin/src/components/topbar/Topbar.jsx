@@ -42,8 +42,8 @@ export default function Topbar() {
 					</div> */}
 					<img
 						src={
-							currentUser.picture != (undefined || null)
-								? currentUser.picture
+							currentUser?.picture != (undefined || null)
+								? currentUser?.picture
 								: defaultUserAvatar
 						}
 						alt=""

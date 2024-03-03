@@ -27,7 +27,7 @@ import {
 	useNavigate,
 	useSearchParams,
 } from 'react-router-dom';
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 // Icons
 import { FaTrash } from 'react-icons/fa';
@@ -78,7 +78,7 @@ function EditCategory() {
 
 	const fetchCategoryById = async () => {
 		try {
-			const res = await admin_request(userToken).get('/categories/' + id);
+			const res = await userRequest.get('/categories/' + id);
 			let fields = res.data.data.fields;
 			let data = res.data.data;
 			setCategoryData(data);
@@ -105,7 +105,7 @@ function EditCategory() {
 	const handleEditCategory = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			const res = await admin_request(userToken).put('/categories/' + id, {
+			const res = await userRequest.put('/categories/' + id, {
 				...values,
 				selectedFields,
 			});

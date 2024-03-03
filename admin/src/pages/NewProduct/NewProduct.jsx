@@ -20,7 +20,7 @@ import 'react-quill/dist/quill.snow.css';
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link } from 'react-router-dom';
-import { admin_request, request } from '../../api';
+import { admin_request, request, userRequest } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
 import { useSearchParams } from 'react-router-dom';
@@ -95,7 +95,7 @@ const NewProduct = () => {
 
 			setIsLoading(true);
 			try {
-				const res = await admin_request(userToken).post('/products', {
+				const res = await userRequest.post('/products', {
 					...values,
 					images: files,
 					activeFields: activeFields,
@@ -122,7 +122,7 @@ const NewProduct = () => {
 
 	const getAllCategories = async () => {
 		try {
-			const res = await admin_request(userToken).get('/categories');
+			const res = await userRequest.get('/categories');
 			setCategories(res.data.data);
 		} catch (error) {
 			console.log(error.response.data.error);
