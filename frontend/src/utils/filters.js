@@ -1,4 +1,4 @@
-import { request } from '../api';
+import { userRequest } from '../api';
 
 export const generateFilterProductAdmin = async (
 	selectedCategory,
@@ -11,7 +11,7 @@ export const generateFilterProductAdmin = async (
 	setIsFiltersLoading
 ) => {
 	console.log(selectedCategory);
-	const allProductsRes = await request.get(
+	const allProductsRes = await userRequest.get(
 		`/products/filters/` + selectedCategory,
 		{
 			params: {
@@ -89,7 +89,7 @@ export const generateFilters = async (
 ) => {
 	// console.log(Array.from(Object.keys(constraints)).length);
 	// Get all products by category to generate filters for it
-	const allProductsRes = await request.get(`/products/filters/` + name, {
+	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
 			activeFilters: activeFilters != [] ? activeFilters : null,
 			// constraints:
@@ -180,7 +180,7 @@ export const regenerateFilters = async (
 	constraints
 ) => {
 	// Get all products by category to generate filters for it
-	const allProductsRes = await request.get(`/products/filters/` + name, {
+	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
 			activeFilters: activeFilters != [] ? activeFilters : null,
 			// constraints:

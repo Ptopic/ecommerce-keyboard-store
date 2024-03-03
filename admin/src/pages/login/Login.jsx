@@ -14,6 +14,8 @@ import InputField from '../../../../frontend/src/components/InputField/InputFiel
 // Icons
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
+import { useCookies } from 'react-cookie';
+
 // Styles
 import './Login.css';
 
@@ -28,6 +30,8 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+	const [cookies, setCookie] = useCookies();
+
 	const [passwordShow, setPasswordShow] = useState(false);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -54,18 +58,25 @@ const Login = () => {
 	});
 
 	const handleLogin = async (values, formikActions) => {
-		try {
-			const res = await login(dispatch, { ...values });
-			if (res.success == true && res.data.isAdmin == true) {
-				formikActions.resetForm();
-				// Redirect to main page
-				navigate('/');
-			} else if (res.success == false) {
-				toast.error(res.error);
-			} else {
-				toast.error('User is not an Admin, Try another user.');
-			}
-		} catch (error) {}
+		const res = await login(dispatch, { ...values });
+
+		console.log(res);
+
+		if (res.success == true && res.data.isAdmin == true) {
+			// Set token cookie
+			let token = res.token;
+			setCookie('token', token, {
+				expires: new Date(new Date().getTime() + 1440 * 60000),
+				path: '/',
+			});
+
+			formikActions.resetForm();
+			navigate('/');
+		} else if (res?.data?.isAdmin == false) {
+			toast.error('User is not admin...');
+		} else {
+			toast.error(res.error);
+		}
 	};
 
 	const togglePasswordShow = () => {

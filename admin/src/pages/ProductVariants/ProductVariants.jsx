@@ -16,7 +16,7 @@ import InputField from '../../../../frontend/src/components/InputField/InputFiel
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link, useLocation } from 'react-router-dom';
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import VariantImagesModal from '../../components/VariantImagesModal/VariantImagesModal';
 
@@ -75,7 +75,7 @@ const ProductVariants = () => {
 	// Get product by id
 	const getProductById = async () => {
 		try {
-			const res = await admin_request(userToken).get('/products/find/' + id);
+			const res = await userRequest.get('/products/find/' + id);
 			let productRes = res.data.data;
 			setProduct(productRes);
 
@@ -94,9 +94,7 @@ const ProductVariants = () => {
 	// Get previous product variations
 	const getProductVariationsByProductId = async () => {
 		try {
-			const res = await admin_request(userToken).get(
-				'/products/variants/' + id
-			);
+			const res = await userRequest.get('/products/variants/' + id);
 			let variationsRes = res.data.data;
 			setOldVariants(variationsRes);
 		} catch (error) {
@@ -254,7 +252,7 @@ const ProductVariants = () => {
 		setIsLoading(true);
 		try {
 			console.log(values);
-			const res = await admin_request(userToken).post('/products/variants', {
+			const res = await userRequest.post('/products/variants', {
 				variations: values.variations,
 				productId: id,
 				names: combinations,
@@ -262,15 +260,12 @@ const ProductVariants = () => {
 			console.log(res);
 
 			// Update product colors sizes and materials
-			const resUpdateProduct = await admin_request(userToken).put(
-				'/products/' + id,
-				{
-					colors: colors,
-					sizes: sizes,
-					materials: materials,
-					names: combinations,
-				}
-			);
+			const resUpdateProduct = await userRequest.put('/products/' + id, {
+				colors: colors,
+				sizes: sizes,
+				materials: materials,
+				names: combinations,
+			});
 			console.log(resUpdateProduct);
 
 			toast.success('Product variants updated successfully');

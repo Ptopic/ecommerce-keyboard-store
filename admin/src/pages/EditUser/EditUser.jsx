@@ -24,7 +24,7 @@ import {
 	useNavigate,
 	useSearchParams,
 } from 'react-router-dom';
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 function EditUser() {
 	const navigate = useNavigate();
@@ -77,7 +77,7 @@ function EditUser() {
 
 	const fetchUserById = async () => {
 		try {
-			const res = await admin_request(userToken).get('/user/' + id);
+			const res = await userRequest.get('/user/' + id);
 			let data = res.data.data;
 			setUserData(data);
 
@@ -96,7 +96,7 @@ function EditUser() {
 	const handleEditUser = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			const res = await admin_request(userToken).put('/user/edit/' + id, {
+			const res = await userRequest.put('/user/edit/' + id, {
 				...values,
 			});
 			console.log(res);

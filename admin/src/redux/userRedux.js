@@ -28,6 +28,9 @@ const userSlice = createSlice({
 		setActiveScreen: (state, action) => {
 			state.activeScreen = action.payload;
 		},
+		setUserData: (state, action) => {
+			state.currentUser = action.payload;
+		},
 	},
 });
 
@@ -37,5 +40,6 @@ export const {
 	loginFailure,
 	logout,
 	setActiveScreen,
+	setUserData,
 } = userSlice.actions;
 export default userSlice.reducer;

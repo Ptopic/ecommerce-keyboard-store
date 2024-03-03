@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
@@ -58,7 +58,7 @@ const Products = () => {
 	const getProductsData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/products/admin', {
+			const res = await userRequest.get('/products/admin', {
 				params: {
 					sort: sort,
 					direction: direction,
@@ -109,9 +109,7 @@ const Products = () => {
 	};
 
 	const handleProductDelete = async () => {
-		const res = await admin_request(userToken).delete(
-			`/products/${productIdToDelete}`
-		);
+		const res = await userRequest.delete(`/products/${productIdToDelete}`);
 		console.log(res);
 		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });

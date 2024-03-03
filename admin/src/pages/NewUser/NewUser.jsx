@@ -16,14 +16,11 @@ import InputField from '../../../../frontend/src/components/InputField/InputFiel
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link } from 'react-router-dom';
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 import { useSearchParams } from 'react-router-dom';
 
 function NewUser() {
-	const user = useSelector((state) => state.user);
-	let userToken = user.currentUser.token;
-
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	// Query params from url
@@ -69,7 +66,7 @@ function NewUser() {
 	const handleAddNewUser = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			const res = await admin_request(userToken).post('/user/add', {
+			const res = await userRequest.post('/user/add', {
 				...values,
 			});
 			toast.success('User added successfully');

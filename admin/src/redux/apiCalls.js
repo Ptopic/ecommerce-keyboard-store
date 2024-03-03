@@ -9,18 +9,24 @@ const catchError = (error) => {
 	}
 };
 
+export const API_URL = import.meta.env.VITE_API_URL;
+
 export const login = async (dispatch, userCredentials) => {
 	dispatch(loginStart());
-	try {
-		const res = await request.post('/auth/login', userCredentials);
-		dispatch(loginSuccess(res.data));
+	const res = await fetch(`${API_URL}auth/login`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(userCredentials),
+	});
 
-		// Set localStorage.currentUser to res.data instead of waiting for page refresh
+	const data = await res.json();
 
-		return res.data;
-	} catch (error) {
+	if (res.ok) {
+		dispatch(loginSuccess(data.data));
+	} else {
 		dispatch(loginFailure());
-		console.log(error);
-		return catchError(error);
 	}
+	return data;
 };

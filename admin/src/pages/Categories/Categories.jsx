@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
@@ -53,7 +53,7 @@ function Categories() {
 	const getCategoriesData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/categories', {
+			const res = await userRequest.get('/categories', {
 				params: {
 					sort: sort,
 					direction: direction,
@@ -104,7 +104,7 @@ function Categories() {
 	};
 
 	const handleCategoryDelete = async () => {
-		await admin_request(userToken).delete(`/categories/${categoryIdToDelete}`);
+		await userRequest.delete(`/categories/${categoryIdToDelete}`);
 		setCategoryIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters

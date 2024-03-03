@@ -29,7 +29,7 @@ import {
 	useNavigate,
 	useSearchParams,
 } from 'react-router-dom';
-import { admin_request, request } from '../../api';
+import { admin_request, request, userRequest } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import Spinner from '../../components/Spinner/Spinner';
 
@@ -149,7 +149,7 @@ const EditProduct = () => {
 		if (files?.length != 0) {
 			setIsLoading(true);
 			try {
-				const res = await admin_request(userToken).put('/products/' + id, {
+				const res = await userRequest.put('/products/' + id, {
 					...values,
 					images: files,
 					activeFields: activeFields,
@@ -173,7 +173,7 @@ const EditProduct = () => {
 		} else {
 			setIsLoading(true);
 			try {
-				const res = await admin_request(userToken).put('/products/' + id, {
+				const res = await userRequest.put('/products/' + id, {
 					...values,
 					activeFields: activeFields,
 				});
@@ -198,7 +198,7 @@ const EditProduct = () => {
 
 	const getAllCategories = async () => {
 		try {
-			const res = await admin_request(userToken).get('/categories');
+			const res = await userRequest.get('/categories');
 			setCategories(res.data.data);
 		} catch (error) {
 			console.log(error.response.data.error);
@@ -207,31 +207,29 @@ const EditProduct = () => {
 
 	const getProduct = async () => {
 		try {
-			await admin_request(userToken)
-				.get('/products/find/' + id)
-				.then((res) => {
-					let productData = res.data.data;
+			await userRequest.get('/products/find/' + id).then((res) => {
+				let productData = res.data.data;
 
-					formik.initialValues.title = productData?.title;
-					formik.initialValues.price = productData?.price;
-					formik.initialValues.stock = productData?.stock;
-					formik.initialValues.category = productData?.category;
-					formik.initialValues.specifications = productData?.specifications;
-					formik.initialValues.description = productData?.description;
-					setSelectedCategory(productData?.category);
+				formik.initialValues.title = productData?.title;
+				formik.initialValues.price = productData?.price;
+				formik.initialValues.stock = productData?.stock;
+				formik.initialValues.category = productData?.category;
+				formik.initialValues.specifications = productData?.specifications;
+				formik.initialValues.description = productData?.description;
+				setSelectedCategory(productData?.category);
 
-					setProduct(productData);
+				setProduct(productData);
 
-					setPreviousFiles(productData.images);
+				setPreviousFiles(productData.images);
 
-					// Set form values as product details values
-					for (let detailsKey of Object.keys(productData.details)) {
-						formik.setFieldValue(detailsKey, productData.details[detailsKey]);
-						console.log(productData.details[detailsKey]);
-					}
+				// Set form values as product details values
+				for (let detailsKey of Object.keys(productData.details)) {
+					formik.setFieldValue(detailsKey, productData.details[detailsKey]);
+					console.log(productData.details[detailsKey]);
+				}
 
-					console.log(formik.values);
-				});
+				console.log(formik.values);
+			});
 		} catch (error) {
 			console.log(error);
 		}
@@ -340,7 +338,7 @@ const EditProduct = () => {
 		setImageRemoveIsLoading(true);
 
 		try {
-			await admin_request(userToken)
+			await userRequest
 				.delete('/products/image/' + id, {
 					data: { productImageId: productImageId },
 				})

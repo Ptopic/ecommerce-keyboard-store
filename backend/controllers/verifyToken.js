@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-	console.log(req.headers);
+	const tokenHeader = req.headers.authorization.split(' ')[1];
 	// const tokenHeader = req.headers.authorization.split(' ')[1];
 	if (tokenHeader) {
 		jwt.verify(tokenHeader, process.env.JWT_SECRET, (err, data) => {
@@ -19,7 +19,6 @@ const verifyToken = (req, res, next) => {
 };
 
 exports.verifyTokenAuthenticity = (req, res, next) => {
-	console.log(req.headers);
 	const tokenHeader = req.headers.authorization.split(' ')[1];
 	// console.log(req.headers.authorization.split(' ')[1]);
 	if (tokenHeader) {
@@ -38,7 +37,6 @@ exports.verifyTokenAuthenticity = (req, res, next) => {
 };
 
 exports.verifyTokenAndAuthorization = (req, res, next) => {
-	console.log(req);
 	verifyToken(req, res, () => {
 		if (req.data.id === req.params.id || req.data.id === req.body.id) {
 			next();

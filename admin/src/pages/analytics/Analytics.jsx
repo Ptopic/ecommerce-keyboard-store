@@ -9,11 +9,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 const Analytics = () => {
 	const dispatch = useDispatch();
-	const user = useSelector((state) => state.user);
 
 	const [sales, setSales] = useState([]);
 	const [salesChartData, setSalesChartData] = useState([]);
@@ -22,11 +21,9 @@ const Analytics = () => {
 	const [orders, setOrders] = useState([]);
 	const [ordersChartData, setOrdersChartData] = useState([]);
 
-	let userToken = user.currentUser.token;
-
 	const getSalesData = async () => {
 		try {
-			const res = await admin_request(userToken).get('/orders/income');
+			const res = await userRequest.get('/orders/income');
 			setSales(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -35,7 +32,7 @@ const Analytics = () => {
 
 	const getUsersData = async () => {
 		try {
-			const res = await admin_request(userToken).get('/user/count');
+			const res = await userRequest.get('/user/count');
 			setUsers(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -44,7 +41,7 @@ const Analytics = () => {
 
 	const getOrdersData = async () => {
 		try {
-			const res = await admin_request(userToken).get('/orders/count');
+			const res = await userRequest.get('/orders/count');
 			setOrders(res.data.data);
 		} catch (err) {
 			console.log(err);

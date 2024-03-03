@@ -22,7 +22,7 @@ import AddFieldModal from '../../components/AddFieldModal/AddFieldModal';
 import { toast, Toaster } from 'react-hot-toast';
 
 import { Link, useSearchParams } from 'react-router-dom';
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 // Icons
 import { FaTrash } from 'react-icons/fa';
@@ -68,7 +68,7 @@ function NewCategory() {
 	const handleAddNewCategory = async (values, formikActions) => {
 		setIsLoading(true);
 		try {
-			const res = await admin_request(userToken).post('/categories', {
+			const res = await userRequest.post('/categories', {
 				...values,
 				selectedFields,
 			});

@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { admin_request } from '../../api';
+import { admin_request, userRequest } from '../../api';
 
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
@@ -25,7 +25,6 @@ import { AiOutlineSearch } from 'react-icons/ai';
 export default function UserList() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const user = useSelector((state) => state.user);
 
 	const [userIdToDelete, setUserIdToDelete] = useState(null);
 	const [data, setData] = useState([]);
@@ -33,8 +32,6 @@ export default function UserList() {
 		open: false,
 		text: '',
 	});
-
-	let userToken = user.currentUser.token;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [totalPages, setTotalPages] = useState(0);
@@ -54,7 +51,7 @@ export default function UserList() {
 	const getUsersData = async () => {
 		// Get params from url and sort data if needed or change page
 		try {
-			const res = await admin_request(userToken).get('/user', {
+			const res = await userRequest.get('/user', {
 				params: {
 					sort: sort,
 					direction: direction,
@@ -104,7 +101,7 @@ export default function UserList() {
 	};
 
 	const handleUserDelete = async () => {
-		await admin_request(userToken).delete(`/user/${userIdToDelete}`);
+		await userRequest.delete(`/user/${userIdToDelete}`);
 		setUserIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 
