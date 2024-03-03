@@ -24,7 +24,6 @@ import { formatPriceDisplay } from '../utils/formatting';
 
 function Checkout() {
 	let user = useSelector((state) => state.user.currentUser);
-	user = user.data;
 
 	const cart = useSelector((state) => state.cart);
 	const dispatch = useDispatch();

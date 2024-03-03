@@ -72,9 +72,6 @@ const Product = () => {
 
 	const cartProducts = useSelector((state) => state.cart.products);
 	const currentUser = useSelector((state) => state.user.currentUser);
-	let userToken = currentUser?.data;
-
-	console.log(userToken);
 
 	const dispatch = useDispatch();
 
@@ -91,9 +88,7 @@ const Product = () => {
 	const getWishlist = async () => {
 		try {
 			// Check if product is in users wishlist
-			const wishlist = await request.get(
-				`/wishlist?userId=${currentUser.data._id}`
-			);
+			const wishlist = await request.get(`/wishlist?userId=${currentUser._id}`);
 
 			const products = wishlist.data.data.products;
 
@@ -137,7 +132,7 @@ const Product = () => {
 		console.log(currentUser);
 		if (Object.keys(currentUser).length != 0) {
 			const productId = product._id;
-			const userId = currentUser.data._id;
+			const userId = currentUser._id;
 
 			try {
 				setIsLoadingWishlist(true);
@@ -159,7 +154,7 @@ const Product = () => {
 
 	const handleRemoveFromWishlist = async () => {
 		const productId = product._id;
-		const userId = currentUser.data._id;
+		const userId = currentUser._id;
 
 		try {
 			setIsLoadingWishlist(true);

@@ -65,7 +65,7 @@ function UserChangePassword() {
 		setIsLoading(true);
 		try {
 			const res = await user_request(user.token).put('/user/changePassword', {
-				userId: user.data._id,
+				userId: user._id,
 				...values,
 			});
 			toast.success('Your password was succesfully changed!');

@@ -52,7 +52,7 @@ function UserOrders() {
 	// Get all orders from user
 	const getUsersOrders = async () => {
 		try {
-			const res = await userRequest.get('/orders/find/' + user.data._id, {
+			const res = await userRequest.get('/orders/find/' + user._id, {
 				params: {
 					sort: sortValue,
 					direction: directionValue,

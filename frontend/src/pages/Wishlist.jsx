@@ -19,7 +19,7 @@ function Wishlist() {
 			try {
 				// Check if product is in users wishlist
 				const wishlist = await request.get(
-					`/wishlist?userId=${currentUser.data._id}`
+					`/wishlist?userId=${currentUser._id}`
 				);
 				// If users wishlist doesnt exist prompt him to add some products to create it
 				if (wishlist.data.message) {

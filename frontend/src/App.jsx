@@ -61,7 +61,7 @@ const App = () => {
 
 		if (res.ok) {
 			// Set redux user data
-			dispatch(setUserData(data));
+			dispatch(setUserData(data.data));
 		}
 	};
 

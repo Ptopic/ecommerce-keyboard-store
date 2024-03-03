@@ -26,12 +26,8 @@ function UserDetails() {
 	const dispatch = useDispatch();
 	let user = useSelector((state) => state.user.currentUser);
 
-	const [token, setToken] = useState(user != null ? user.token : '');
-
-	user = user.data;
-
-	const [r1, setR1] = useState(user.tvrtka !== '' ? true : false);
-	const [dostava, setDostava] = useState(user.ime2 !== '' ? true : false);
+	const [r1, setR1] = useState(user?.tvrtka !== '' ? true : false);
+	const [dostava, setDostava] = useState(user?.ime2 !== '' ? true : false);
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	const validationSchema = Yup.object().shape({
@@ -94,24 +90,24 @@ function UserDetails() {
 	});
 
 	const initialValues = {
-		email: user.email ? user.email : '',
-		tvrtka: user.tvrtka ? user.tvrtka : '',
-		oib: user.oib ? user.oib : '',
-		firstName: user.firstName ? user.firstName : '',
-		lastName: user.lastName ? user.lastName : '',
-		mjesto: user.billingInfo != null ? user.billingInfo.address.city : '',
-		zip: user.billingInfo != null ? user.billingInfo.address.postal_code : '',
-		adresa: user.billingInfo != null ? user.billingInfo.address.line1 : '',
-		telefon: user.billingInfo != null ? user.billingInfo.phone : '',
+		email: user?.email ? user.email : '',
+		tvrtka: user?.tvrtka ? user.tvrtka : '',
+		oib: user?.oib ? user.oib : '',
+		firstName: user?.firstName ? user.firstName : '',
+		lastName: user?.lastName ? user.lastName : '',
+		mjesto: user?.billingInfo != null ? user.billingInfo.address.city : '',
+		zip: user?.billingInfo != null ? user.billingInfo.address.postal_code : '',
+		adresa: user?.billingInfo != null ? user.billingInfo.address.line1 : '',
+		telefon: user?.billingInfo != null ? user.billingInfo.phone : '',
 		// Additional shipping info
-		tvrtka2: user.tvrtkaDostava ? user.tvrtkaDostava : '',
-		ime2: user.shippingInfo != null ? user.shippingInfo.firstName : '',
-		prezime2: user.shippingInfo != null ? user.shippingInfo.lastName : '',
-		mjesto2: user.shippingInfo != null ? user.shippingInfo.address.city : '',
+		tvrtka2: user?.tvrtkaDostava ? user.tvrtkaDostava : '',
+		ime2: user?.shippingInfo != null ? user.shippingInfo.firstName : '',
+		prezime2: user?.shippingInfo != null ? user.shippingInfo.lastName : '',
+		mjesto2: user?.shippingInfo != null ? user.shippingInfo.address.city : '',
 		zip2:
-			user.shippingInfo != null ? user.shippingInfo.address.postal_code : '',
-		adresa2: user.shippingInfo != null ? user.shippingInfo.address.line1 : '',
-		telefon2: user.shippingInfo != null ? user.shippingInfo.phone : '',
+			user?.shippingInfo != null ? user.shippingInfo.address.postal_code : '',
+		adresa2: user?.shippingInfo != null ? user.shippingInfo.address.line1 : '',
+		telefon2: user?.shippingInfo != null ? user.shippingInfo.phone : '',
 	};
 
 	const editUserInfo = async (values, formikActions) => {
@@ -157,7 +153,7 @@ function UserDetails() {
 
 		// Api call to update users info
 		try {
-			const res = await user_request(token).put('/user/changeUserInfo', {
+			const res = await userRequest.put('/user/changeUserInfo', {
 				userId: user._id,
 				...values,
 				shippingInfo,
