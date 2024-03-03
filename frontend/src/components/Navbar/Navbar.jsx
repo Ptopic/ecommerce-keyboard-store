@@ -32,11 +32,15 @@ import { setCategories } from '../../redux/categoriesRedux';
 import { logout } from '../../redux/userRedux';
 import { openCart, closeCart } from '../../redux/cartRedux';
 
+import { useCookies } from 'react-cookie';
+
 const Navbar = () => {
+	const [cookies, setCookie] = useCookies();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	const user = useSelector((state) => state.user.currentUser);
+
 	const quantity = useSelector((state) => state.cart.quantity);
 	const categories = useSelector((state) => state.categories.data);
 
@@ -81,6 +85,13 @@ const Navbar = () => {
 
 	const handleLogOut = () => {
 		dispatch(logout());
+
+		// Destroy cookie
+		setCookie('token', '', {
+			expires: new Date(0),
+			path: '/',
+		});
+
 		navigate('/');
 		window.location.reload();
 	};
@@ -134,7 +145,7 @@ const Navbar = () => {
 					</Link>
 				</div>
 				<div className="navbar-right">
-					{user?.data ? (
+					{user ? (
 						<div className="navbar-user-data">
 							<button onClick={() => handleLogOut()}>
 								<IoLogOutOutline size={26} />
@@ -152,7 +163,7 @@ const Navbar = () => {
 						</Link>
 					)}
 
-					{user?.data && (
+					{user && (
 						<Link
 							style={{
 								textDecoration: 'none',
@@ -243,6 +254,7 @@ const Navbar = () => {
 														link={`/products/${category.name}?name=${category.name}`}
 														text={category.name}
 														closeFunction={closeNavbar}
+														key={category._id}
 													/>
 												);
 											})}

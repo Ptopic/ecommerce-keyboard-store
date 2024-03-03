@@ -193,10 +193,14 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
 	try {
+		console.log(req.body);
 		const user = await User.findOne({ email: req.body.email });
+		console.log(user);
 		if (!user) {
 			return res.status(401).send({ success: false, error: 'User not found.' });
 		}
+
+		console.log(user);
 
 		const isPasswordCorrect = bcrypt.compareSync(
 			req.body.password,

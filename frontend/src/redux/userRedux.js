@@ -22,7 +22,7 @@ const userSlice = createSlice({
 			state.isFetching = false;
 		},
 		setUserData: (state, action) => {
-			state.currentUser.data = action.payload;
+			state.currentUser = action.payload;
 		},
 	},
 });

@@ -247,15 +247,19 @@ const ProductList = () => {
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
-		for (let reduxFilter of reduxFilters.filters) {
-			if (Object.keys(reduxFilter) == name) {
-				isCategoryFiltersCached = reduxFilter;
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			for (let reduxFilter of reduxFilters?.filters) {
+				if (Object.keys(reduxFilter) == name) {
+					isCategoryFiltersCached = reduxFilter;
+				}
 			}
 		}
 
-		for (let reduxActiveFilter of reduxFilters.activeFilters) {
-			if (Object.keys(reduxActiveFilter) == name) {
-				isCategoryActiveFiltersCached = reduxActiveFilter;
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+				if (Object.keys(reduxActiveFilter) == name) {
+					isCategoryActiveFiltersCached = reduxActiveFilter;
+				}
 			}
 		}
 
@@ -268,13 +272,11 @@ const ProductList = () => {
 				setActiveFilters
 			)
 				.then((res) => {
-					console.log(res.activeFilters);
-					console.log(res.filters);
 					dispatch(
 						addFilter({
 							categoryName: name,
-							filters: res.filters,
-							activeFilters: res.activeFilters,
+							filters: res?.filters,
+							activeFilters: res?.activeFilters,
 						})
 					);
 				})
@@ -311,15 +313,19 @@ const ProductList = () => {
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
-		for (let reduxFilter of reduxFilters.filters) {
-			if (Object.keys(reduxFilter) == name) {
-				isCategoryFiltersCached = reduxFilter;
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			for (let reduxFilter of reduxFilters?.filters) {
+				if (Object.keys(reduxFilter) == name) {
+					isCategoryFiltersCached = reduxFilter;
+				}
 			}
 		}
 
-		for (let reduxActiveFilter of reduxFilters.activeFilters) {
-			if (Object.keys(reduxActiveFilter) == name) {
-				isCategoryActiveFiltersCached = reduxActiveFilter;
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+				if (Object.keys(reduxActiveFilter) == name) {
+					isCategoryActiveFiltersCached = reduxActiveFilter;
+				}
 			}
 		}
 
@@ -332,13 +338,11 @@ const ProductList = () => {
 				setActiveFilters
 			)
 				.then((res) => {
-					console.log(res.activeFilters);
-					console.log(res.filters);
 					dispatch(
 						addFilter({
 							categoryName: name,
-							filters: res.filters,
-							activeFilters: res.activeFilters,
+							filters: res?.filters,
+							activeFilters: res?.activeFilters,
 						})
 					);
 				})

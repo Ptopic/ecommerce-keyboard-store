@@ -28,7 +28,11 @@ import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import InputField from '../components/InputField/InputField';
 
+import { useCookies } from 'react-cookie';
+
 const Login = () => {
+	const [cookies, setCookie] = useCookies();
+
 	const [passwordShow, setPasswordShow] = useState(false);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -56,12 +60,20 @@ const Login = () => {
 
 	const handleLogin = async (values, formikActions) => {
 		const res = await login(dispatch, { ...values });
-		if (res.success == false) {
-			toast.error(res.error);
-		} else {
+
+		if (res.success == true) {
+			// Set token cookie
+			let token = res.token;
+			setCookie('token', token, {
+				expires: new Date(new Date().getTime() + 1440 * 60000),
+				path: '/',
+			});
+
 			formikActions.resetForm();
-			// Redirect to main page
 			navigate('/');
+			window.location.reload();
+		} else {
+			toast.error(res.error);
 		}
 	};
 

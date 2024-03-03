@@ -30,7 +30,11 @@ import { useNavigate } from 'react-router-dom';
 // Redux
 import { useDispatch } from 'react-redux';
 
+import { useCookies } from 'react-cookie';
+
 const Register = () => {
+	const [cookies, setCookie] = useCookies();
+
 	const dispatch = useDispatch();
 	const [passwordShow, setPasswordShow] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -68,13 +72,20 @@ const Register = () => {
 			...values,
 		});
 		setIsLoading(false);
-		if (res.success == false) {
-			toast.error(res.error);
-		} else {
+		if (res.success == true) {
+			// Set token cookie
+			let token = res.token;
+			setCookie('token', token, {
+				expires: new Date(new Date().getTime() + 1440 * 60000),
+				path: '/',
+			});
+
 			formikActions.resetForm();
 
 			// Redirect to login page
 			navigate('/user/registerThanks');
+		} else {
+			toast.error(res.error);
 		}
 	};
 

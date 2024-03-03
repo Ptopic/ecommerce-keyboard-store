@@ -8,9 +8,6 @@ const filtersSlice = createSlice({
 	},
 	reducers: {
 		addFilter: (state, action) => {
-			// const filtersData = {};
-			// filtersData['filters'] = action.payload.filters;
-			// filtersData['activeFilters'] = action.payload.activeFilters;
 			const objFilters = {};
 			objFilters[action.payload.categoryName] = action.payload.filters;
 

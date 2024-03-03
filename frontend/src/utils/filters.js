@@ -115,13 +115,17 @@ export const generateFilters = async (
 	let initialFiltersArray = [];
 
 	if (initialFiltersArray.length == 0) {
-		for (let filter of categoryFields) {
-			let obj = {};
-			let initialFilter = {};
-			obj[filter.name] = new Set([]);
-			initialFilter[filter.name] = '';
-			filtersArray.push(obj);
-			initialFiltersArray.push(initialFilter);
+		if (!categoryFields) {
+			return;
+		} else {
+			for (let filter of categoryFields) {
+				let obj = {};
+				let initialFilter = {};
+				obj[filter.name] = new Set([]);
+				initialFilter[filter.name] = '';
+				filtersArray.push(obj);
+				initialFiltersArray.push(initialFilter);
+			}
 		}
 	}
 
@@ -198,10 +202,14 @@ export const regenerateFilters = async (
 
 	let filtersArray = [];
 
-	for (let filter of categoryFields) {
-		let obj = {};
-		obj[filter.name] = new Set([]);
-		filtersArray.push(obj);
+	if (!categoryFields) {
+		return;
+	} else {
+		for (let filter of categoryFields) {
+			let obj = {};
+			obj[filter.name] = new Set([]);
+			filtersArray.push(obj);
+		}
 	}
 
 	for (let product of productsData) {

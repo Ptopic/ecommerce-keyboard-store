@@ -102,6 +102,7 @@ exports.changeUserInfo = async (req, res) => {
 };
 
 exports.getUser = async (req, res) => {
+	console.log(req.params.id);
 	try {
 		const user = await User.findById(req.params.id);
 		// Seperate password from other info to hide it
