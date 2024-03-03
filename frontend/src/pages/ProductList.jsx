@@ -16,7 +16,8 @@ import { toast, Toaster } from 'react-hot-toast';
 import '../pages/Checkout.css';
 
 // Redux
-import { useSelector } from 'react-redux/es/hooks/useSelector';
+import { useSelector, useDispatch } from 'react-redux';
+import { addFilter } from '../redux/filtersRedux';
 
 // Utils
 import { debounce } from '../utils/debounce';
@@ -28,7 +29,10 @@ import ProductFilters from '../components/ProductFilters/ProductFilters';
 
 const ProductList = () => {
 	const categories = useSelector((state) => state.categories.data);
+	const reduxFilters = useSelector((state) => state.filters);
 	let PAGE_SIZE = 12;
+
+	const dispatch = useDispatch();
 
 	const navigate = useNavigate();
 	const loadMoreBtnRef = useRef(null);
@@ -185,7 +189,10 @@ const ProductList = () => {
 	) => {
 		setLoading(true);
 		// If new filter value is equal to current filter value then remove current value
-		let updatedFilters = [...activeFilters];
+		let updatedFilters = activeFilters.map((filter) => {
+			return { ...filter };
+		});
+
 		if (newFilterValue == curFilterValue) {
 			// Reset filter value
 			updatedFilters[filterIndex][filterKey] = '';
@@ -227,8 +234,6 @@ const ProductList = () => {
 		setActiveFilters(initialFiltersArray);
 	};
 
-	const getCategories = async () => {};
-
 	// Initial page load and redux state load
 	useEffect(() => {
 		setLoading(true);
@@ -239,13 +244,49 @@ const ProductList = () => {
 		setActiveFilters([]);
 		setFilters([]);
 
-		generateFilters(
-			name,
-			activeFilters,
-			categories,
-			setFilters,
-			setActiveFilters
-		);
+		let isCategoryFiltersCached;
+		let isCategoryActiveFiltersCached;
+
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			for (let reduxFilter of reduxFilters?.filters) {
+				if (Object.keys(reduxFilter) == name) {
+					isCategoryFiltersCached = reduxFilter;
+				}
+			}
+		}
+
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+				if (Object.keys(reduxActiveFilter) == name) {
+					isCategoryActiveFiltersCached = reduxActiveFilter;
+				}
+			}
+		}
+
+		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			generateFilters(
+				name,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			)
+				.then((res) => {
+					dispatch(
+						addFilter({
+							categoryName: name,
+							filters: res?.filters,
+							activeFilters: res?.activeFilters,
+						})
+					);
+				})
+				.catch((err) => console.log(err));
+		} else {
+			console.log('Cached filters');
+			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
+			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+		}
+
 		setLoading(false);
 	}, [categories]);
 
@@ -269,15 +310,48 @@ const ProductList = () => {
 		setActiveFilters([]);
 		setFilters([]);
 
-		// getMinMaxPrices();
-		getProductsWithoutDebounce();
-		generateFilters(
-			name,
-			activeFilters,
-			categories,
-			setFilters,
-			setActiveFilters
-		);
+		let isCategoryFiltersCached;
+		let isCategoryActiveFiltersCached;
+
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			for (let reduxFilter of reduxFilters?.filters) {
+				if (Object.keys(reduxFilter) == name) {
+					isCategoryFiltersCached = reduxFilter;
+				}
+			}
+		}
+
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+				if (Object.keys(reduxActiveFilter) == name) {
+					isCategoryActiveFiltersCached = reduxActiveFilter;
+				}
+			}
+		}
+
+		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			generateFilters(
+				name,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			)
+				.then((res) => {
+					dispatch(
+						addFilter({
+							categoryName: name,
+							filters: res?.filters,
+							activeFilters: res?.activeFilters,
+						})
+					);
+				})
+				.catch((err) => console.log(err));
+		} else {
+			console.log('Cached filters');
+			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
+			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+		}
 	}, [location]);
 
 	useEffect(() => {

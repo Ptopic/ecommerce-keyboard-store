@@ -64,7 +64,7 @@ function InputField({
 				</label>
 				{passwordShow != null && (
 					<button type="button" onClick={() => togglePasswordShow()}>
-						{errors && touched && renderPasswordVisibility()}
+						{renderPasswordVisibility()}
 					</button>
 				)}
 				{errors && touched ? <MdError color={'#ff3333'} /> : icon ? icon : null}

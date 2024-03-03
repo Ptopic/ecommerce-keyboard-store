@@ -1,33 +1,46 @@
 import { loginStart, loginFailure, loginSuccess } from './userRedux';
 import { request } from '../api';
 
-const catchError = (error) => {
-	if (error?.response?.data) {
-		return error.response.data;
-	} else {
-		return { success: false, error: error.message };
-	}
-};
+export const API_URL = import.meta.env.VITE_URL;
 
 export const login = async (dispatch, userCredentials) => {
+	// const res = await request.post('/auth/login', userCredentials);
 	dispatch(loginStart());
-	try {
-		const res = await request.post('/auth/login', userCredentials);
-		dispatch(loginSuccess(res.data));
-		return res.data;
-	} catch (error) {
+	const res = await fetch(`${API_URL}auth/login`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(userCredentials),
+	});
+
+	const data = await res.json();
+
+	if (res.ok) {
+		dispatch(loginSuccess(data.data));
+	} else {
 		dispatch(loginFailure());
-		return catchError(error);
 	}
+	return data;
 };
 
 export const register = async (dispatch, userCredentials) => {
-	try {
-		const res = await request.post('/auth/register', userCredentials);
-		// Set user in redux when user registers
-		dispatch(loginSuccess(res.data));
-		return res.data;
-	} catch (error) {
-		return catchError(error);
+	const res = await fetch(`${API_URL}auth/register`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(userCredentials),
+	});
+
+	const data = await res.json();
+
+	console.log(data);
+	// Set user in redux when user registers
+	if (res.ok) {
+		dispatch(loginSuccess(data.data));
+	} else {
+		dispatch(loginFailure());
 	}
+	return data;
 };

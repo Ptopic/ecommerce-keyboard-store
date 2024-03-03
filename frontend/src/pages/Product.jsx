@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar/Navbar';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { request } from '../api';
+import { request, userRequest } from '../api';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -72,7 +72,9 @@ const Product = () => {
 
 	const cartProducts = useSelector((state) => state.cart.products);
 	const currentUser = useSelector((state) => state.user.currentUser);
-	let userToken = currentUser?.data?.token;
+	let userToken = currentUser?.data;
+
+	console.log(userToken);
 
 	const dispatch = useDispatch();
 
@@ -139,13 +141,10 @@ const Product = () => {
 
 			try {
 				setIsLoadingWishlist(true);
-				const res = await user_request(userToken).post(
-					`/wishlist?id=${userId}`,
-					{
-						userId: userId,
-						productId: productId,
-					}
-				);
+				const res = await userRequest.post(`/wishlist?id=${userId}`, {
+					userId: userId,
+					productId: productId,
+				});
 				setIsLoadingWishlist(false);
 				setIsProductInWishlist(true);
 				toast.success('Product added to wishlist');
@@ -170,10 +169,7 @@ const Product = () => {
 					productId: productId,
 				},
 			};
-			const res = await user_request(userToken).delete(
-				`/wishlist?id=${userId}`,
-				config
-			);
+			const res = await userRequest.delete(`/wishlist?id=${userId}`, config);
 			setIsLoadingWishlist(false);
 			setIsProductInWishlist(false);
 			toast.success('Product removed from wishlist');

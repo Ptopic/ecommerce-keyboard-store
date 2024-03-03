@@ -15,17 +15,14 @@ import {
 	PURGE,
 	REGISTER,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-
-import { CookieStorage } from 'redux-persist-cookie-storage';
-import Cookies from 'cookies-js';
+import storageSession from 'redux-persist/lib/storage/session';
 
 const persistConfig = {
 	key: 'root',
 	// Add blocklist in production
 	// blacklist: ['payment'],
 	version: 1,
-	storage: new CookieStorage(Cookies),
+	storage: storageSession,
 };
 
 const rootReducer = combineReducers({
@@ -42,9 +39,7 @@ export const store = configureStore({
 	reducer: persistedReducer,
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware({
-			serializableCheck: {
-				ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-			},
+			serializableCheck: false,
 		}),
 });
 

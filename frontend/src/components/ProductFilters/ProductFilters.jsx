@@ -12,13 +12,20 @@ const ProductFilters = ({
 		<>
 			{filters.map((filter, filterIndex) => {
 				return (
-					<div className="filter">
+					<div className="filter" key={filterIndex}>
 						<div className="filter-name">{Object.keys(filter)}:</div>
 						<div className="filter-values">
 							{Object.values(filter).map((el) => {
 								return Array.from(el).map((filterValue) => {
 									return (
-										<div className="checkout-checkbox">
+										<div
+											className="checkout-checkbox"
+											key={
+												Object.keys(activeFilters[filterIndex]) +
+												'-' +
+												filterValue
+											}
+										>
 											<button
 												type="button"
 												style={{

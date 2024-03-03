@@ -32,10 +32,10 @@ router.put('/changePassword', userChangePassword);
 router.put('/changeUserInfo', verifyTokenAuthenticity, changeUserInfo);
 
 // Change user password
-router.put('/:id', verifyTokenAuthenticity, changePassword);
+router.put('/:id', verifyTokenAndAdmin, changePassword);
 
-// Get user (admin only)
-router.get('/:id', verifyTokenAndAdmin, getUser);
+// Get user
+router.get('/:id', verifyTokenAuthenticity, getUser);
 
 // Get all users (admin only)
 router.get('/', verifyTokenAndAdmin, getAllUsers);

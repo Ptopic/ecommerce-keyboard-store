@@ -30,11 +30,57 @@ import NotFound from './pages/NotFound';
 import AllProductList from './pages/AllProductList';
 import Configurator from './pages/Configurator/Configurator';
 
+import { useCookies } from 'react-cookie';
+
+import { jwtDecode } from 'jwt-decode';
+
+// Redux
+import { useDispatch } from 'react-redux';
+import { setUserData } from './redux/userRedux';
+
 const App = () => {
+	const [cookies, setCookie] = useCookies();
 	const [stripePromise, setStripePromise] = useState(null);
 	const user = useSelector((state) => state.user.currentUser);
+	console.log(user);
+
+	const dispatch = useDispatch();
+
+	const API_URL = import.meta.env.VITE_URL;
+
+	const getUserData = async (id, token) => {
+		const res = await fetch(`${API_URL}user/` + id, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		const data = await res.json();
+
+		if (res.ok) {
+			// Set redux user data
+			dispatch(setUserData(data));
+		}
+	};
 
 	useEffect(() => {
+		// check if token cookie is available
+		let token = cookies.token;
+
+		if (token) {
+			// Decode jwt to get user id
+			const decoded = jwtDecode(token);
+			let userId = decoded.id;
+
+			// Get user data by id
+			getUserData(userId, token);
+		} else {
+			// if it isnt set user data to null
+			dispatch(setUserData(null));
+		}
+
 		setStripePromise(
 			loadStripe(
 				'pk_test_51NzTW3CbgJlRmRdknFU2YQUNpvZslhliNO4CfK9EhxNWPz3f5e7HLAunH27UJOXnkyZI1NjjE3apVdHvYhdYiQNG00W3TfKPTI'

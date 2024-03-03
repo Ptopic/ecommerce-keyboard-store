@@ -103,10 +103,6 @@ export const generateFilters = async (
 
 	let foundCategory = categories.find((category) => category.name === name);
 
-	console.log(categories);
-
-	console.log(foundCategory);
-
 	if (foundCategory?.fields == []) {
 		setFilters(null);
 		setActiveFilters(null);
@@ -119,13 +115,17 @@ export const generateFilters = async (
 	let initialFiltersArray = [];
 
 	if (initialFiltersArray.length == 0) {
-		for (let filter of categoryFields) {
-			let obj = {};
-			let initialFilter = {};
-			obj[filter.name] = new Set([]);
-			initialFilter[filter.name] = '';
-			filtersArray.push(obj);
-			initialFiltersArray.push(initialFilter);
+		if (!categoryFields) {
+			return;
+		} else {
+			for (let filter of categoryFields) {
+				let obj = {};
+				let initialFilter = {};
+				obj[filter.name] = new Set([]);
+				initialFilter[filter.name] = '';
+				filtersArray.push(obj);
+				initialFiltersArray.push(initialFilter);
+			}
 		}
 	}
 
@@ -163,7 +163,12 @@ export const generateFilters = async (
 
 	setFilters(filtersArray);
 
-	// Cache filters for current category in redux persist
+	let returnObj = {};
+
+	returnObj['filters'] = filtersArray;
+	returnObj['activeFilters'] = initialFiltersArray;
+
+	return returnObj;
 };
 
 export const regenerateFilters = async (
@@ -197,10 +202,14 @@ export const regenerateFilters = async (
 
 	let filtersArray = [];
 
-	for (let filter of categoryFields) {
-		let obj = {};
-		obj[filter.name] = new Set([]);
-		filtersArray.push(obj);
+	if (!categoryFields) {
+		return;
+	} else {
+		for (let filter of categoryFields) {
+			let obj = {};
+			obj[filter.name] = new Set([]);
+			filtersArray.push(obj);
+		}
 	}
 
 	for (let product of productsData) {
