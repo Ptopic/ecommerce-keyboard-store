@@ -1,23 +1,43 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './Selection.css';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
+
+import {
+	motion,
+	useScroll,
+	useSpring,
+	useTransform,
+	MotionValue,
+} from 'framer-motion';
+
+function useParallax(value, distance) {
+	return useTransform(value, [0, 1], [-distance, distance]);
+}
+
 function Selection() {
+	const sectionRef = useRef(null);
+
+	const { scrollYProgress } = useScroll({ target: sectionRef });
+	const y = useParallax(scrollYProgress, 300);
+
 	return (
 		<div className="selection-section">
 			<p>Our Products</p>
 
 			<div className="selection-container">
-				<Link to="/products/keyboard?name=Keyboards" className="selection-card">
-					<img
-						src="https://dangkeebs.com/cdn/shop/collections/IMG_0428.jpg?v=1615023959&width=330"
-						alt=""
-					/>
-					<div>
-						<span>Keyboards</span>
-						<AiOutlineArrowRight size={18} />
-					</div>
-				</Link>
+				<div className="selection-card" ref={sectionRef}>
+					<Link to="/products/keyboard?name=Keyboards">
+						<img
+							src="https://dangkeebs.com/cdn/shop/collections/IMG_0428.jpg?v=1615023959&width=330"
+							alt=""
+						/>
+						<div>
+							<span>Keyboards</span>
+							<AiOutlineArrowRight size={18} />
+						</div>
+					</Link>
+				</div>
 
 				<Link to="/products/macropad?name=Macropads" className="selection-card">
 					<img
