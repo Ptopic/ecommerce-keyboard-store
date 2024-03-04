@@ -559,6 +559,21 @@ const ConfiguratorModal = ({
 													{product.title}
 												</Link>
 											</div>
+											{Object.keys(product.details).map((productDetail, i) => {
+												return (
+													<div
+														className="configurator-products-table-body-row-cell desktop"
+														key={i}
+													>
+														<div className="product-detail">
+															<p className="detail-name">{productDetail}</p>
+															<p className="detail-value">
+																{product.details[productDetail]}
+															</p>
+														</div>
+													</div>
+												);
+											})}
 											<div className="product-details">
 												{Object.keys(product.details).map(
 													(productDetail, i) => {
