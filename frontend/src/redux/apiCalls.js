@@ -1,7 +1,7 @@
 import { loginStart, loginFailure, loginSuccess } from './userRedux';
 import { request } from '../api';
 
-export const API_URL = import.meta.env.VITE_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export const login = async (dispatch, userCredentials) => {
 	dispatch(loginStart());

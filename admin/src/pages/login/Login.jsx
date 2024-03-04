@@ -72,6 +72,7 @@ const Login = () => {
 
 			formikActions.resetForm();
 			navigate('/');
+			navigate(0);
 		} else if (res?.data?.isAdmin == false) {
 			toast.error('User is not admin...');
 		} else {

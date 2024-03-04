@@ -178,7 +178,7 @@ exports.register = async (req, res) => {
 			id: newUser._id,
 		},
 		process.env.JWT_SECRET,
-		{ expiresIn: '3d' }
+		{ expiresIn: '2d' }
 	);
 
 	try {
@@ -217,7 +217,7 @@ exports.login = async (req, res) => {
 				isAdmin: user.isAdmin,
 			},
 			process.env.JWT_SECRET,
-			{ expiresIn: '3d' }
+			{ expiresIn: '2d' }
 		);
 		const { password, ...otherInfo } = user._doc;
 
