@@ -134,6 +134,10 @@
    border-bottom: 1px solid #E0E0E0;
 }
 
+.product-details {
+   display: none;
+}
+
 .configurator-products-table-body-row-cell {
    display: flex;
    gap: 2rem;
@@ -147,6 +151,10 @@
 
 .product-detail .detail-name {
    display: none;
+}
+
+.product-detail .detail-value {
+   font-size: 1.4rem;
 }
 
 /* Media query */
@@ -265,6 +273,10 @@
 
    .configurator-products-table-body-row {
       grid-template-columns: 1fr !important;
+   }
+
+   .configurator-products-table-body-row-cell.deskto {
+      display: none;
    }
 
    .product-detail .detail-name {
