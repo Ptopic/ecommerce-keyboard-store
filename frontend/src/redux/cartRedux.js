@@ -20,12 +20,15 @@ const cartSlice = createSlice({
 			(state.products = []), (state.quantity = 0), (state.totalPrice = 0);
 		},
 		addProduct: (state, action) => {
-			console.log(action.payload);
 			state.quantity += action.payload.quantity;
 			state.products.push(action.payload);
-			console.log(action.payload.price);
-			console.log(action.payload.quantity);
-			state.totalPrice += action.payload.price * action.payload.quantity;
+			let priceToAdd = action.payload.price * action.payload.quantity;
+			let tempCartTotal =
+				Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+
+			// New toFixed(2) state total price
+			let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+			state.totalPrice = newCartTotal;
 		},
 		removeProduct: (state, action) => {
 			state.quantity -= action.payload.quantity;
@@ -37,14 +40,26 @@ const cartSlice = createSlice({
 					state.products.splice(i, 1);
 				}
 			}
-			state.totalPrice -= action.payload.price * action.payload.quantity;
+			let priceToRemove = action.payload.price * action.payload.quantity;
+			let tempCartTotal =
+				Number.parseFloat(state.totalPrice) - Number.parseFloat(priceToRemove);
+
+			// New toFixed(2) state total price
+			let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+			state.totalPrice = newCartTotal;
 		},
 		incrementProductQuantity: (state, action) => {
 			state.products = state.products.map((product) => {
 				if (product._id === action.payload.id) {
 					product.quantity += 1;
 					state.quantity += 1;
-					state.totalPrice += product.price;
+					let tempCartTotal =
+						Number.parseFloat(state.totalPrice) +
+						Number.parseFloat(product.price);
+
+					// New toFixed(2) state total price
+					let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+					state.totalPrice = newCartTotal;
 				}
 				return product;
 			});
@@ -54,10 +69,15 @@ const cartSlice = createSlice({
 				if (product._id === action.payload.id) {
 					product.quantity = product.quantity > 1 ? product.quantity - 1 : 1;
 					state.quantity = state.quantity > 1 ? state.quantity - 1 : 1;
-					state.totalPrice =
+
+					let tempCartTotal =
 						state.totalPrice > product.price
 							? state.totalPrice - product.price
 							: product.price;
+
+					// New toFixed(2) state total price
+					let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+					state.totalPrice = newCartTotal;
 				}
 				return product;
 			});
