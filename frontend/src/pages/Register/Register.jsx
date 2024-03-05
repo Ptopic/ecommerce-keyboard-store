@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { register } from '../redux/apiCalls';
+import { register } from '../../redux/apiCalls';
 import { Link } from 'react-router-dom';
 
 // Formik
@@ -7,21 +7,21 @@ import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import InputField from '../components/InputField/InputField';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
 
 // Styles
-import './Login.css';
+import '../Login/Login.css';
 
 // Icons
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 // Social login icons
-import facebook from '../assets/socials/facebook.png';
-import twitter from '../assets/socials/twitter.png';
-import google from '../assets/socials/google.png';
-import apple from '../assets/socials/apple.png';
+import facebook from '../../assets/socials/facebook.png';
+import twitter from '../../assets/socials/twitter.png';
+import google from '../../assets/socials/google.png';
+import apple from '../../assets/socials/apple.png';
 
 import { toast, Toaster } from 'react-hot-toast';
 

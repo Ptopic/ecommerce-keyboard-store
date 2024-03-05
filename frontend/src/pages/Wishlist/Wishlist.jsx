@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './Wishlist.css';
-import { request } from '../api';
+import { request } from '../../api';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
+import Navbar from '../../components/Navbar/Navbar';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { formatPriceDisplay } from '../utils/formatting';
+import { formatPriceDisplay } from '../../utils/formatting';
 
 function Wishlist() {
 	const currentUser = useSelector((state) => state.user.currentUser);

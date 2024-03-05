@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from '../components/Navbar/Navbar';
-import Products from '../components/Products/Products';
-import Footer from '../components/Footer/Footer';
+import Navbar from '../../components/Navbar/Navbar';
+import Products from '../../components/Products/Products';
+import Footer from '../../components/Footer/Footer';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import './ProductList.css';
-import { request } from '../api';
+import '../ProductList/ProductList.css';
+import { request } from '../../api';
 import ReactSlider from 'react-slider';
 import { motion as m, AnimatePresence } from 'framer-motion';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 import toast, { Toaster } from 'react-hot-toast';
 
 // Utils
-import { debounce } from '../utils/debounce';
+import { debounce } from '../../utils/debounce';
 
 const AllProductList = () => {
 	let PAGE_SIZE = 12;

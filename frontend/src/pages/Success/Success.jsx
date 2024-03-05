@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import Navbar from '../components/Navbar/Navbar';
+import Navbar from '../../components/Navbar/Navbar';
 
 // Lottie animations
 import Lottie from 'lottie-react';
-import paymentSuccessAnimation from '../assets/lottie/payment.json';
+import paymentSuccessAnimation from '../../assets/lottie/payment.json';
 
 import { Link } from 'react-router-dom';
 
 // Redux
 import { useDispatch } from 'react-redux';
-import { resetCart } from '../redux/cartRedux';
+import { resetCart } from '../../redux/cartRedux';
 
 import './Success.css';
 function Success() {

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Footer from '../components/Footer/Footer';
-import Navbar from '../components/Navbar/Navbar';
+import Footer from '../../components/Footer/Footer';
+import Navbar from '../../components/Navbar/Navbar';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { request, userRequest } from '../api';
+import { request, userRequest } from '../../api';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	openCart,
 	addProduct,
 	incrementProductQuantity,
-} from '../redux/cartRedux';
+} from '../../redux/cartRedux';
 
 import './Product.css';
 
@@ -26,11 +26,11 @@ import {
 	AiOutlineRight,
 } from 'react-icons/ai';
 import { BiSearchAlt } from 'react-icons/bi';
-import Button from '../components/Button/Button';
+import Button from '../../components/Button/Button';
 
 // Utils
-import { formatPriceDisplay } from '../utils/formatting';
-import { user_request } from '../../../admin/src/api';
+import { formatPriceDisplay } from '../../utils/formatting';
+import { user_request } from '../../../../admin/src/api';
 
 import { useSwipeable } from 'react-swipeable';
 

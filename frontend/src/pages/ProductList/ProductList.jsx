@@ -1,31 +1,31 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import Navbar from '../components/Navbar/Navbar';
-import Products from '../components/Products/Products';
-import Footer from '../components/Footer/Footer';
+import Navbar from '../../components/Navbar/Navbar';
+import Products from '../../components/Products/Products';
+import Footer from '../../components/Footer/Footer';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './ProductList.css';
-import { request } from '../api';
+import { request } from '../../api';
 import ReactSlider from 'react-slider';
 import { motion as m, AnimatePresence } from 'framer-motion';
 
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from '../../components/Spinner/Spinner';
 import { toast, Toaster } from 'react-hot-toast';
 
 // Styles for input boxes
-import '../pages/Checkout.css';
+import '../Checkout/Checkout.css';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { addFilter } from '../redux/filtersRedux';
+import { addFilter } from '../../redux/filtersRedux';
 
 // Utils
-import { debounce } from '../utils/debounce';
+import { debounce } from '../../utils/debounce';
 import { Checkbox } from '@mui/material';
-import { generateFilters, regenerateFilters } from '../utils/filters';
+import { generateFilters, regenerateFilters } from '../../utils/filters';
 
 import { IoMdCheckmark } from 'react-icons/io';
-import ProductFilters from '../components/ProductFilters/ProductFilters';
+import ProductFilters from '../../components/ProductFilters/ProductFilters';
 
 const ProductList = () => {
 	const categories = useSelector((state) => state.categories.data);

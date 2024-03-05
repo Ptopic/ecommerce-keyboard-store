@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react';
-import Product from './pages/Product';
-import Home from './pages/Home';
-import ProductList from './pages/ProductList';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Success from './pages/Success';
-import Wishlist from './pages/Wishlist';
-import Checkout from './pages/Checkout';
-import Payment from './pages/Payment';
-import Order from './pages/Order';
+import Product from './pages/Product/Product';
+import Home from './pages/Home/Home';
+import ProductList from './pages/ProductList/ProductList';
+import Register from './pages/Register/Register';
+import Login from './pages/Login/Login';
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
+import ResetPassword from './pages/ResetPassword/ResetPassword';
+import Success from './pages/Success/Success';
+import Wishlist from './pages/Wishlist/Wishlist';
+import Checkout from './pages/Checkout/Checkout';
+import Payment from './pages/Payment/Payment';
+import Order from './pages/Order/Order';
+import UserDetails from './pages/UserDetails/UserDetails';
+import UserOrders from './pages/UserOrders/UserOrders';
+import UserChangePassword from './pages/UserChangePassword/UserChangePassword';
+import UserRegisterThanks from './pages/UserRegisterThanks/UserRegisterThanks';
+import NotFound from './pages/NotFound/NotFound';
+import AllProductList from './pages/AllProductList/AllProductList';
+import Configurator from './pages/Configurator/Configurator';
+
 import { useSelector } from 'react-redux';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -22,13 +30,6 @@ import {
 	Route,
 	Navigate,
 } from 'react-router-dom';
-import UserDetails from './pages/UserDetails';
-import UserOrders from './pages/UserOrders';
-import UserChangePassword from './pages/UserChangePassword';
-import UserRegisterThanks from './pages/UserRegisterThanks';
-import NotFound from './pages/NotFound';
-import AllProductList from './pages/AllProductList';
-import Configurator from './pages/Configurator/Configurator';
 
 import { useCookies } from 'react-cookie';
 

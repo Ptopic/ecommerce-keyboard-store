@@ -3,18 +3,18 @@ import './Order.css';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import { request } from '../api';
+import { request } from '../../api';
 
 // Components
-import CustomMap from '../components/Map/CustomMap';
-import OrderStatus from '../components/OrderStatus/OrderStatus';
+import CustomMap from '../../components/Map/CustomMap';
+import OrderStatus from '../../components/OrderStatus/OrderStatus';
 
 // Assets
-import logo from '../assets/logo3.png';
+import logo from '../../assets/logo3.png';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 
 // Utils
-import { formatPriceDisplay } from '../utils/formatting';
+import { formatPriceDisplay } from '../../utils/formatting';
 
 import { setKey, fromAddress } from 'react-geocode';
 

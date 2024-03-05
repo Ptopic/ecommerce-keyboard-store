@@ -4,11 +4,11 @@ import React from 'react';
 import './UserRegisterThanks.css';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
+import Navbar from '../../components/Navbar/Navbar';
 
 // Lottie animations
 import Lottie from 'lottie-react';
-import paymentSuccessAnimation from '../assets/lottie/payment.json';
+import paymentSuccessAnimation from '../../assets/lottie/payment.json';
 
 import { Link } from 'react-router-dom';
 

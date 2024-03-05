@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import queryString from 'query-string';
-import { login } from '../redux/apiCalls';
+import { login } from '../../redux/apiCalls';
 import { Link } from 'react-router-dom';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
-import { request } from '../api';
+import { request } from '../../api';
 
 // Formik
 import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
@@ -13,14 +13,14 @@ import * as Yup from 'yup';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import Button from '../../components/Button/Button';
 
 import { toast, Toaster } from 'react-hot-toast';
 
 // Styles
-import './Login.css';
-import InputField from '../components/InputField/InputField';
+import '../Login/Login.css';
+import InputField from '../../components/InputField/InputField';
 
 function ForgotPassword() {
 	const [passwordShow, setPasswordShow] = useState(false);
