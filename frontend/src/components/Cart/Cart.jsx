@@ -26,8 +26,6 @@ function Cart() {
 	const cart = useSelector((state) => state.cart);
 	const user = useSelector((state) => state?.user?.currentUser);
 
-	console.log(user);
-
 	const [isLoading, setIsLoading] = useState(false);
 
 	const makePaymentRequest = async () => {
@@ -42,7 +40,6 @@ function Cart() {
 				amount: cart.totalPrice * 100,
 			});
 			setIsLoading(false);
-			console.log(res);
 			dispatch(closeCart());
 			window.location.assign(res.data.url);
 		} catch (err) {
