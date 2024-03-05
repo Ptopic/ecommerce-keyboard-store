@@ -14,7 +14,8 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
 // Redux
-import { useSelector } from 'react-redux/es/hooks/useSelector';
+import { useSelector, useDispatch } from 'react-redux';
+import { addFilter } from '../../redux/filtersRedux';
 
 // Components
 import ReactSlider from 'react-slider';
@@ -41,7 +42,10 @@ const ConfiguratorModal = ({
 	mode,
 }) => {
 	const categories = useSelector((state) => state.categories.data);
+	const reduxFilters = useSelector((state) => state.filters);
 	let PAGE_SIZE = 40;
+
+	const dispatch = useDispatch();
 
 	const [page, setPage] = useState(0);
 	const pageDisplay = Number(page) + 1;
@@ -145,7 +149,9 @@ const ConfiguratorModal = ({
 	) => {
 		setLoading(true);
 		// If new filter value is equal to current filter value then remove current value
-		let updatedFilters = [...activeFilters];
+		let updatedFilters = activeFilters.map((filter) => {
+			return { ...filter };
+		});
 
 		if (newFilterValue == curFilterValue) {
 			// Reset filter value
@@ -198,21 +204,63 @@ const ConfiguratorModal = ({
 				}
 			}
 		}
+
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
 		setLoading(true);
 
 		getProducts(true);
-		generateFilters(
-			categoryName,
-			activeFilters,
-			categories,
-			setFilters,
-			setActiveFilters,
-			constraints
-		);
-
 		getMinMaxPrices();
+
+		// Cache filters
+
+		let isCategoryFiltersCached;
+		let isCategoryActiveFiltersCached;
+
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			isCategoryFiltersCached = reduxFilters?.filters.map((filter) => {
+				return { ...filter };
+			});
+		}
+
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			isCategoryActiveFiltersCached = reduxFilters?.activeFilters.map(
+				(filter) => {
+					return { ...filter };
+				}
+			);
+		}
+
+		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			generateFilters(
+				categoryName,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			)
+				.then((res) => {
+					dispatch(
+						addFilter({
+							categoryName: categoryName,
+							filters: res?.filters,
+							activeFilters: res?.activeFilters,
+						})
+					);
+					console.log(res.filters);
+				})
+				.catch((err) => console.log(err));
+		} else {
+			console.log('Cached filters');
+
+			generateFilters(
+				categoryName,
+				isCategoryActiveFiltersCached,
+				categories,
+				setFilters,
+				setActiveFilters
+			);
+		}
 		setLoading(false);
 	}, []);
 
@@ -220,6 +268,10 @@ const ConfiguratorModal = ({
 	useMemo(() => {
 		let constraints = configuratorModalValues['Constraints'];
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
+
+		let updatedFilters = activeFilters.map((filter) => {
+			return { ...filter };
+		});
 
 		for (let i = 0; i < constraintsArray.length; i++) {
 			for (let j = 0; j < activeFilters.length; j++) {
@@ -239,7 +291,7 @@ const ConfiguratorModal = ({
 			setActiveFilters,
 			constraints
 		);
-	}, [activeFilters]);
+	}, [filters]);
 
 	useEffect(() => {
 		getProducts();

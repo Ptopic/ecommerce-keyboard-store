@@ -26,7 +26,7 @@ function Cart() {
 	const cart = useSelector((state) => state.cart);
 	const user = useSelector((state) => state?.user?.currentUser);
 
-	console.log(user.data);
+	console.log(user);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -182,7 +182,7 @@ function Cart() {
 								isLoading={isLoading}
 							/>
 
-							{Object.keys(user) == 0 ? (
+							{user == null ? (
 								<>
 									<p style={{ marginBottom: '1.4rem' }}>Have an account?</p>
 									<p>

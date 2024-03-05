@@ -10,7 +10,6 @@ export const generateFilterProductAdmin = async (
 	namesOfActiveFields,
 	setIsFiltersLoading
 ) => {
-	console.log(selectedCategory);
 	const allProductsRes = await userRequest.get(
 		`/products/filters/` + selectedCategory,
 		{
@@ -19,8 +18,6 @@ export const generateFilterProductAdmin = async (
 			},
 		}
 	);
-
-	console.log(allProductsRes);
 
 	let productsData = allProductsRes.data.data;
 
@@ -87,7 +84,6 @@ export const generateFilters = async (
 	setActiveFilters,
 	constraints
 ) => {
-	// console.log(Array.from(Object.keys(constraints)).length);
 	// Get all products by category to generate filters for it
 	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
@@ -242,5 +238,5 @@ export const regenerateFilters = async (
 		}
 	}
 
-	setFilters(filtersArray);
+	setFilters([...filtersArray]);
 };
