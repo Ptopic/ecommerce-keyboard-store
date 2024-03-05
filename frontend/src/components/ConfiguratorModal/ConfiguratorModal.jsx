@@ -213,27 +213,22 @@ const ConfiguratorModal = ({
 		getMinMaxPrices();
 
 		// Cache filters
-		// Reset filters and active filters
-		// setActiveFilters([]);
-		// setFilters([]);
 
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
 		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-			for (let reduxFilter of reduxFilters?.filters) {
-				if (Object.keys(reduxFilter) == categoryName) {
-					isCategoryFiltersCached = reduxFilter;
-				}
-			}
+			isCategoryFiltersCached = reduxFilters?.filters.map((filter) => {
+				return { ...filter };
+			});
 		}
 
 		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
-			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-				if (Object.keys(reduxActiveFilter) == categoryName) {
-					isCategoryActiveFiltersCached = reduxActiveFilter;
+			isCategoryActiveFiltersCached = reduxFilters?.activeFilters.map(
+				(filter) => {
+					return { ...filter };
 				}
-			}
+			);
 		}
 
 		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
@@ -252,32 +247,40 @@ const ConfiguratorModal = ({
 							activeFilters: res?.activeFilters,
 						})
 					);
+					console.log(res.filters);
 				})
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
-			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
-			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+
+			generateFilters(
+				categoryName,
+				isCategoryActiveFiltersCached,
+				categories,
+				setFilters,
+				setActiveFilters
+			);
 		}
 		setLoading(false);
 	}, []);
 
 	// Get new prices with useMemo only when activeFilters change
-	useEffect(() => {
+	useMemo(() => {
 		let constraints = configuratorModalValues['Constraints'];
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
+
+		let updatedFilters = activeFilters.map((filter) => {
+			return { ...filter };
+		});
 
 		for (let i = 0; i < constraintsArray.length; i++) {
 			for (let j = 0; j < activeFilters.length; j++) {
 				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-					console.log('changed');
 					activeFilters[j][constraintsArray[i]] =
 						constraints[constraintsArray[i]];
 				}
 			}
 		}
-
-		console.log(filters);
 
 		getMinMaxPrices();
 		regenerateFilters(
@@ -285,11 +288,10 @@ const ConfiguratorModal = ({
 			activeFilters,
 			categories,
 			setFilters,
-			setActiveFilters
+			setActiveFilters,
+			constraints
 		);
-
-		console.log(filters);
-	}, [activeFilters]);
+	}, [filters]);
 
 	useEffect(() => {
 		getProducts();
