@@ -242,8 +242,7 @@ const ConfiguratorModal = ({
 				activeFilters,
 				categories,
 				setFilters,
-				setActiveFilters,
-				constraints
+				setActiveFilters
 			)
 				.then((res) => {
 					dispatch(
@@ -260,7 +259,6 @@ const ConfiguratorModal = ({
 			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
 			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
 		}
-
 		setLoading(false);
 	}, []);
 
@@ -269,24 +267,19 @@ const ConfiguratorModal = ({
 		let constraints = configuratorModalValues['Constraints'];
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
 
-		console.log(constraintsArray);
-		console.log(activeFilters);
-
 		for (let i = 0; i < constraintsArray.length; i++) {
 			for (let j = 0; j < activeFilters.length; j++) {
-				console.log(activeFilters[j]);
 				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-					console.log(activeFilters[j][constraintsArray[i]]);
+					console.log('changed');
 					activeFilters[j][constraintsArray[i]] =
 						constraints[constraintsArray[i]];
 				}
 			}
 		}
 
-		console.log(activeFilters);
+		console.log(filters);
 
 		getMinMaxPrices();
-		getProducts();
 		regenerateFilters(
 			categoryName,
 			activeFilters,
@@ -294,6 +287,8 @@ const ConfiguratorModal = ({
 			setFilters,
 			setActiveFilters
 		);
+
+		console.log(filters);
 	}, [activeFilters]);
 
 	useEffect(() => {
