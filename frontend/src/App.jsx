@@ -46,7 +46,7 @@ const App = () => {
 
 	const dispatch = useDispatch();
 
-	const API_URL = import.meta.env.VITE_URL;
+	const API_URL = import.meta.env.VITE_API_URL;
 
 	const getUserData = async (id, token) => {
 		const res = await fetch(`${API_URL}user/` + id, {

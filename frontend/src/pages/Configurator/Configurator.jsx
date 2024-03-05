@@ -42,7 +42,7 @@ const Configurator = () => {
 	const openConfiguratorModal = (displayType, categoryName, subCategory) => {
 		setConfiguratorModalValues({
 			...configuratorModalValues,
-			open: !configuratorModalValues.open,
+			open: true,
 			displayType: displayType,
 			categoryName: categoryName,
 			subCategory: subCategory ? subCategory : null,
