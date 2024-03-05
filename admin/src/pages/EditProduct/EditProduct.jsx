@@ -12,7 +12,9 @@ import { IoClose } from 'react-icons/io5';
 import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
-import { useSelector } from 'react-redux';
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { setCategoriesArray } from '../../redux/categoriesRedux';
 
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
@@ -29,7 +31,7 @@ import {
 	useNavigate,
 	useSearchParams,
 } from 'react-router-dom';
-import { admin_request, request, userRequest } from '../../api';
+import { userRequest } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import Spinner from '../../components/Spinner/Spinner';
 
@@ -39,8 +41,9 @@ import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/Produc
 
 const EditProduct = () => {
 	const navigate = useNavigate();
-	const user = useSelector((state) => state.user);
-	let userToken = user.currentUser.token;
+	const dispatch = useDispatch();
+
+	const categoriesRedux = useSelector((state) => state.categories.data);
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -197,11 +200,18 @@ const EditProduct = () => {
 	};
 
 	const getAllCategories = async () => {
-		try {
-			const res = await userRequest.get('/categories');
-			setCategories(res.data.data);
-		} catch (error) {
-			console.log(error.response.data.error);
+		// Cache categories in redux persist store
+		if (categoriesRedux.length == 0) {
+			try {
+				const res = await request('/categories');
+				dispatch(setCategoriesArray({ categories: res.data.data }));
+				setCategories(res.data.data);
+			} catch (error) {
+				console.log(error);
+			}
+		} else {
+			console.log('Cached categories');
+			setCategories(categoriesRedux);
 		}
 	};
 
