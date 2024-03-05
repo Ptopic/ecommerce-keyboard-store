@@ -21,6 +21,17 @@
 .selection-card {
     text-decoration: none;
     color: var(--black);
+    /* position: sticky;
+    top: 20rem;
+    height: fit-content; */
+    position: relative;
+    scroll-snap-align: center;
+    perspective: 500px;
+}
+
+.selection-card>a {
+    color: black;
+    text-decoration: none;
 }
 
 .selection-card div {

@@ -338,7 +338,7 @@ const ConfiguratorModal = ({
 	};
 
 	return (
-		<div class="modal-overlay">
+		<div className="modal-overlay">
 			<Toaster />
 			{/* Filters on mobile layout */}
 			<AnimatePresence>
@@ -404,7 +404,7 @@ const ConfiguratorModal = ({
 				)}
 			</AnimatePresence>
 
-			<div class="configurator-modal">
+			<div className="configurator-modal">
 				<div className="configurator-modal-header">
 					<p>
 						Odaberi {displayType} {subCategory && `- ${subCategory}`}
