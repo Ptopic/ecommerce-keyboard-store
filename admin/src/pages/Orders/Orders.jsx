@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Categories.css';
-import '../../styles/tables.css';
-
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import './Orders.css';
 
 // Components
 import DeleteModal from '../../components/DeleteModal/DeleteModal';
@@ -13,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { admin_request, userRequest } from '../../api';
+import { userRequest } from '../../api';
 
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
@@ -21,12 +18,17 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-function Categories() {
+// Utils
+import { formatPriceDisplay } from '../../../../frontend/src/utils/formatting';
+
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+
+const Orders = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 
-	const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
+	const [orderIdToDelete, setOrderIdToDelete] = useState(null);
 	const [data, setData] = useState([]);
 	const [deleteModal, setDeleteModal] = useState({
 		open: false,
@@ -48,10 +50,9 @@ function Categories() {
 	const pageDisplay = Number(page) + 1;
 	const pageSize = 5;
 
-	const getCategoriesData = async () => {
-		// Get params from url and sort data if needed or change page
+	const getOrdersData = async () => {
 		try {
-			const res = await userRequest.get('/categories', {
+			const res = await userRequest.get('/orders', {
 				params: {
 					sort: sort,
 					direction: direction,
@@ -60,6 +61,27 @@ function Categories() {
 					search: searchTermValue,
 				},
 			});
+			// Format order dates
+			for (let order of res.data.data) {
+				let orderDate = order.createdAt.split('T')[0];
+				let splittedDate = orderDate.split('-');
+				let year;
+				let month;
+				let day;
+				if (splittedDate.length == 3) {
+					if (splittedDate[0].length == 1) {
+						splittedDate[0] = '0' + splittedDate[0];
+					} else if (splittedDate[1].length == 1) {
+						splittedDate[1] = '0' + splittedDate[1];
+					}
+
+					year = splittedDate[0];
+					month = splittedDate[1];
+					day = splittedDate[2];
+				}
+				order['orderDate'] = day + '.' + month + '.' + year;
+			}
+
 			setTotalPages(res.data.totalPages - 1);
 			setData(res.data.data);
 		} catch (err) {
@@ -69,13 +91,13 @@ function Categories() {
 
 	useEffect(() => {
 		// On page load set active screen to Users to display in side bar
-		dispatch(setActiveScreen('Categories'));
+		dispatch(setActiveScreen('Orders'));
 
-		getCategoriesData();
+		getOrdersData();
 	}, []);
 
 	useEffect(() => {
-		getCategoriesData();
+		getOrdersData();
 	}, [page, pageSize, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
@@ -91,21 +113,21 @@ function Categories() {
 	};
 
 	const openDeleteModal = (textValue, categoryId) => {
-		setCategoryIdToDelete(categoryId);
+		setOrderIdToDelete(categoryId);
 		setDeleteModal({ open: true, text: textValue });
 	};
 
 	const closeDeleteModal = () => {
-		setCategoryIdToDelete(null);
+		setOrderIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 	};
 
-	const handleCategoryDelete = async () => {
-		await userRequest.delete(`/categories/${categoryIdToDelete}`);
-		setCategoryIdToDelete(null);
+	const handleOrderDelete = async () => {
+		await userRequest.delete(`/orders/${orderIdToDelete}`);
+		setOrderIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
-		navigate(`/categories?page=${page}&pageSize=${pageSize}${
+		navigate(`/orders?page=${page}&pageSize=${pageSize}${
 			sort != null ? '&sort=' + sort : ''
 		}${direction != null ? '&direction=' + direction : ''}
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}`);
@@ -116,22 +138,19 @@ function Categories() {
 
 	return (
 		<>
-			<div className="categories-list">
+			<div className="orders-container">
 				<InputField
 					type={'text'}
 					name={'search'}
-					placeholder={'Search categories by name'}
+					placeholder={'Search orders by order number or date'}
 					value={searchTermValue}
 					onChange={(e) => setSearchTermValue(e.target.value)}
 					width={'50%'}
 					icon={
 						<Link
-							to={`/categories${
+							to={`/orders${
 								searchTermValue
-									? `?direction=${direction}
-							&page=${0}
-							&pageSize=${pageSize}
-							&search=${searchTermValue}`
+									? `?direction=${direction}&page=${0}&pageSize=${pageSize}&search=${searchTermValue}`
 									: ''
 							}`}
 						>
@@ -139,18 +158,20 @@ function Categories() {
 						</Link>
 					}
 				/>
+
 				<div className="add-new-container">
 					<Link
-						to={`/categories/add?page=${page}&pageSize=${pageSize}${
+						to={`/orders/add?page=${page}&pageSize=${pageSize}${
 							sort != null ? '&sort=' + sort : ''
 						}${direction != null ? '&direction=' + direction : ''}
-				${searchTermValue != null ? '&search=' + searchTermValue : ''}
+         ${searchTermValue != null ? '&search=' + searchTermValue : ''}
 `}
 						className="add-btn"
 					>
-						Add new Category
+						Add new Order
 					</Link>
 				</div>
+
 				<table className="table">
 					<thead className="table-head">
 						<tr>
@@ -159,16 +180,57 @@ function Categories() {
 							</th>
 							<th>
 								<a
-									href={`/categories
-										?sort=name
-										&page=${page}
-										&pageSize=${pageSize}
-										&search=${searchTermValue}
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
+									href={`/orders?sort=name&page=${page}&pageSize=${pageSize}&search=${searchTermValue}&direction=${
+										direction == 'asc' ? 'desc' : 'asc'
+									}`}
 								>
 									<div className="seperator"></div>
-									<h1>Name</h1>
+									<h1>Ime</h1>
 									{filterDirectionIcons('name')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/orders?sort=orderNumber&page=${page}&pageSize=${pageSize}&search=${searchTermValue}&direction=${
+										direction == 'asc' ? 'desc' : 'asc'
+									}`}
+								>
+									<div className="seperator"></div>
+									<h1>Broj narudžbe</h1>
+									{filterDirectionIcons('orderNumber')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/orders?sort=createdAt&page=${page}&pageSize=${pageSize}&search=${searchTermValue}&direction=${
+										direction == 'asc' ? 'desc' : 'asc'
+									}`}
+								>
+									<div className="seperator"></div>
+									<h1>Datum</h1>
+									{filterDirectionIcons('createdAt')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/orders?sort=status&page=${page}&pageSize=${pageSize}&search=${searchTermValue}&direction=${
+										direction == 'asc' ? 'desc' : 'asc'
+									}`}
+								>
+									<div className="seperator"></div>
+									<h1>Status</h1>
+									{filterDirectionIcons('status')}
+								</a>
+							</th>
+							<th>
+								<a
+									href={`/orders?sort=amount&page=${page}&pageSize=${pageSize}&search=${searchTermValue}&direction=${
+										direction == 'asc' ? 'desc' : 'asc'
+									}`}
+								>
+									<div className="seperator"></div>
+									<h1>Ukupno</h1>
+									{filterDirectionIcons('amount')}
 								</a>
 							</th>
 							<th>
@@ -180,31 +242,39 @@ function Categories() {
 					</thead>
 
 					<tbody className="table-content">
-						{data.map((category) => {
+						{data.map((order) => {
 							return (
 								<tr className="table-content-row">
-									<td>{category._id.toString().substring(0, 5) + '...'}</td>
-									<td>{category.name}</td>
+									<td>{order._id.toString().substring(0, 5) + '...'}</td>
+									<td>{order.name}</td>
+									<td>{order.orderNumber}</td>
+									<td>{order.orderDate}</td>
+									<td>{order.status}</td>
+									<td>€{formatPriceDisplay(order.amount)}</td>
 									<td className="actions-row">
 										<Link
-											to={`/categories/edit/${
-												category._id
+											to={`/orders/edit/${
+												order._id
 											}?page=${page}&pageSize=${pageSize}${
 												sort != null ? '&sort=' + sort : ''
 											}${direction != null ? '&direction=' + direction : ''}
-													${searchTermValue != null ? '&search=' + searchTermValue : ''}
-									`}
+                                    ${
+																			searchTermValue != null
+																				? '&search=' + searchTermValue
+																				: ''
+																		}
+                        `}
 											className="action-btn"
-											title="Edit Category"
+											title="Edit Order"
 										>
 											<FaPen />
 										</Link>
 										<button
 											type="button"
 											className="delete-btn"
-											title="Delete Category"
+											title="Delete Order"
 											onClick={() =>
-												openDeleteModal(`${category.name}`, category._id)
+												openDeleteModal(`${order.name}`, order._id)
 											}
 										>
 											<FaTrash />
@@ -219,11 +289,15 @@ function Categories() {
 					{page != 0 && totalPages > 0 && (
 						<Link
 							className="prev-btn"
-							to={`/categories?page=${Number(page) - 1}&pageSize=${pageSize}${
+							to={`/orders?page=${Number(page) - 1}&pageSize=${pageSize}${
 								sort != null ? '&sort=' + sort : ''
 							}${direction != null ? '&direction=' + direction : ''}
-									${searchTermValue != null ? '&search=' + searchTermValue : ''}
-                            `}
+                        ${
+													searchTermValue != null
+														? '&search=' + searchTermValue
+														: ''
+												}
+                         `}
 						>
 							<FaChevronLeft />
 						</Link>
@@ -232,11 +306,11 @@ function Categories() {
 					{page != totalPages && totalPages > 0 && (
 						<Link
 							className="next-btn"
-							to={`/categories?page=${Number(page) + 1}&pageSize=${pageSize}${
+							to={`/orders?page=${Number(page) + 1}&pageSize=${pageSize}${
 								sort != null ? '&sort=' + sort : ''
 							}${direction != null ? '&direction=' + direction : ''}
-							${searchTermValue != null ? '&search=' + searchTermValue : ''}
-							`}
+                  ${searchTermValue != null ? '&search=' + searchTermValue : ''}
+                  `}
 						>
 							<FaChevronRight />
 						</Link>
@@ -246,13 +320,13 @@ function Categories() {
 			{deleteModal.open && (
 				<DeleteModal
 					text={deleteModal.text}
-					type={'Category'}
-					handleDelete={handleCategoryDelete}
+					type={'Order'}
+					handleDelete={handleOrderDelete}
 					closeDeleteModal={closeDeleteModal}
 				/>
 			)}
 		</>
 	);
-}
+};
 
-export default Categories;
+export default Orders;

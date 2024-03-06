@@ -86,7 +86,7 @@ exports.getUserOrder = async (req, res) => {
 	// Get total number of orders
 	let totalOrders;
 	// If search query is not empty, get total number of orders that match search query
-	let splittedDate = search.split('.');
+	let splittedDate = search ? search.split('.') : null;
 	let year;
 	let month;
 	let day;
@@ -210,26 +210,137 @@ exports.getUserOrder = async (req, res) => {
 };
 
 exports.getAllOrders = async (req, res) => {
-	const sort = req.query.sort;
-	const page = req.query.page;
-	const pageSize = req.query.pageSize;
+	const { sort, direction, page, pageSize, search } = req.query;
+
+	// Get total number of orders
+	let totalOrders;
+	// If search query is not empty, get total number of orders that match search query
+	let splittedDate = search ? search.split('.') : null;
+	let year;
+	let month;
+	let day;
+	if (splittedDate && splittedDate.length == 3) {
+		if (splittedDate[0].length == 1) {
+			splittedDate[0] = '0' + splittedDate[0];
+		} else if (splittedDate[1].length == 1) {
+			splittedDate[1] = '0' + splittedDate[1];
+		}
+
+		year = splittedDate[2];
+		month = splittedDate[1];
+		day = splittedDate[0];
+	}
+
+	if (search != '' && search != null) {
+		totalOrders = await Order.find({
+			$or: [
+				{ orderNumber: { $regex: search, $options: 'i' } },
+				{
+					$expr: {
+						$and: [
+							{ $eq: [{ $year: '$createdAt' }, year] },
+							{ $eq: [{ $month: '$createdAt' }, month] },
+							{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+						],
+					},
+				},
+			],
+		}).count();
+	} else {
+		totalOrders = await Order.find().count();
+	}
+
+	// Calculate number of pages based on page size
+	const totalPages = Math.ceil(totalOrders / pageSize);
 
 	try {
 		let orders;
-		if (page && pageSize) {
+
+		if (page && pageSize && sort && direction && search != '') {
+			orders = await Order.find({
+				$or: [
+					{ orderNumber: { $regex: search, $options: 'i' } },
+					{
+						$expr: {
+							$and: [
+								{ $eq: [{ $year: '$createdAt' }, year] },
+								{ $eq: [{ $month: '$createdAt' }, month] },
+								{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+							],
+						},
+					},
+				],
+			})
+				.limit(pageSize)
+				.skip(pageSize * page)
+				.sort([[sort, direction]]);
+		} else if (page && pageSize && search != '') {
+			orders = await Order.find({
+				$or: [
+					{ orderNumber: { $regex: search, $options: 'i' } },
+					{
+						$expr: {
+							$and: [
+								{ $eq: [{ $year: '$createdAt' }, year] },
+								{ $eq: [{ $month: '$createdAt' }, month] },
+								{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+							],
+						},
+					},
+				],
+			})
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction && search != '') {
+			orders = await Order.find({
+				$or: [
+					{ orderNumber: { $regex: search, $options: 'i' } },
+					{
+						$expr: {
+							$and: [
+								{ $eq: [{ $year: '$createdAt' }, year] },
+								{ $eq: [{ $month: '$createdAt' }, month] },
+								{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
+							],
+						},
+					},
+				],
+			}).sort([[sort, direction]]);
+		} else if (page && pageSize && sort && direction) {
 			orders = await Order.find()
 				.limit(pageSize)
 				.skip(pageSize * page)
-				.sort([['createdAt', -1]]);
-		} else if (page) {
+				.sort([[sort, direction]]);
+		} else if (page && pageSize) {
 			orders = await Order.find()
-				.limit(10)
-				.skip(10 * page)
-				.sort([['createdAt', -1]]);
+				.limit(pageSize)
+				.skip(pageSize * page);
+		} else if (sort && direction) {
+			orders = await Order.find().sort([[sort, direction]]);
 		} else {
 			orders = await Order.find().sort([['createdAt', -1]]);
 		}
-		return res.status(200).send({ success: true, data: orders });
+
+		// if (page && pageSize) {
+		// 	orders = await Order.find()
+		// 		.limit(pageSize)
+		// 		.skip(pageSize * page)
+		// 		.sort([['createdAt', -1]]);
+		// } else if (page) {
+		// 	orders = await Order.find()
+		// 		.limit(10)
+		// 		.skip(10 * page)
+		// 		.sort([['createdAt', -1]]);
+		// } else {
+		// 	orders = await Order.find().sort([['createdAt', -1]]);
+		// }
+
+		return res.status(200).send({
+			success: true,
+			data: orders,
+			totalOrders: totalOrders,
+			totalPages: totalPages,
+		});
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
 	}

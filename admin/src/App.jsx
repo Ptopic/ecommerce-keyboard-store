@@ -25,6 +25,7 @@ import EditProduct from './pages/EditProduct/EditProduct';
 import { useCookies } from 'react-cookie';
 
 import { jwtDecode } from 'jwt-decode';
+import Orders from './pages/Orders/Orders';
 
 function App() {
 	const [cookies, setCookie] = useCookies();
@@ -80,6 +81,7 @@ function App() {
 								path="/products/:id/variants"
 								element={<ProductVariants />}
 							/> */}
+							<Route exact path="/orders" element={<Orders />} />
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</div>

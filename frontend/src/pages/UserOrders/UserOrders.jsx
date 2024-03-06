@@ -19,6 +19,8 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
+// Utils
+import { formatPriceDisplay } from '../../utils/formatting';
 import { userRequest } from '../../api';
 
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -60,7 +62,6 @@ function UserOrders() {
 					pageSize: pageSize,
 					search: searchTermValue,
 				},
-				headers: { token: user.token },
 			});
 
 			res.data.totalPages == 0
@@ -74,7 +75,6 @@ function UserOrders() {
 				let year;
 				let month;
 				let day;
-				console.log(splittedDate);
 				if (splittedDate.length == 3) {
 					if (splittedDate[0].length == 1) {
 						splittedDate[0] = '0' + splittedDate[0];
@@ -236,7 +236,7 @@ function UserOrders() {
 									<td>{order.orderNumber}</td>
 									<td>{order.orderDate}</td>
 									<td>{order.status}</td>
-									<td>€{order.amount}</td>
+									<td>€{formatPriceDisplay(order.amount)}</td>
 									<td>
 										<Link to={'/order/' + order._id}>Detalji</Link>
 									</td>
