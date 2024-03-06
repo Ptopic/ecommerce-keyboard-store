@@ -20,8 +20,7 @@ exports.getAllCategories = async (req, res) => {
 	// Get total number of categories
 	let totalCategories = await getCategoriesCount(search);
 
-	// Calculate number of pages based on page size
-	const totalPages = Math.ceil(totalCategories / pageSize);
+	const totalPages = Math.ceil(totalCategories / pageSize); // Calculate number of pages based on page size
 
 	try {
 		let categories = await getAllCategories(

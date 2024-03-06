@@ -42,12 +42,10 @@ exports.forgotPassword = async (req, res) => {
 		});
 	}
 
-	// Create reset token
-	const token = await createRandomBytes();
+	const token = await createRandomBytes(); // Create reset token
 
-	// Save token to db
 	try {
-		await createResetToken(user._id, token);
+		await createResetToken(user._id, token); // Save token to db
 	} catch (error) {
 		console.log(error);
 	}
@@ -70,15 +68,13 @@ exports.forgotPassword = async (req, res) => {
 		}
 	});
 
-	// Delete token after 5 minutes
-	deleteTokenJob(user._id, 5);
+	deleteTokenJob(user._id, 5); // Delete token after 5 minutes
 };
 
 exports.verifyToken = async (req, res, next) => {
 	const { tokenValue, id } = req.query;
 	try {
-		// Get token from db
-		const foundToken = await getResetToken(tokenValue, id);
+		const foundToken = await getResetToken(tokenValue, id); // Get token from db
 		if (!foundToken) {
 			return res.status(400).send({ success: false, error: 'Token not found' });
 		}
@@ -91,15 +87,12 @@ exports.verifyToken = async (req, res, next) => {
 
 exports.resetPassword = async (req, res) => {
 	const { id } = req.query;
-	// Change user password
 	try {
-		// Encrypt password
-		let encryptedPassword = await bcrypt.hash(req.body.password, 8);
+		let encryptedPassword = await bcrypt.hash(req.body.password, 8); // Encrypt password
 
-		// Change user password
-		await changeUserPassword(id, encryptedPassword);
-		// Delete auth token
-		await deleteResetTokenByUserId(id);
+		await changeUserPassword(id, encryptedPassword); // Change user password
+
+		await deleteResetTokenByUserId(id); // Delete auth token
 
 		res.status(201).send({ success: true, message: 'Password changed.' });
 	} catch (error) {
@@ -125,27 +118,25 @@ exports.register = async (req, res) => {
 		password: await bcrypt.hash(password, 8),
 	});
 
-	// Check if user with that username existst
 	const checkUsername = await getUserByUsername(username);
 
+	// Check if user with that username existst
 	if (checkUsername)
 		return res.status(400).send({
 			success: false,
 			error: 'User with that username already exists.',
 		});
 
-	// Check if user with that email exists
 	const checkEmail = await getUserByEmail(email);
 
+	// Check if user with that email exists
 	if (checkEmail)
 		return res.status(400).send({
 			success: false,
 			error: 'User with that email already exists.',
 		});
 
-	// Generate access token (same when login so that user is automaticly logged in when registered)
-
-	const accessToken = await generateJwt(newUser._id);
+	const accessToken = await generateJwt(newUser._id); // Generate jwt token
 
 	try {
 		const savedUser = await newUser.save();
@@ -167,6 +158,7 @@ exports.login = async (req, res) => {
 		}
 
 		const isPasswordCorrect = bcrypt.compareSync(
+			// Compare user password and given password
 			req.body.password,
 			user.password
 		);
@@ -175,10 +167,9 @@ exports.login = async (req, res) => {
 			return res.status(401).send({ success: false, error: 'Wrong password.' });
 		}
 
-		const accessToken = await generateJwt(user._id, user.isAdmin);
+		const accessToken = await generateJwt(user._id, user.isAdmin); // Generate jwt token
 
-		// Hide password in response
-		const { password, ...otherInfo } = user._doc;
+		const { password, ...otherInfo } = user._doc; // Hide password in response
 
 		return res
 			.status(200)
