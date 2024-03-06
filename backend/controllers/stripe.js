@@ -99,17 +99,9 @@ exports.stripe = async (req, res) => {
 		}
 
 		const paymentIntent = await stripe.paymentIntents.create({
-			// receipt_email: 'pingo15102002@gmail.com',
 			amount,
 			currency: 'eur',
 			metadata: {
-				// billingName: billing.name,
-				// billingPhone: billing.phone,
-				// billingAddressCity: billing.address.city,
-				// billingAddressCountry: billing.address.country,
-				// billingAddressLine1: billing.address.line1,
-				// billingAddressLine2: billing.address.line2,
-				// billingAddressPostalCode: billing.address.postal_code,
 				invoice_id: invoice.id,
 				tvrtka,
 				tvrtkaDostava,
@@ -140,7 +132,6 @@ exports.stripeWebHook = async (req, res) => {
 		return res.status(400).send({ success: false, error: error });
 	}
 
-	let customerEmail;
 	switch (event.type) {
 		case 'charge.succeeded':
 			const charge = event.data.object;
@@ -148,8 +139,6 @@ exports.stripeWebHook = async (req, res) => {
 			const paymentIntent = await stripe.paymentIntents.retrieve(
 				charge.payment_intent
 			);
-
-			console.log(paymentIntent);
 
 			// Use this email to send receipt to user
 			const customerEmail = charge.billing_details.email;
@@ -316,20 +305,3 @@ exports.deleteAllProducts = async (req, res) => {
 		return res.status(200).send({ success: false, error: error });
 	}
 };
-
-// exports.pay = async (req, res) => {
-// 	stripe.charges.create(
-// 		{
-// 			source: req.body.tokenId,
-// 			amount: req.body.amount,
-// 			currency: 'eur',
-// 		},
-// 		(stripeErr, stripeRes) => {
-// 			if (stripeErr) {
-// 				return res.status(500).send({ success: false, error: stripeErr });
-// 			} else {
-// 				return res.status(200).send({ success: true, data: stripeRes });
-// 			}
-// 		}
-// 	);
-// };
