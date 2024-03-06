@@ -9,6 +9,8 @@ const {
 	getUserOrdersCount,
 	getOrders,
 	splitSearchDate,
+	getTotalOrders,
+	getUserTotalOrders,
 } = require('../services/order');
 
 exports.getOrdersCount = async (req, res) => {
@@ -78,7 +80,7 @@ exports.getUserOrders = async (req, res) => {
 	}
 
 	// Get total number of orders
-	let totalOrders = await getUserOrdersCount(search, userId, year, month, day);
+	let totalOrders = await getUserTotalOrders(search, userId, year, month, day);
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalOrders / pageSize);
@@ -125,7 +127,7 @@ exports.getAllOrders = async (req, res) => {
 	}
 
 	// Get total number of orders
-	let totalOrders = await getOrdersCount(search, year, month, day);
+	let totalOrders = await getTotalOrders(search, year, month, day);
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalOrders / pageSize);
