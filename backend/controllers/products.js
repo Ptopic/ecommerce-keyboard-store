@@ -1,5 +1,12 @@
 const Product = require('../models/Product');
 const ProductVariation = require('../models/ProductVariation');
+const {
+	mapActiveFields,
+	uploadProductImages,
+	searchProducts,
+	getAllProducts,
+	getTotalProducts,
+} = require('../services/products');
 
 const { uploadToCloudinary, removeFromCloudinary } = require('./cloudinary');
 
@@ -20,19 +27,9 @@ exports.createProduct = async (req, res) => {
 	try {
 		if (images) {
 			// Map active fields to details object
-			let details = {};
+			let details = mapActiveFields(activeFields, req);
 
-			for (let field of activeFields) {
-				// details[field] = String(req.body[field]).toLowerCase().trim();
-				details[field] = String(req.body[field]);
-			}
-
-			let imagesArray = [];
-			for (let image of images) {
-				const uploadRes = await uploadToCloudinary(image, 'shop');
-
-				imagesArray.push(uploadRes);
-			}
+			let imagesArray = await uploadProductImages(images);
 
 			const newProduct = new Product({
 				title: title,
@@ -49,11 +46,7 @@ exports.createProduct = async (req, res) => {
 			return res.status(200).send({ success: true, data: savedProduct });
 		} else {
 			// Map active fields to details object
-			let details = {};
-
-			for (let field of activeFields) {
-				details[field] = req.body[field];
-			}
+			let details = mapActiveFields(activeFields, req);
 
 			const newProduct = new Product({
 				title: title,
@@ -89,26 +82,19 @@ exports.updateProduct = async (req, res) => {
 		names,
 	} = req.body;
 
+	const { id } = req.params;
+
 	price = parseFloat(price).toFixed(2);
 
 	try {
 		if (images) {
-			// Map active fields to details object
 			let details = {};
-
 			if (activeFields) {
-				for (let field of activeFields) {
-					// details[field] = String(req.body[field]).toLowerCase().trim();
-					details[field] = String(req.body[field]);
-				}
+				// Map active fields to details object
+				details = mapActiveFields(activeFields, req);
 			}
 
-			let imagesArray = [];
-			for (let image of images) {
-				const uploadRes = await uploadToCloudinary(image, 'shop');
-
-				imagesArray.push(uploadRes);
-			}
+			let imagesArray = await uploadProductImages(images);
 
 			// Clear any existing keys in details that are not in new detauks array
 			Object.keys(details).forEach((key) => {
@@ -118,7 +104,7 @@ exports.updateProduct = async (req, res) => {
 			});
 
 			let updatedProduct = await Product.findByIdAndUpdate(
-				req.params.id,
+				id,
 				{
 					$set: {
 						title: title,
@@ -141,17 +127,14 @@ exports.updateProduct = async (req, res) => {
 			);
 			return res.status(200).send({ success: true, data: updatedProduct });
 		} else {
-			// Map active fields to details object
 			let details = {};
-
 			if (activeFields) {
-				for (let field of activeFields) {
-					details[field] = req.body[field];
-				}
+				// Map active fields to details object
+				details = mapActiveFields(activeFields, req);
 			}
 
 			let updatedProduct = await Product.findByIdAndUpdate(
-				req.params.id,
+				id,
 				{
 					$set: {
 						title: title,
@@ -267,24 +250,10 @@ exports.getProduct = async (req, res) => {
 
 exports.searchProducts = async (req, res) => {
 	const term = req.query.search;
-	let termString = String(term);
-
-	let numberString = parseInt(term);
 
 	try {
-		// Search for product that contains term in title
-
-		let products = await Product.find({
-			$or: [
-				!isNaN(numberString)
-					? {
-							$expr: {
-								$eq: ['$price', termString],
-							},
-					  }
-					: { title: { $regex: termString, $options: 'i' } },
-			],
-		});
+		// Search for product that contains term
+		let products = await searchProducts(term);
 		return res.status(200).send({ success: true, data: products });
 	} catch (error) {
 		console.log(error);
@@ -294,8 +263,6 @@ exports.searchProducts = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
 	let { sort, direction, page, pageSize, minPrice, maxPrice } = req.query;
-
-	const term = req.query.search;
 
 	// If sort and direction is null use default
 	if (sort == null && direction == null) {
@@ -355,7 +322,6 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 
 	try {
 		let products;
-
 		// Sortiraj prema najnovijima po defaultu
 		products = await Product.find(query);
 
@@ -450,76 +416,19 @@ exports.getAllProductsForAdminPage = async (req, res) => {
 	const { sort, direction, page, pageSize, search } = req.query;
 
 	// Get total number of orders
-	let totalProducts;
-	// If search query is not empty, get total number of orders that match search query
-	if (search != '' && search != null) {
-		totalProducts = await Product.find({
-			$or: [
-				{ title: { $regex: search, $options: 'i' } },
-				{ category: { $regex: search, $options: 'i' } },
-			],
-		}).count();
-	} else {
-		totalProducts = await Product.find().count();
-	}
+	let totalProducts = await getTotalProducts(search);
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalProducts / pageSize);
 
 	try {
-		let products;
-		if (
-			page != null &&
-			pageSize != null &&
-			sort != null &&
-			direction != null &&
-			search != ''
-		) {
-			products = await Product.find({
-				$or: [
-					{ title: { $regex: search, $options: 'i' } },
-					{ category: { $regex: search, $options: 'i' } },
-				],
-			})
-				.limit(pageSize)
-				.skip(pageSize * page)
-				.sort([[sort, direction]]);
-		} else if (page && pageSize && search != '' && search != null) {
-			products = await Product.find({
-				$or: [
-					{ title: { $regex: search, $options: 'i' } },
-					{ category: { $regex: search, $options: 'i' } },
-				],
-			})
-				.limit(pageSize)
-				.skip(pageSize * page);
-		} else if (sort != null && direction != null && search != '') {
-			products = await Product.find({
-				$or: [
-					{ title: { $regex: search, $options: 'i' } },
-					{ category: { $regex: search, $options: 'i' } },
-				],
-			}).sort([[sort, direction]]);
-		} else if (
-			page != null &&
-			pageSize != null &&
-			sort != null &&
-			direction != null
-		) {
-			products = await Product.find()
-				.limit(pageSize)
-				.skip(pageSize * page)
-				.sort([[sort, direction]]);
-		} else if (page != null && pageSize != null) {
-			products = await Product.find()
-				.limit(pageSize)
-				.skip(pageSize * page);
-		} else if (sort != null && direction != null) {
-			products = await Product.find().sort([[sort, direction]]);
-		} else {
-			products = await Product.find();
-		}
-
+		let products = await getAllProducts(
+			sort,
+			direction,
+			page,
+			pageSize,
+			search
+		);
 		return res.status(200).send({
 			success: true,
 			data: products,

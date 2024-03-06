@@ -4,7 +4,6 @@ const ObjectId = require('mongodb').ObjectId;
 
 exports.addToWishlist = async (req, res) => {
 	const { userId, productId } = req.body;
-	console.log(userId, productId);
 
 	// Get product to add to wishlist
 	const product = await Product.findById(productId);
@@ -56,7 +55,6 @@ exports.getUserWishlist = async (req, res) => {
 	const { userId } = req.query;
 	try {
 		const usersWishlist = await Wishlist.findOne({ userId: userId });
-		console.log(usersWishlist);
 		if (!usersWishlist) {
 			// Create users wishlist if it doesn't exist
 			const wishlist = new Wishlist({

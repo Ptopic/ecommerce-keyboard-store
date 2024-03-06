@@ -43,26 +43,18 @@ exports.getIncome = async () => {
 };
 
 exports.getOrdersCount = async (search, year, month, day) => {
-	let totalOrders;
-	if (search != '' && search != null) {
-		totalOrders = await Order.find({
-			$or: [
-				{ orderNumber: { $regex: search, $options: 'i' } },
-				{
-					$expr: {
-						$and: [
-							{ $eq: [{ $year: '$createdAt' }, year] },
-							{ $eq: [{ $month: '$createdAt' }, month] },
-							{ $eq: [{ $dayOfMonth: '$createdAt' }, day] },
-						],
-					},
+	const ordersCount = await Order.aggregate([
+		{
+			$group: {
+				_id: {
+					month: { $month: '$createdAt' },
+					year: { $year: '$createdAt' },
 				},
-			],
-		}).count();
-	} else {
-		totalOrders = await Order.find().count();
-	}
-	return totalOrders;
+				ordersCount: { $sum: 1 },
+			},
+		},
+	]);
+	return ordersCount;
 };
 
 exports.getUserOrdersCount = async (search, userId, year, month, day) => {
