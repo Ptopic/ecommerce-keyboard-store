@@ -12,7 +12,7 @@ const {
 	createOrder,
 	editOrder,
 	deleteOrder,
-	getUserOrder,
+	getUserOrders,
 	getAllOrders,
 	getOrderByOrderId,
 	getOrdersCount,
@@ -38,7 +38,7 @@ router.put('/:id', verifyTokenAndAdmin, editOrder);
 router.delete('/:id', verifyTokenAndAdmin, deleteOrder);
 
 // Get user order
-router.get('/find/:userId', verifyTokenAuthenticity, getUserOrder);
+router.get('/find/:userId', verifyTokenAuthenticity, getUserOrders);
 
 // Get all orders (admin only)
 router.get('/', verifyTokenAndAdmin, getAllOrders);
