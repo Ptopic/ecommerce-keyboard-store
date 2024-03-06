@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
 import { setCategoriesArray } from '../../redux/categoriesRedux';
+import { addFilter } from '../../redux/filtersRedux';
 
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
@@ -32,6 +33,7 @@ const NewProduct = () => {
 	const dispatch = useDispatch();
 
 	const categoriesRedux = useSelector((state) => state.categories.data);
+	const reduxFilters = useSelector((state) => state.filters);
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -154,31 +156,66 @@ const NewProduct = () => {
 				curCategory = category;
 			}
 		});
+
+		console.log(curCategory);
+
+		// Check for cached filters or cache them
+
 		// Set fieldDetails to category details
 		if (curCategory != null) {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			let object = {};
-			let validationObject = {};
+			let isCategoryFiltersCached;
+			let isCategoryActiveFiltersCached;
 
-			// Map names of active fields as object
-			for (let i = 0; i < namesOfActiveFields.length; i++) {
-				object[namesOfActiveFields[i]] = '';
-				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
+			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+				for (let reduxFilter of reduxFilters?.filters) {
+					if (Object.keys(reduxFilter) == curCategory) {
+						isCategoryFiltersCached = reduxFilter;
+					}
+				}
 			}
 
-			console.log(selectedCategory);
+			if (
+				reduxFilters?.activeFilters &&
+				reduxFilters.activeFilters.length > 0
+			) {
+				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+					if (Object.keys(reduxActiveFilter) == curCategory) {
+						isCategoryActiveFiltersCached = reduxActiveFilter;
+					}
+				}
+			}
 
-			generateFilterProductAdmin(
-				selectedCategory,
-				activeFilters,
-				curCategory,
-				setFilters,
-				setActiveFilters,
-				setActiveFields,
-				namesOfActiveFields
-			);
+			console.log(isCategoryFiltersCached);
+
+			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+				generateFilterProductAdmin(
+					selectedCategory,
+					activeFilters,
+					curCategory,
+					setFilters,
+					setActiveFilters,
+					setActiveFields,
+					namesOfActiveFields
+				)
+					.then((res) => {
+						console.log(res);
+						dispatch(
+							addFilter({
+								categoryName: curCategory,
+								filters: res?.filters,
+								activeFilters: res?.activeFilters,
+							})
+						);
+					})
+					.catch((err) => console.log(err));
+			} else {
+				console.log('Cached filters');
+				console.log(isCategoryActiveFiltersCached);
+				setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+			}
 		}
 	};
 
