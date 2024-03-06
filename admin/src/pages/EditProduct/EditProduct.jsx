@@ -246,6 +246,8 @@ const EditProduct = () => {
 	};
 
 	const handleInitilaFiltersGeneration = async () => {
+		// Check for cached filters or cache them
+
 		setIsFiltersLoading(true);
 		let curCategory;
 		categories.forEach((category) => {
@@ -282,6 +284,8 @@ const EditProduct = () => {
 	};
 
 	const handleOnCategoryChangeFiltersGeneration = async (newCategory) => {
+		// Check for cached filters or cache them
+
 		// Find selected category in category data
 		newCategory ? setSelectedCategory(newCategory) : null;
 
@@ -336,10 +340,6 @@ const EditProduct = () => {
 		handleInitilaFiltersGeneration();
 	}, [product, selectedCategory]);
 
-	// useEffect(() => {
-	// 	handleInitilaFiltersGeneration();
-	// }, [product, selectedCategory]);
-
 	const dragAndDropOnChange = (e) => {
 		formik.setFieldValue('files', e.target.files[0]);
 	};
@@ -383,6 +383,7 @@ const EditProduct = () => {
 								name={'title'}
 								placeholder={'Title *'}
 								value={formik.values.title}
+								onBlur={formik.handleBlur}
 								onChange={(e) => {
 									formik.setFieldValue('title', e.target.value);
 								}}
@@ -396,6 +397,7 @@ const EditProduct = () => {
 										name={'price'}
 										placeholder={'Price *'}
 										value={formik.values.price}
+										onBlur={formik.handleBlur}
 										onChange={(e) => {
 											formik.setFieldValue('price', e.target.value);
 										}}
@@ -410,6 +412,7 @@ const EditProduct = () => {
 										name={'stock'}
 										placeholder={'Stock *'}
 										value={formik.values.stock}
+										onBlur={formik.handleBlur}
 										onChange={(e) => {
 											formik.setFieldValue('stock', e.target.value);
 										}}
@@ -494,6 +497,7 @@ const EditProduct = () => {
 									as="select"
 									name="category"
 									value={selectedCategory}
+									onBlur={formik.handleBlur}
 									onChange={(e) => {
 										formik.setFieldValue('category', e.target.value);
 										setSelectedCategory(e.target.value);
