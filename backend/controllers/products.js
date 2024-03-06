@@ -270,14 +270,7 @@ exports.getAllProducts = async (req, res) => {
 	}
 
 	// Get total number of products
-	let totalProducts;
-	if (minPrice && maxPrice) {
-		totalProducts = await Product.find({
-			price: { $gte: minPrice, $lte: maxPrice },
-		}).count();
-	} else {
-		totalProducts = await Product.find().count();
-	}
+	let totalProducts = await getTotalProducts(null, minPrice, maxPrice);
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalProducts / pageSize);

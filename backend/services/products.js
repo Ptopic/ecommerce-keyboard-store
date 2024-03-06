@@ -44,7 +44,7 @@ exports.searchProducts = async (term) => {
 	return products;
 };
 
-exports.getTotalProducts = async (search) => {
+exports.getTotalProducts = async (search, minPrice, maxPrice) => {
 	// Get total number of orders
 	let totalProducts;
 	// If search query is not empty, get total number of orders that match search query
@@ -54,6 +54,10 @@ exports.getTotalProducts = async (search) => {
 				{ title: { $regex: search, $options: 'i' } },
 				{ category: { $regex: search, $options: 'i' } },
 			],
+		}).count();
+	} else if (minPrice && maxPrice) {
+		totalProducts = await Product.find({
+			price: { $gte: minPrice, $lte: maxPrice },
 		}).count();
 	} else {
 		totalProducts = await Product.find().count();
