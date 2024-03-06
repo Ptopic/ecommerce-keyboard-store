@@ -4,56 +4,33 @@ const Product = require('../models/Product');
 
 const { removeFromCloudinary } = require('./cloudinary');
 
+// Service
+const {
+	getCategoryById,
+	getCategoryByName,
+	createCategory,
+	editCategory,
+	getAllCategories,
+	getCategoriesCount,
+} = require('../services/category');
+
 exports.getAllCategories = async (req, res) => {
 	const { sort, direction, page, pageSize, search } = req.query;
 
-	// Get total number of orders
-	let totalCategories;
-	// If search query is not empty, get total number of orders that match search query
-	if (search != '' && search != null) {
-		totalCategories = await Category.find({
-			name: { $regex: search, $options: 'i' },
-		}).count();
-	} else {
-		totalCategories = await Category.find().count();
-	}
+	// Get total number of categories
+	let totalCategories = await getCategoriesCount(search);
 
 	// Calculate number of pages based on page size
 	const totalPages = Math.ceil(totalCategories / pageSize);
 
 	try {
-		let categories;
-		if (page && pageSize && sort && direction && search != '') {
-			categories = await Category.find({
-				name: { $regex: search, $options: 'i' },
-			})
-				.limit(pageSize)
-				.skip(pageSize * page)
-				.sort([[sort, direction]]);
-		} else if (page && pageSize && search != '') {
-			categories = await Category.find({
-				name: { $regex: search, $options: 'i' },
-			})
-				.limit(pageSize)
-				.skip(pageSize * page);
-		} else if (sort && direction && search != '') {
-			categories = await Category.find({
-				name: { $regex: search, $options: 'i' },
-			}).sort([[sort, direction]]);
-		} else if (page && pageSize && sort && direction) {
-			categories = await Category.find()
-				.limit(pageSize)
-				.skip(pageSize * page)
-				.sort([[sort, direction]]);
-		} else if (page && pageSize) {
-			categories = await Category.find()
-				.limit(pageSize)
-				.skip(pageSize * page);
-		} else if (sort && direction) {
-			categories = await Category.find().sort([[sort, direction]]);
-		} else {
-			categories = await Category.find();
-		}
+		let categories = await getAllCategories(
+			page,
+			pageSize,
+			sort,
+			direction,
+			search
+		);
 		return res.status(200).send({
 			success: true,
 			data: categories,
@@ -68,7 +45,7 @@ exports.getAllCategories = async (req, res) => {
 exports.getCategoryById = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const category = await Category.findById(id);
+		const category = await getCategoryById(id);
 		return res.status(200).send({ success: true, data: category });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
@@ -78,7 +55,7 @@ exports.getCategoryById = async (req, res) => {
 exports.getCategoryByName = async (req, res) => {
 	const { name } = req.params;
 	try {
-		const category = await Category.find({ name: name });
+		const category = await getCategoryByName(name);
 		return res.status(200).send({ success: true, data: category });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
@@ -89,7 +66,7 @@ exports.createCategory = async (req, res) => {
 	const { name, selectedFields } = req.body;
 
 	// Check if category already exists
-	const foundCategory = await Category.find({ name: name });
+	const foundCategory = await getCategoryByName(name);
 
 	if (foundCategory.length > 0) {
 		return res.status(500).send({
@@ -98,10 +75,8 @@ exports.createCategory = async (req, res) => {
 		});
 	}
 
-	const newCategory = new Category({ name: name, fields: [...selectedFields] });
-
 	try {
-		const savedCategory = await newCategory.save();
+		const savedCategory = await createCategory(name, selectedFields);
 		return res.status(200).send({ success: true, data: savedCategory });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
@@ -110,19 +85,10 @@ exports.createCategory = async (req, res) => {
 
 exports.editCategory = async (req, res) => {
 	const { name, selectedFields } = req.body;
-	console.log(req.body);
+	const { id } = req.params;
 
 	try {
-		const updatedCategory = await Category.findByIdAndUpdate(
-			req.params.id,
-			{
-				$set: {
-					name: name,
-					fields: selectedFields,
-				},
-			},
-			{ new: true }
-		);
+		const updatedCategory = await editCategory(id, name, selectedFields);
 		return res.status(200).send({ success: true, data: updatedCategory });
 	} catch (err) {
 		return res.status(500).send({ success: false, error: err });
@@ -130,8 +96,9 @@ exports.editCategory = async (req, res) => {
 };
 
 exports.deleteCategory = async (req, res) => {
+	const { id } = req.params;
 	try {
-		const category = await Category.findById(req.params.id);
+		const category = await getCategoryById(id);
 
 		if (!category) {
 			return res
