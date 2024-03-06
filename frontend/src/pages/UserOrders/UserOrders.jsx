@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import './UserOrders.css';
-import './UserDetails.css';
-import '../pages/Checkout.css';
-import './Login.css';
+import '../UserDetails/UserDetails.css';
+import '../Checkout/Checkout.css';
+import '../Login/Login.css';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import InputField from '../components/InputField/InputField';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
 import { Link } from 'react-router-dom';
 
 // Redux
@@ -19,7 +19,7 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-import { userRequest } from '../api';
+import { userRequest } from '../../api';
 
 import { useLocation, useSearchParams } from 'react-router-dom';
 

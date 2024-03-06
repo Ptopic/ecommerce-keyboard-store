@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { login } from '../redux/apiCalls';
+import { login } from '../../redux/apiCalls';
 import { Link } from 'react-router-dom';
-import { request } from '../api';
+import { request } from '../../api';
 
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -10,12 +10,12 @@ import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import Button from '../../components/Button/Button';
 
 // Styles
-import './Login.css';
-import InputField from '../components/InputField/InputField';
+import '../Login/Login.css';
+import InputField from '../../components/InputField/InputField';
 
 function ForgotPassword() {
 	const [isLoading, setIsLoading] = useState(false);

@@ -8,19 +8,19 @@ import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import InputField from '../components/InputField/InputField';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
 
 import { useNavigate } from 'react-router-dom';
 
 // Redux
-import { setState, resetState } from '../redux/paymentRedux';
+import { setState, resetState } from '../../redux/paymentRedux';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
 // Utils
-import { formatPriceDisplay } from '../utils/formatting';
+import { formatPriceDisplay } from '../../utils/formatting';
 
 function Checkout() {
 	let user = useSelector((state) => state.user.currentUser);

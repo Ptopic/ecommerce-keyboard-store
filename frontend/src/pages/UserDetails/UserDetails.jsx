@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import './UserDetails.css';
-import '../pages/Checkout.css';
+import '../Checkout/Checkout.css';
 
 import { IoMdCheckmark } from 'react-icons/io';
 
@@ -10,15 +10,15 @@ import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import InputField from '../components/InputField/InputField';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
 import { Link } from 'react-router-dom';
 
 // Redux
-import { setUserData } from '../redux/userRedux';
+import { setUserData } from '../../redux/userRedux';
 import { useSelector, useDispatch } from 'react-redux';
-import { user_request, userRequest } from '../api';
+import { user_request, userRequest } from '../../api';
 
 import { toast, Toaster } from 'react-hot-toast';
 

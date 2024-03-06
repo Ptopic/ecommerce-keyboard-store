@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../pages/ProductList.css';
+import '../../pages/ProductList/ProductList.css';
 
 import { IoMdCheckmark } from 'react-icons/io';
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import './UserChangePassword.css';
-import './UserDetails.css';
-import '../pages/Checkout.css';
+import '../UserDetails/UserDetails.css';
+import '../Checkout/Checkout.css';
 
 // Formik
 import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
@@ -15,12 +15,12 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import InputField from '../components/InputField/InputField';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
 
 import { Link } from 'react-router-dom';
-import { user_request, userRequest } from '../api';
+import { user_request, userRequest } from '../../api';
 
 import { toast, Toaster } from 'react-hot-toast';
 

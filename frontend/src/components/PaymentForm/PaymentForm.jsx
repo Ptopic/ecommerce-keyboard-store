@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Checkout.css';
+import '../../pages/Checkout/Checkout.css';
 
 import {
 	Elements,
@@ -13,11 +13,11 @@ import { useSelector } from 'react-redux';
 import { toast, Toaster } from 'react-hot-toast';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import Button from '../components/Button/Button';
+import Navbar from '../Navbar/Navbar';
+import Button from '../Button/Button';
 
 // Utils
-import { formatPriceDisplay } from '../utils/formatting';
+import { formatPriceDisplay } from '../../utils/formatting';
 
 function PaymentForm() {
 	const stripe = useStripe();

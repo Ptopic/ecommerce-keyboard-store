@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './Checkout.css';
+import '../Checkout/Checkout.css';
 
 import { Elements } from '@stripe/react-stripe-js';
-import PaymentForm from './PaymentForm';
+import PaymentForm from '../../components/PaymentForm/PaymentForm';
 
-import { request } from '../api';
+import { request } from '../../api';
 
 // Redux
 import { useSelector } from 'react-redux';

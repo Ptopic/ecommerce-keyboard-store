@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { login } from '../redux/apiCalls';
+import { login } from '../../redux/apiCalls';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -8,8 +8,8 @@ import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
 // Components
-import Navbar from '../components/Navbar/Navbar';
-import Button from '../components/Button/Button';
+import Navbar from '../../components/Navbar/Navbar';
+import Button from '../../components/Button/Button';
 
 // Icons
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
@@ -18,15 +18,15 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import './Login.css';
 
 // Social login icons
-import facebook from '../assets/socials/facebook.png';
-import twitter from '../assets/socials/twitter.png';
-import google from '../assets/socials/google.png';
-import apple from '../assets/socials/apple.png';
+import facebook from '../../assets/socials/facebook.png';
+import twitter from '../../assets/socials/twitter.png';
+import google from '../../assets/socials/google.png';
+import apple from '../../assets/socials/apple.png';
 
 import { toast, Toaster } from 'react-hot-toast';
 
 import { useNavigate } from 'react-router-dom';
-import InputField from '../components/InputField/InputField';
+import InputField from '../../components/InputField/InputField';
 
 import { useCookies } from 'react-cookie';
 
