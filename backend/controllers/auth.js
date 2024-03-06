@@ -6,33 +6,20 @@ const {
 	mailTransport,
 	generatePasswordResetTemplate,
 } = require('../utils/mail');
-const ResetToken = require('../models/ResetToken');
-const schedule = require('node-schedule');
 
-const deleteTokenJob = (id, time) => {
-	let dateForJob = new Date();
-	let hours = dateForJob.getHours();
-	let minutes = dateForJob.getMinutes() + time;
+const {
+	deleteTokenJob,
+	createResetToken,
+	getResetToken,
+	deleteResetTokenByUserId,
+	generateJwt,
+} = require('../services/auth');
 
-	// If minutes + 10 is more than 60 increase hour by one and minute by 60 - that time
-
-	if (minutes > 60) {
-		let minutesDif = Math.abs(60 - minutes);
-		hours = hours + 1;
-
-		minutes = minutesDif;
-	}
-	let rule = new schedule.RecurrenceRule();
-	rule.hour = hours;
-	rule.minute = minutes;
-	rule.seconds = 0;
-	const job = schedule.scheduleJob(rule, async function () {
-		// Delete auth token
-		await ResetToken.findOneAndDelete({
-			userId: id,
-		});
-	});
-};
+const {
+	getUserByEmail,
+	getUserByUsername,
+	changeUserPassword,
+} = require('../services/users');
 
 exports.forgotPassword = async (req, res) => {
 	const { email } = req.body;
@@ -46,9 +33,8 @@ exports.forgotPassword = async (req, res) => {
 	}
 
 	// Find user by email
-	const user = await User.findOne({
-		email: req.body.email,
-	});
+	let user = await getUserByEmail(email);
+
 	if (!user) {
 		return res.status(400).send({
 			success: false,
@@ -61,16 +47,12 @@ exports.forgotPassword = async (req, res) => {
 
 	// Save token to db
 	try {
-		const newToken = new ResetToken({
-			userId: user._id,
-			token: token,
-		});
-		const savedToken = await newToken.save();
+		await createResetToken(user._id, token);
 	} catch (error) {
 		console.log(error);
 	}
-	// Send password reset email
 
+	// Send password reset email
 	const mailOptions = {
 		from: 'email@email.com',
 		to: user.email,
@@ -96,35 +78,29 @@ exports.verifyToken = async (req, res, next) => {
 	const { tokenValue, id } = req.query;
 	try {
 		// Get token from db
-		const foundToken = await ResetToken.findOne({
-			token: tokenValue,
-			userId: id,
-		});
+		const foundToken = await getResetToken(tokenValue, id);
 		if (!foundToken) {
 			return res.status(400).send({ success: false, error: 'Token not found' });
 		}
 		next();
 	} catch (error) {
+		console.log(error);
 		return res.status(500).send({ success: false, error: error });
 	}
 };
 
 exports.resetPassword = async (req, res) => {
+	const { id } = req.query;
 	// Change user password
 	try {
 		// Encrypt password
 		let encryptedPassword = await bcrypt.hash(req.body.password, 8);
 
-		await User.findByIdAndUpdate(
-			{ _id: req.query.id },
-			{ password: encryptedPassword },
-			{ new: true }
-		);
-
+		// Change user password
+		await changeUserPassword(id, encryptedPassword);
 		// Delete auth token
-		await ResetToken.findOneAndDelete({
-			userId: req.query.id,
-		});
+		await deleteResetTokenByUserId(id);
+
 		res.status(201).send({ success: true, message: 'Password changed.' });
 	} catch (error) {
 		console.log(error);
@@ -133,16 +109,25 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
+	const { firstName, lastName, username, email, password } = req.body;
+
+	if (!firstName || !lastName || !username || !email || !password) {
+		return res
+			.status(500)
+			.send({ success: false, error: 'Some user information is missing!' });
+	}
+
 	const newUser = new User({
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		username: req.body.username,
-		email: req.body.email,
-		password: await bcrypt.hash(req.body.password, 8),
+		firstName: firstName,
+		lastName: lastName,
+		username: username,
+		email: email,
+		password: await bcrypt.hash(password, 8),
 	});
 
 	// Check if user with that username existst
-	const checkUsername = await User.findOne({ username: req.body.username });
+	const checkUsername = await getUserByUsername(username);
+
 	if (checkUsername)
 		return res.status(400).send({
 			success: false,
@@ -150,57 +135,36 @@ exports.register = async (req, res) => {
 		});
 
 	// Check if user with that email exists
-	const checkEmail = await User.findOne({
-		email: req.body.email,
-	});
+	const checkEmail = await getUserByEmail(email);
+
 	if (checkEmail)
 		return res.status(400).send({
 			success: false,
 			error: 'User with that email already exists.',
 		});
 
-	if (
-		!req.body.firstName ||
-		!req.body.lastName ||
-		!req.body.username ||
-		!req.body.email ||
-		!req.body.password
-	) {
-		return res
-			.status(500)
-			.send({ success: false, error: 'Some user information is missing!' });
-	}
-
 	// Generate access token (same when login so that user is automaticly logged in when registered)
 
-	const accessToken = jwt.sign(
-		{
-			id: newUser._id,
-		},
-		process.env.JWT_SECRET,
-		{ expiresIn: '2d' }
-	);
+	const accessToken = await generateJwt(newUser._id);
 
 	try {
 		const savedUser = await newUser.save();
 		return res
 			.status(201)
 			.send({ success: true, data: savedUser, token: accessToken });
-	} catch (err) {
-		return res.status(500).send({ success: false, error: err });
+	} catch (error) {
+		return res.status(500).send({ success: false, error: error });
 	}
 };
 
 exports.login = async (req, res) => {
+	const { email, password } = req.body;
 	try {
-		console.log(req.body);
-		const user = await User.findOne({ email: req.body.email });
-		console.log(user);
+		const user = await getUserByEmail(email);
+
 		if (!user) {
 			return res.status(401).send({ success: false, error: 'User not found.' });
 		}
-
-		console.log(user);
 
 		const isPasswordCorrect = bcrypt.compareSync(
 			req.body.password,
@@ -211,20 +175,16 @@ exports.login = async (req, res) => {
 			return res.status(401).send({ success: false, error: 'Wrong password.' });
 		}
 
-		const accessToken = jwt.sign(
-			{
-				id: user._id,
-				isAdmin: user.isAdmin,
-			},
-			process.env.JWT_SECRET,
-			{ expiresIn: '2d' }
-		);
+		const accessToken = await generateJwt(user._id, user.isAdmin);
+
+		// Hide password in response
 		const { password, ...otherInfo } = user._doc;
 
 		return res
 			.status(200)
 			.send({ success: true, data: otherInfo, token: accessToken });
-	} catch (err) {
+	} catch (error) {
+		console.log(error);
 		return res.status(500).send({ success: false, error: err });
 	}
 };
