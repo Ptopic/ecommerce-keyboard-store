@@ -126,6 +126,7 @@ const Products = () => {
 	return (
 		<>
 			<div className="products-list">
+				<h1 className="title">Products</h1>
 				<InputField
 					type={'text'}
 					name={'search'}

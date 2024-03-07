@@ -139,6 +139,7 @@ const Orders = () => {
 	return (
 		<>
 			<div className="orders-container">
+				<h1 className="title">Orders</h1>
 				<InputField
 					type={'text'}
 					name={'search'}
