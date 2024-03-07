@@ -143,7 +143,6 @@ exports.getAllOrders = async (req, res) => {
 			month,
 			day
 		);
-
 		return res.status(200).send({
 			success: true,
 			data: orders,

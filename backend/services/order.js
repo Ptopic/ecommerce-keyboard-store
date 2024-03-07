@@ -100,7 +100,7 @@ exports.getOrders = async (
 	day
 ) => {
 	let orders;
-	if (page && pageSize && sort && direction && search != '') {
+	if (page && pageSize && sort && direction && search && search != '') {
 		orders = await Order.find({
 			$or: [
 				{ orderNumber: { $regex: search, $options: 'i' } },
@@ -118,7 +118,7 @@ exports.getOrders = async (
 			.limit(pageSize)
 			.skip(pageSize * page)
 			.sort([[sort, direction]]);
-	} else if (page && pageSize && search != '') {
+	} else if (page && pageSize && search && search != '') {
 		orders = await Order.find({
 			$or: [
 				{ orderNumber: { $regex: search, $options: 'i' } },
@@ -134,8 +134,9 @@ exports.getOrders = async (
 			],
 		})
 			.limit(pageSize)
-			.skip(pageSize * page);
-	} else if (sort && direction && search != '') {
+			.skip(pageSize * page)
+			.sort([['createdAt', -1]]);
+	} else if (sort && direction && search && search != '') {
 		orders = await Order.find({
 			$or: [
 				{ orderNumber: { $regex: search, $options: 'i' } },
@@ -158,10 +159,12 @@ exports.getOrders = async (
 	} else if (page && pageSize) {
 		orders = await Order.find()
 			.limit(pageSize)
-			.skip(pageSize * page);
+			.skip(pageSize * page)
+			.sort([['createdAt', -1]]);
 	} else if (sort && direction) {
 		orders = await Order.find().sort([[sort, direction]]);
 	} else {
+		console.log('test');
 		orders = await Order.find().sort([['createdAt', -1]]);
 	}
 	return orders;

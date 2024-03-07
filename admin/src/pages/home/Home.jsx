@@ -46,7 +46,7 @@ export default function Home() {
 
 	const getOrdersData = async () => {
 		try {
-			const res = await userRequest.get('/orders/count');
+			const res = await userRequest.get('orders/count');
 			setOrders(res.data.data);
 		} catch (err) {
 			console.log(err);
@@ -55,7 +55,7 @@ export default function Home() {
 
 	const getLatestOrders = async () => {
 		try {
-			const res = await userRequest.get('/orders/?pageSize=4&page=0');
+			const res = await userRequest.get('orders/?pageSize=4&page=0');
 			setLatestOrders(res.data.data);
 		} catch (err) {
 			console.log(err);
