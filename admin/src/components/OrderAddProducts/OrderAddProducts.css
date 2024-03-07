@@ -1,0 +1,18 @@
+.order-add-products-container {
+   border: 2px dashed #ccc;
+   border-radius: 20px;
+   width: 100%;
+   height: auto;
+   margin: 2rem 0;
+   padding: 2rem;
+}
+
+.order-add-products-container .select-products-btn {
+   background: var(--primary500);
+   width: fit-content;
+   padding: 2rem;
+   border: none;
+   outline: none;
+   color: white;
+   margin-top: 2rem;
+}
