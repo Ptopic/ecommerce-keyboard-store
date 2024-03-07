@@ -117,6 +117,7 @@ function Categories() {
 	return (
 		<>
 			<div className="categories-list">
+				<h1 className="title">Categories</h1>
 				<InputField
 					type={'text'}
 					name={'search'}

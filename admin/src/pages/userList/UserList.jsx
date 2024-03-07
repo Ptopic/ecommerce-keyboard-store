@@ -118,6 +118,7 @@ export default function UserList() {
 	return (
 		<>
 			<div className="user-list">
+				<h1 className="title">Users</h1>
 				<InputField
 					type={'text'}
 					name={'search'}
