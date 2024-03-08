@@ -5,9 +5,12 @@ import './OrderAddProducts.css';
 
 // Icons
 import { IoClose } from 'react-icons/io5';
+import SelectOrderProductsModal from '../SelectOrderProductsModal/SelectOrderProductsModal';
 
 const OrderAddProducts = () => {
 	const [orderProducts, setOrderProducts] = useState([]);
+	const [isAddProductsModalVisible, setIsAddOrderProductsModalVisible] =
+		useState(false);
 
 	const removeOrderProduct = (e, id) => {
 		e.preventDefault();
@@ -18,11 +21,19 @@ const OrderAddProducts = () => {
 		setOrderProducts(filteredOrderProducts);
 	};
 
+	const toggleAddProductsModal = () => {
+		setIsAddOrderProductsModalVisible(!isAddProductsModalVisible);
+	};
+
 	return (
 		<div className="order-add-products-container">
 			<p>Select order products</p>
 
-			<button type="button" className="select-products-btn">
+			<button
+				type="button"
+				className="select-products-btn"
+				onClick={() => toggleAddProductsModal()}
+			>
 				Select products
 			</button>
 
@@ -42,6 +53,11 @@ const OrderAddProducts = () => {
 					);
 				})}
 			</div>
+			{isAddProductsModalVisible && (
+				<SelectOrderProductsModal
+					toggleAddProductsModal={toggleAddProductsModal}
+				/>
+			)}
 		</div>
 	);
 };

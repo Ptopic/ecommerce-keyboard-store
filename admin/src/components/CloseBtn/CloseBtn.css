@@ -1,0 +1,20 @@
+.close-btn-component {
+    border: none;
+    background-color: var(--error-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    padding: .6rem;
+    color: var(--error-text);
+    transition: .4s all ease;
+    transform: scale(1.5);
+}
+
+.close-btn-component>svg {
+    font-size: 3rem;
+}
+
+.close-btn-component:hover {
+    background-color: var(--primary200);
+    transition: .4s all ease;
+}
