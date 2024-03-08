@@ -10,3 +10,15 @@
 .order-form h2:not(:first-child) {
    margin-top: 2rem;
 }
+
+.checkout-form.shipping {
+   margin-bottom: 2rem;
+}
+
+.select-container.order-status {
+   margin-bottom: 4rem;
+}
+
+.select-container.order-status select {
+   padding: 0 1rem;
+}

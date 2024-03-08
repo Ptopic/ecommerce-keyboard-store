@@ -263,6 +263,7 @@ exports.createOrder = async (orderData) => {
 		oib,
 		products,
 		amount,
+		status,
 		billingDetails,
 		shippingDetails,
 	} = orderData;
@@ -276,7 +277,7 @@ exports.createOrder = async (orderData) => {
 		amount: amount,
 		shippingInfo: shippingDetails,
 		billingInfo: billingDetails,
-		status: 'Pending',
+		status: status,
 		orderNumber: orderNumber,
 		tvrtka: tvrtka,
 		tvrtkaDostava: tvrtkaDostava,
