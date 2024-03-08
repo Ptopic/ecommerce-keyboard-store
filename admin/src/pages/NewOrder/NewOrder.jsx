@@ -122,6 +122,7 @@ const NewOrder = () => {
 		zip2: '',
 		adresa2: '',
 		telefon2: '',
+		status: 'Paid',
 	};
 
 	const formik = useFormik({
@@ -188,6 +189,7 @@ const NewOrder = () => {
 				tvrtkaDostava,
 				oib,
 				amount: amount,
+				status: formik.values.status,
 				products: [...orderProductsRedux.orderProducts],
 			});
 
@@ -600,7 +602,7 @@ const NewOrder = () => {
 								)}
 								{/* ----- Desktop details form dostava ----- */}
 								{dostava && (
-									<div className="checkout-form">
+									<div className="checkout-form shipping">
 										{r1 && (
 											<>
 												<InputField
@@ -704,6 +706,28 @@ const NewOrder = () => {
 							<div className="seperator-line"></div>
 							<OrderAddProducts />
 						</div>
+
+						<div className="select-container order-status">
+							<p>Select Order Status:</p>
+							<select
+								placeholder="Role *"
+								as="select"
+								name="isAdmin"
+								value={formik.values.status}
+								onChange={(e) => {
+									formik.setFieldValue('status', e.target.value);
+								}}
+								onBlur={formik.handleBlur}
+							>
+								<option value={'Paid'}>Paid</option>
+								<option value={'Packing'}>Packing</option>
+								<option value={'Delivering'}>Delivering</option>
+								<option value={'Delivered'}>Delivered</option>
+							</select>
+						</div>
+						{formik.errors.isAdmin && formik.touched.isAdmin ? (
+							<div className="error">{formik.errors.isAdmin}</div>
+						) : null}
 						<div>
 							<Button
 								type="submit"
