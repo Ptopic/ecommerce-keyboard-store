@@ -33,7 +33,7 @@ function Order() {
 		});
 		setOrder(res.data.data[0]);
 
-		getAddressCordinates(res.data.data[0]);
+		// getAddressCordinates(res.data.data[0]);
 	};
 
 	const getAddressCordinates = async (order) => {
@@ -73,9 +73,7 @@ function Order() {
 					</div>
 
 					<div className="map-container-box">
-						{cordinates && (
-							<CustomMap lat={cordinates[0]} lng={cordinates[1]} />
-						)}
+						<CustomMap lat={43.51597769437966} lng={16.44454179125724} />
 					</div>
 
 					<div className="box-map-content">

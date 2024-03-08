@@ -128,6 +128,8 @@ const ConfiguratorModal = ({
 
 			let data = res.data;
 
+			console.log(data);
+
 			setProducts(data.data);
 			setTotalPages(data.totalPages);
 		} catch (error) {
@@ -163,8 +165,8 @@ const ConfiguratorModal = ({
 
 		setActiveFilters(updatedFilters);
 
-		// Trigger filters re render
-		setFilters([...filters]);
+		// // Trigger filters re render
+		// setFilters([...filters]);
 
 		// Get new products
 		getProducts();
@@ -209,7 +211,7 @@ const ConfiguratorModal = ({
 		window.scrollTo(0, 0);
 		setLoading(true);
 
-		getProducts(true);
+		getProducts();
 		getMinMaxPrices();
 
 		// Cache filters
@@ -217,19 +219,37 @@ const ConfiguratorModal = ({
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
-		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-			isCategoryFiltersCached = reduxFilters?.filters.map((filter) => {
-				return { ...filter };
-			});
+		// Check if filter object with category name is present
+		let isFilterPresent = false;
+		for (let reduxFilter of reduxFilters.filters) {
+			if (categoryName == Object.keys(reduxFilter)) {
+				isFilterPresent = true;
+			}
 		}
 
-		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
-			isCategoryActiveFiltersCached = reduxFilters?.activeFilters.map(
-				(filter) => {
+		if (isFilterPresent) {
+			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+				isCategoryFiltersCached = reduxFilters?.filters.map((filter) => {
 					return { ...filter };
-				}
-			);
+				});
+			}
+
+			if (
+				reduxFilters?.activeFilters &&
+				reduxFilters.activeFilters.length > 0
+			) {
+				isCategoryActiveFiltersCached = reduxFilters?.activeFilters.map(
+					(filter) => {
+						console.log();
+						return Object.keys(filter)[0];
+					}
+				);
+
+				console.log(isCategoryActiveFiltersCached);
+			}
 		}
+
+		console.log(isCategoryFiltersCached);
 
 		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
 			generateFilters(
@@ -247,11 +267,12 @@ const ConfiguratorModal = ({
 							activeFilters: res?.activeFilters,
 						})
 					);
-					console.log(res.filters);
 				})
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
+
+			console.log(isCategoryActiveFiltersCached);
 
 			generateFilters(
 				categoryName,
@@ -264,34 +285,34 @@ const ConfiguratorModal = ({
 		setLoading(false);
 	}, []);
 
-	// Get new prices with useMemo only when activeFilters change
-	useMemo(() => {
-		let constraints = configuratorModalValues['Constraints'];
-		let constraintsArray = Array.of(Object.keys(constraints))[0];
+	// // Get new prices with useMemo only when activeFilters change
+	// useMemo(() => {
+	// 	let constraints = configuratorModalValues['Constraints'];
+	// 	let constraintsArray = Array.of(Object.keys(constraints))[0];
 
-		let updatedFilters = activeFilters.map((filter) => {
-			return { ...filter };
-		});
+	// 	let updatedFilters = activeFilters.map((filter) => {
+	// 		return { ...filter };
+	// 	});
 
-		for (let i = 0; i < constraintsArray.length; i++) {
-			for (let j = 0; j < activeFilters.length; j++) {
-				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-					activeFilters[j][constraintsArray[i]] =
-						constraints[constraintsArray[i]];
-				}
-			}
-		}
+	// 	for (let i = 0; i < constraintsArray.length; i++) {
+	// 		for (let j = 0; j < activeFilters.length; j++) {
+	// 			if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
+	// 				activeFilters[j][constraintsArray[i]] =
+	// 					constraints[constraintsArray[i]];
+	// 			}
+	// 		}
+	// 	}
 
-		getMinMaxPrices();
-		regenerateFilters(
-			categoryName,
-			activeFilters,
-			categories,
-			setFilters,
-			setActiveFilters,
-			constraints
-		);
-	}, [filters]);
+	// 	getMinMaxPrices();
+	// 	regenerateFilters(
+	// 		categoryName,
+	// 		activeFilters,
+	// 		categories,
+	// 		setFilters,
+	// 		setActiveFilters,
+	// 		constraints
+	// 	);
+	// }, [filters]);
 
 	useEffect(() => {
 		getProducts();

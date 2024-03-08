@@ -16,16 +16,17 @@ import { userRequest } from '../../api';
 
 import { Link } from 'react-router-dom';
 import OrderProductsTable from '../OrderProductsTable/OrderProductsTable';
+import PaginationControls from '../PaginationControls/PaginationControls';
 
 const SelectOrderProductsModal = ({ toggleAddProductsModal }) => {
 	const [products, setProducts] = useState(null);
 
 	const [page, setPage] = useState(0);
-	const pageDisplay = Number(page) + 1;
+	const [totalPages, setTotalPages] = useState(0);
 	const pageSize = 5;
 
 	const [searchInputValue, setSearchInputValue] = useState('');
-	const [search, setSearch] = useState('');
+	const [search, setSearch] = useState(null);
 
 	const getProducts = async () => {
 		const res = await userRequest.get('/products/admin', {
@@ -38,6 +39,8 @@ const SelectOrderProductsModal = ({ toggleAddProductsModal }) => {
 
 		let productsData = res.data.data;
 
+		setTotalPages(res.data.totalPages - 1);
+
 		setProducts(productsData);
 	};
 
@@ -46,10 +49,12 @@ const SelectOrderProductsModal = ({ toggleAddProductsModal }) => {
 	}, []);
 
 	useEffect(() => {
-		if (search && search != '') {
-			getProducts();
-		}
+		search != null && getProducts();
 	}, [search]);
+
+	useEffect(() => {
+		page != null && getProducts();
+	}, [page]);
 
 	return (
 		<div className="modal-overlay">
@@ -76,8 +81,17 @@ const SelectOrderProductsModal = ({ toggleAddProductsModal }) => {
 					<CloseBtn handleClose={toggleAddProductsModal} />
 				</div>
 				<div className="select-order-products-modal-content">
-					<OrderProductsTable data={products} />
+					<OrderProductsTable
+						products={products}
+						toggleAddProductsModal={toggleAddProductsModal}
+					/>
 				</div>
+				<PaginationControls
+					state={true}
+					page={page}
+					setPage={setPage}
+					totalPages={totalPages}
+				/>
 			</div>
 		</div>
 	);

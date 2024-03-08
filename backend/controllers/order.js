@@ -37,6 +37,7 @@ exports.createOrder = async (req, res) => {
 		const savedOrder = await createOrder(req.body);
 		return res.status(200).send({ success: true, data: savedOrder });
 	} catch (err) {
+		console.log(err);
 		return res.status(500).send({ success: false, error: err });
 	}
 };

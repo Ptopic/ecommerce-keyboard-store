@@ -7,18 +7,39 @@ import './OrderAddProducts.css';
 import { IoClose } from 'react-icons/io5';
 import SelectOrderProductsModal from '../SelectOrderProductsModal/SelectOrderProductsModal';
 
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import {
+	removeProductFromOrder,
+	incrementProductQuantity,
+	decrementProductQuantity,
+} from '../../redux/orderProductsRedux';
+
 const OrderAddProducts = () => {
-	const [orderProducts, setOrderProducts] = useState([]);
+	const dispatch = useDispatch();
+	// Get redux order products state
+	const orderProductsRedux = useSelector((state) => state.orderProducts);
+
 	const [isAddProductsModalVisible, setIsAddOrderProductsModalVisible] =
 		useState(false);
 
-	const removeOrderProduct = (e, id) => {
-		e.preventDefault();
-		const filteredOrderProducts = orderProducts.filter(
-			(_, index) => index != id
+	const removeOrderProduct = (id, price, quantity) => {
+		// Remove order product from redux store
+		dispatch(
+			removeProductFromOrder({ id: id, price: price, quantity: quantity })
 		);
+	};
 
-		setOrderProducts(filteredOrderProducts);
+	const handleIncrementProductQuantity = (id, price, quantity) => {
+		dispatch(
+			incrementProductQuantity({ id: id, price: price, quantity: quantity })
+		);
+	};
+
+	const handleDecrementProductQuantity = (id, price, quantity) => {
+		dispatch(
+			decrementProductQuantity({ id: id, price: price, quantity: quantity })
+		);
 	};
 
 	const toggleAddProductsModal = () => {
@@ -38,17 +59,53 @@ const OrderAddProducts = () => {
 			</button>
 
 			<div className="order-products-container">
-				{orderProducts.map((orderProduct, id) => {
+				{orderProductsRedux.orderProducts.map((orderProduct, id) => {
 					return (
 						<div className="order-product" key={id}>
 							<button
 								type="button"
 								className="close-img-btn"
-								onClick={(e) => removeOrderProduct(e, id)}
+								onClick={() =>
+									removeOrderProduct(
+										id,
+										orderProduct.price,
+										orderProduct.quantity
+									)
+								}
 							>
 								<IoClose />
 							</button>
-							<img src={orderProduct.images[0].url} alt="Product image" />
+							<img
+								src={orderProduct.originalProduct.images[0].url}
+								alt="Product image"
+							/>
+							<div className="order-product-quantity">
+								<button
+									type="button"
+									onClick={() =>
+										handleDecrementProductQuantity(
+											id,
+											orderProduct.price,
+											orderProduct.quantity
+										)
+									}
+								>
+									-
+								</button>
+								<p>{orderProduct.quantity}</p>
+								<button
+									type="button"
+									onClick={() =>
+										handleIncrementProductQuantity(
+											id,
+											orderProduct.price,
+											orderProduct.quantity
+										)
+									}
+								>
+									+
+								</button>
+							</div>
 						</div>
 					);
 				})}
@@ -58,6 +115,9 @@ const OrderAddProducts = () => {
 					toggleAddProductsModal={toggleAddProductsModal}
 				/>
 			)}
+			<p>
+				Total: <span>€{orderProductsRedux.totalPrice}</span>
+			</p>
 		</div>
 	);
 };

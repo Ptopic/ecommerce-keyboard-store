@@ -3,6 +3,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import userReducer from './userRedux';
 import categoriesRedux from './categoriesRedux';
 import filtersRedux from './filtersRedux';
+import orderProductsRedux from './orderProductsRedux';
 
 import {
 	persistStore,
@@ -20,12 +21,14 @@ const persistConfig = {
 	key: 'root',
 	version: 1,
 	storage: storageSession,
+	blacklist: ['orderProducts'],
 };
 
 const rootReducer = combineReducers({
 	user: userReducer,
 	categories: categoriesRedux,
 	filters: filtersRedux,
+	orderProducts: orderProductsRedux,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

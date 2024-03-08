@@ -9,6 +9,7 @@ import { IoMdCheckmark } from 'react-icons/io';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
+import { resetState } from '../../redux/orderProductsRedux';
 
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
@@ -27,6 +28,8 @@ import { useSearchParams } from 'react-router-dom';
 import OrderAddProducts from '../../components/OrderAddProducts/OrderAddProducts';
 
 const NewOrder = () => {
+	const orderProductsRedux = useSelector((state) => state.orderProducts);
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [r1, setR1] = useState(false);
@@ -132,9 +135,75 @@ const NewOrder = () => {
 				? validationSchemaWithDostava
 				: validationSchema,
 		onSubmit: async (values, formikActions) => {
-			goToCheckout(values, formikActions);
+			addNewOrder(values, formikActions);
 		},
 	});
+
+	const addNewOrder = async (values, formikActions) => {
+		// If amount is lower than 20 add 3 € shipping
+		let amount = orderProductsRedux.totalPrice;
+		if (amount < 20) {
+			amount = amount + 3;
+		}
+
+		const billingDetails = {
+			name: values.firstName + ' ' + values.lastName,
+			email: values.email,
+			phone: values.telefon,
+			address: {
+				city: values.mjesto,
+				country: 'HR',
+				line1: values.adresa,
+				line2: '',
+				postal_code: values.zip,
+			},
+		};
+
+		const shippingDetails = {
+			name: dostava
+				? values.ime2 + ' ' + values.prezime2
+				: values.firstName + ' ' + values.lastName,
+			address: {
+				city: dostava ? values.mjesto2 : values.mjesto,
+				country: 'HR',
+				line1: dostava ? values.adresa2 : values.adresa,
+				line2: '',
+				postal_code: dostava ? values.zip2 : values.zip,
+			},
+			phone: dostava ? values.telefon2 : values.telefon,
+			carrier: 'DPD',
+			tracking_number: '123456789',
+		};
+
+		const tvrtka = values.tvrtka;
+		const tvrtkaDostava = dostava ? values.tvrtka2 : values.tvrtka;
+		const oib = values.oib;
+
+		try {
+			const res = await userRequest.post('/orders', {
+				...values,
+				billingDetails,
+				shippingDetails,
+				tvrtka,
+				tvrtkaDostava,
+				oib,
+				amount: amount,
+				products: [...orderProductsRedux.orderProducts],
+			});
+
+			formikActions.resetForm();
+
+			// Reset orderProducts formik
+			dispatch(resetState());
+			toast.success('Order created succesfully');
+		} catch (error) {
+			toast.error(
+				error.response.data.error
+					? error.response.data.error
+					: 'Something went wrong'
+			);
+		}
+	};
 
 	return (
 		<div className="form">
