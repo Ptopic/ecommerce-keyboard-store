@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const { mailTransport, generateReceiptAdmin } = require('../utils/mail');
 
 exports.splitSearchDate = (search) => {
 	let splittedDate = search ? search.split('.') : null;
@@ -253,8 +254,56 @@ exports.getUserOrders = async (
 };
 
 exports.createOrder = async (orderData) => {
-	const newOrder = new Order(orderData);
+	const {
+		email,
+		firstName,
+		lastName,
+		tvrtka,
+		tvrtkaDostava,
+		oib,
+		products,
+		amount,
+		billingDetails,
+		shippingDetails,
+	} = orderData;
+
+	var orderNumber = Math.floor(Math.random() * 9000000000) + 1000000000;
+
+	const newOrder = new Order({
+		name: firstName + ' ' + lastName,
+		receiptLink: '',
+		products: products,
+		amount: amount,
+		shippingInfo: shippingDetails,
+		billingInfo: billingDetails,
+		status: 'Pending',
+		orderNumber: orderNumber,
+		tvrtka: tvrtka,
+		tvrtkaDostava: tvrtkaDostava,
+		oib: oib,
+	});
 	const savedOrder = await newOrder.save();
+
+	// Create and send reciept to customer (Only for live mode not test mode until then send invoice using nodemailer)
+	const mailOptions = {
+		from: 'email@email.com',
+		to: email,
+		subject: 'Switchy - Order receipt',
+		html: generateReceiptAdmin(
+			'',
+			savedOrder._id,
+			orderNumber,
+			amount,
+			products
+		),
+	};
+	mailTransport().sendMail(mailOptions, function (err, info) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json({ success: true, message: 'Email sent!' });
+		}
+	});
 	return savedOrder;
 };
 

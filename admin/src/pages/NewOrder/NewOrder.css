@@ -1,0 +1,12 @@
+.order-form .checkout-form {
+   flex: 4;
+   padding: 0;
+}
+
+.order-form .input-container {
+   margin-top: 2rem;
+}
+
+.order-form h2:not(:first-child) {
+   margin-top: 2rem;
+}

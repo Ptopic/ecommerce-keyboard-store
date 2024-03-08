@@ -18,13 +18,6 @@
     overflow: hidden;
 }
 
-/* .image-zoom-modal-container img {
-    width: 80%;
-    height: 80%;
-    object-fit: cover;
-    margin-left: 36px;
-} */
-
 .image-zoom-close-overlay {
     position: relative;
     right: 4rem;

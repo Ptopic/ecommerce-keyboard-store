@@ -1,0 +1,55 @@
+.order-add-products-container {
+   border: 2px dashed #ccc;
+   border-radius: 20px;
+   width: 100%;
+   height: auto;
+   margin: 2rem 0;
+   padding: 2rem;
+}
+
+.order-add-products-container .select-products-btn {
+   background: var(--primary500);
+   width: fit-content;
+   padding: 2rem;
+   border: none;
+   outline: none;
+   color: white;
+   margin-top: 2rem;
+}
+
+.order-products-container {
+   margin-top: 10px;
+   display: flex;
+   flex-wrap: wrap;
+   overflow-y: scroll;
+   height: 200px;
+}
+
+.order-products-container img {
+   width: 150px;
+   margin-bottom: 10px;
+   margin-right: 10px;
+   vertical-align: middle;
+}
+
+.order-product {
+   position: relative;
+   margin-right: 2rem;
+   margin-top: 1rem;
+}
+
+.order-product-quantity {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.order-product-quantity p {
+   padding: 0 2rem;
+}
+
+.order-product-quantity button {
+   margin: 0;
+   border: 1px solid black;
+   outline: none;
+}

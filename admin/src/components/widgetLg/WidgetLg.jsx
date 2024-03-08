@@ -5,6 +5,9 @@ import './widgetLg.css';
 // Images
 import defaultUserAvatar from '../../assets/images/user.jpg';
 
+// Utils
+import { formatPriceDisplay } from '../../../../frontend/src/utils/formatting';
+
 export default function WidgetLg({ data }) {
 	let newDates = [];
 	const Button = ({ type, text }) => {
@@ -67,7 +70,9 @@ export default function WidgetLg({ data }) {
 									<span className="widgetLgName">{order.name}</span>
 								</td>
 								<td className="widgetLgDate">{newDates[index]}</td>
-								<td className="widgetLgAmount">€{order.amount}</td>
+								<td className="widgetLgAmount">
+									€{formatPriceDisplay(order.amount)}
+								</td>
 								<td className="widgetLgStatus">
 									{order.status != 'Declined' ? (
 										<Button type="Approved" text={order.status} />

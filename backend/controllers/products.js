@@ -408,6 +408,10 @@ exports.getAllProductsByCategory = async (req, res) => {
 exports.getAllProductsForAdminPage = async (req, res) => {
 	const { sort, direction, page, pageSize, search } = req.query;
 
+	console.log(req.query);
+
+	console.log(page);
+
 	// Get total number of orders
 	let totalProducts = await getTotalProducts(search);
 

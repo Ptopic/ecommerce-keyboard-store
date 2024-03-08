@@ -1,0 +1,13 @@
+.modal.select-products {
+    width: 90%;
+    height: 90%;
+    padding: 1rem;
+}
+
+.select-order-products-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.select-order-products-modal-content {}
