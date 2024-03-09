@@ -81,19 +81,14 @@ export const generateFilters = async (
 	activeFilters,
 	categories,
 	setFilters,
-	setActiveFilters,
-	constraints
+	setActiveFilters
 ) => {
 	// Get all products by category to generate filters for it
 	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
 			activeFilters: activeFilters != [] ? activeFilters : null,
-			// constraints:
-			// 	Array.from(Object.keys(constraints)).length > 0 ? constraints : null,
 		},
 	});
-
-	console.log(allProductsRes);
 
 	let productsData = allProductsRes.data.data;
 
@@ -174,15 +169,12 @@ export const regenerateFilters = async (
 	activeFilters,
 	categories,
 	setFilters,
-	setActiveFilters,
-	constraints
+	setActiveFilters
 ) => {
 	// Get all products by category to generate filters for it
 	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
 			activeFilters: activeFilters != [] ? activeFilters : null,
-			// constraints:
-			// 	Array.from(Object.keys(constraints)).length > 0 ? constraints : null,
 		},
 	});
 

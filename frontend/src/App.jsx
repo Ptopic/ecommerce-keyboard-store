@@ -43,7 +43,6 @@ const App = () => {
 	const [cookies, setCookie] = useCookies();
 	const [stripePromise, setStripePromise] = useState(null);
 	const user = useSelector((state) => state.user.currentUser);
-	console.log(user);
 
 	const dispatch = useDispatch();
 

@@ -8,18 +8,14 @@ const filtersSlice = createSlice({
 	},
 	reducers: {
 		addFilter: (state, action) => {
-			const objFilters = {};
-			objFilters[action.payload.categoryName] = action.payload.filters;
+			const { categoryName, filters, activeFilters } = action.payload;
 
-			const objActiveFilters = {};
-			objActiveFilters[action.payload.categoryName] =
-				action.payload.activeFilters;
-
-			state.filters.push(objFilters);
-			state.activeFilters.push(objActiveFilters);
+			// Use immer to update the state immutably
+			state.filters.push({ [categoryName]: filters });
+			state.activeFilters.push({ [categoryName]: activeFilters });
 		},
 		getFilter: (state, action) => {
-			return state.data;
+			return state.initialState;
 		},
 		resetFilters: (state) => {
 			state.filters = [];

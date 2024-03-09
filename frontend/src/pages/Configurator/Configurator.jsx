@@ -95,15 +95,6 @@ const Configurator = () => {
 					toast.error('Quantity cannot be greater than stock');
 					setIsLoading(false);
 					return;
-				} else if (productAlreadyInCart) {
-					dispatch(
-						incrementProductQuantity({
-							id: product._id,
-							product,
-						})
-					);
-					// Open cart when product is added
-					dispatch(openCart());
 				} else {
 					dispatch(addProduct({ ...product, quantity }));
 					// Open cart when product is added
