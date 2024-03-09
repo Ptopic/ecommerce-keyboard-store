@@ -95,6 +95,7 @@ function Order() {
 
 							<p className="header">Shipping address</p>
 							<div>
+								<p>{order?.tvrtkaDostava}</p>
 								<p>{order?.shippingInfo?.name}</p>
 								<p>{order?.shippingInfo?.address?.line1}</p>
 								<p>
@@ -116,11 +117,15 @@ function Order() {
 								</p>
 								<p>Croatia</p>
 							</div>
-							<p className="header">Tvrtka</p>
-							<div>
-								<p>{order?.tvrtkaDostava}</p>
-								<p>{order?.oib}</p>
-							</div>
+							{order?.tvrtka && (
+								<>
+									<p className="header">Tvrtka</p>
+									<div>
+										<p>{order?.tvrtka}</p>
+										<p>{order?.oib}</p>
+									</div>
+								</>
+							)}
 						</div>
 					</div>
 				</div>

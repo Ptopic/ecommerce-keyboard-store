@@ -9,26 +9,29 @@ import { IoMdCheckmark } from 'react-icons/io';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { resetState } from '../../redux/orderProductsRedux';
+import { resetState, setState } from '../../redux/orderProductsRedux';
 
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
 import InputField from '../../../../frontend/src/components/InputField/InputField';
 
 // Styles
-import './NewOrder.css';
+import './EditOrder.css';
+import '../NewOrder/NewOrder.css';
 import '../../../../frontend/src/pages/Checkout/Checkout.css';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { request, userRequest } from '../../api';
 
 import { useSearchParams } from 'react-router-dom';
 import OrderAddProducts from '../../components/OrderAddProducts/OrderAddProducts';
 
-const NewOrder = () => {
+const EditOrder = () => {
 	const orderProductsRedux = useSelector((state) => state.orderProducts);
+
+	const [order, setOrder] = useState(null);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -36,9 +39,11 @@ const NewOrder = () => {
 	const [dostava, setDostava] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const [searchParams, setSearchParams] = useSearchParams();
+	const location = useLocation();
+	const id = location.pathname.split('/edit/')[1];
 
 	// Query params from url
+	const [searchParams, setSearchParams] = useSearchParams();
 	const page = searchParams ? searchParams.get('page') : null;
 	const pageSize = searchParams ? searchParams.get('pageSize') : null;
 
@@ -133,11 +138,11 @@ const NewOrder = () => {
 				? validationSchemaWithDostava
 				: validationSchema,
 		onSubmit: async (values, formikActions) => {
-			addNewOrder(values, formikActions);
+			editOrder(values, formikActions);
 		},
 	});
 
-	const addNewOrder = async (values, formikActions) => {
+	const editOrder = async (values, formikActions) => {
 		// If amount is lower than 20 add 3 € shipping
 		let amount = orderProductsRedux.totalPrice;
 		if (amount < 20) {
@@ -178,7 +183,7 @@ const NewOrder = () => {
 		const oib = values.oib;
 
 		try {
-			const res = await userRequest.post('/orders', {
+			const res = await userRequest.put('/orders/' + order._id, {
 				...values,
 				billingDetails,
 				shippingDetails,
@@ -190,12 +195,89 @@ const NewOrder = () => {
 				products: [...orderProductsRedux.orderProducts],
 			});
 
-			// Reset orderProducts formik
-			formikActions.resetForm();
+			toast.success('Order updated succesfully');
+		} catch (error) {
+			console.log(error);
+			toast.error(
+				error?.response?.data?.error &&
+					Object.keys(error?.response?.data?.error).length < 0
+					? error?.response?.data?.error
+					: 'Something went wrong'
+			);
+		}
+	};
 
-			// Reset order products redux state
-			dispatch(resetState());
-			toast.success('Order created succesfully');
+	const getInitialOrder = async () => {
+		try {
+			const res = await userRequest.get('/orders/getByOrderId', {
+				params: { orderId: id },
+			});
+			let orderData = res.data.data[0];
+			console.log(orderData);
+
+			console.log(orderData.billingInfo);
+
+			// Set form values from order
+			formik.setFieldValue('email', orderData?.billingInfo?.email);
+			formik.setFieldValue(
+				'firstName',
+				orderData?.billingInfo?.name.split(' ')[0]
+			);
+			formik.setFieldValue(
+				'lastName',
+				orderData?.billingInfo?.name.split(' ')[1]
+			);
+			formik.setFieldValue('mjesto', orderData?.billingInfo?.address?.city);
+			formik.setFieldValue('zip', orderData?.billingInfo?.address?.postal_code);
+			formik.setFieldValue('adresa', orderData?.billingInfo?.address?.line1);
+			formik.setFieldValue('telefon', orderData?.billingInfo?.phone);
+
+			// Check if tvrtka exists then set r1
+			if (orderData?.tvrtka != '') {
+				setR1(true);
+				formik.setFieldValue('tvrtka', orderData?.tvrtka);
+				formik.setFieldValue('oib', orderData?.oib);
+			}
+
+			// If tvrtkaDostava is different it means that additional shipping details exist
+			if (
+				orderData?.tvrtkaDostava != '' ||
+				orderData?.shippingInfo?.name != orderData?.billingInfo?.name
+			) {
+				setDostava(true);
+				formik.setFieldValue('tvrtka2', orderData?.tvrtkaDostava);
+				formik.setFieldValue(
+					'ime2',
+					orderData?.shippingInfo?.name.split(' ')[0]
+				);
+				formik.setFieldValue(
+					'prezime2',
+					orderData?.shippingInfo?.name.split(' ')[1]
+				);
+				formik.setFieldValue('mjesto2', orderData?.shippingInfo?.address?.city);
+				formik.setFieldValue(
+					'zip2',
+					orderData?.shippingInfo?.address?.postal_code
+				);
+				formik.setFieldValue(
+					'adresa2',
+					orderData?.shippingInfo?.address?.line1
+				);
+				formik.setFieldValue('telefon2', orderData?.shippingInfo?.phone);
+			}
+
+			// Set order status field
+			formik.setFieldValue('status', orderData?.status);
+
+			dispatch(
+				setState({
+					products: orderData?.products, // Set order redux state to order products
+					totalPrice: orderData?.amount, // Set order redux total to order total
+				})
+			);
+
+			// Set order state
+			setOrder(orderData);
 		} catch (error) {
 			toast.error(
 				error.response.data.error
@@ -205,15 +287,15 @@ const NewOrder = () => {
 		}
 	};
 
-	// Reset redux state on load (when page is changed from edit to add state is persisted)
+	// Get order on load
 	useEffect(() => {
-		dispatch(resetState());
+		getInitialOrder();
 	}, []);
 
 	return (
 		<div className="form">
 			<Toaster />
-			<h1>Add new Order</h1>
+			<h1>Edit Order</h1>
 
 			<div className="box">
 				<h2>Order Information:</h2>
@@ -736,7 +818,7 @@ const NewOrder = () => {
 								type="submit"
 								isLoading={isLoading}
 								width="100%"
-								text="Add new Order"
+								text="Edit Order"
 							/>
 						</div>
 					</form>
@@ -752,4 +834,4 @@ const NewOrder = () => {
 	);
 };
 
-export default NewOrder;
+export default EditOrder;
