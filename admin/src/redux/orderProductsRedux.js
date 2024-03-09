@@ -81,6 +81,10 @@ const orderProductsSlice = createSlice({
 			state.orderProducts = [];
 			state.totalPrice = 0;
 		},
+		setState: (state, action) => {
+			state.orderProducts = action.payload.products;
+			state.totalPrice = action.payload.totalPrice;
+		},
 	},
 });
 
@@ -91,5 +95,6 @@ export const {
 	incrementProductQuantity,
 	decrementProductQuantity,
 	resetState,
+	setState,
 } = orderProductsSlice.actions;
 export default orderProductsSlice.reducer;

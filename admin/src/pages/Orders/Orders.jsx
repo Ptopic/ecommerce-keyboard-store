@@ -161,7 +161,10 @@ const Orders = () => {
 				/>
 
 				<div className="add-new-container">
-					<Link to={`/orders/add`} className="add-btn">
+					<Link
+						to={`/orders/add?page=${page}&pageSize=${pageSize}`}
+						className="add-btn"
+					>
 						Add new Order
 					</Link>
 				</div>
@@ -247,17 +250,7 @@ const Orders = () => {
 									<td>€{formatPriceDisplay(order.amount)}</td>
 									<td className="actions-row">
 										<Link
-											to={`/orders/edit/${
-												order._id
-											}?page=${page}&pageSize=${pageSize}${
-												sort != null ? '&sort=' + sort : ''
-											}${direction != null ? '&direction=' + direction : ''}
-                                    ${
-																			searchTermValue != null
-																				? '&search=' + searchTermValue
-																				: ''
-																		}
-                        `}
+											to={`/orders/edit/${order._id}?page=${page}&pageSize=${pageSize}`}
 											className="action-btn"
 											title="Edit Order"
 										>

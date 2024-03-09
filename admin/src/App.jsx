@@ -27,6 +27,7 @@ import { useCookies } from 'react-cookie';
 import { jwtDecode } from 'jwt-decode';
 import Orders from './pages/Orders/Orders';
 import NewOrder from './pages/NewOrder/NewOrder';
+import EditOrder from './pages/EditOrder/EditOrder';
 
 function App() {
 	const [cookies, setCookie] = useCookies();
@@ -82,6 +83,7 @@ function App() {
 							/> */}
 							<Route exact path="/orders" element={<Orders />} />
 							<Route exact path="/orders/add" element={<NewOrder />} />
+							<Route exact path="/orders/edit/:id" element={<EditOrder />} />
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</div>
