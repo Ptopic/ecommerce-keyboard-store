@@ -20,7 +20,6 @@ const cartSlice = createSlice({
 			(state.products = []), (state.quantity = 0), (state.totalPrice = 0);
 		},
 		addProduct: (state, action) => {
-			let productAlreadyInCart = false;
 			let productInCartId = null;
 			// Check if product is in cart if it is just increment quantity of product
 			for (let i = 0; i < state.products.length; i++) {
@@ -28,8 +27,6 @@ const cartSlice = createSlice({
 					productInCartId = i;
 				}
 			}
-
-			console.log(productAlreadyInCart);
 
 			if (productInCartId != null) {
 				console.log('Increment product quantity');
