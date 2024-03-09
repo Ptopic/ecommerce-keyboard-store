@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 
 const orderProductsSlice = createSlice({
 	name: 'orderProducts',
@@ -8,22 +8,45 @@ const orderProductsSlice = createSlice({
 	},
 	reducers: {
 		addProductToOrder: (state, action) => {
-			// Format product to other orders products format (for displaying in view order page)
-			let productObj = {};
-			productObj['productId'] = action.payload._id;
-			productObj['price'] = action.payload.price;
-			productObj['quantity'] = 1;
-			productObj['originalProduct'] = action.payload;
+			let productInCartId = null;
+			// Check if product is in cart if it is just increment quantity of product
+			if (state.orderProducts.length > 0) {
+				for (let i = 0; i < state.orderProducts.length; i++) {
+					if (state.orderProducts[i].productId === action.payload._id) {
+						productInCartId = i;
+					}
+				}
+			}
 
-			// Push new productObj to orderProducts array
-			state.orderProducts.push(productObj);
-			let priceToAdd = action.payload.price;
-			let tempCartTotal =
-				Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+			console.log(productInCartId);
 
-			// New toFixed(2) state total price
-			let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-			state.totalPrice = newCartTotal;
+			if (productInCartId != null) {
+				state.orderProducts[productInCartId].quantity += 1;
+				let priceToAdd = action.payload.price;
+				let tempCartTotal =
+					Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+
+				// New toFixed(2) state total price
+				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+				state.totalPrice = newCartTotal;
+			} else {
+				// Format product to other orders products format (for displaying in view order page)
+				let productObj = {};
+				productObj['productId'] = action.payload._id;
+				productObj['price'] = action.payload.price;
+				productObj['quantity'] = 1;
+				productObj['originalProduct'] = action.payload;
+
+				// Push new productObj to orderProducts array
+				state.orderProducts.push(productObj);
+				let priceToAdd = action.payload.price;
+				let tempCartTotal =
+					Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+
+				// New toFixed(2) state total price
+				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+				state.totalPrice = newCartTotal;
+			}
 		},
 		removeProductFromOrder: (state, action) => {
 			const filteredOrderProducts = state.orderProducts.filter(

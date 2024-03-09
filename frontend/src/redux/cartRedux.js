@@ -20,15 +20,39 @@ const cartSlice = createSlice({
 			(state.products = []), (state.quantity = 0), (state.totalPrice = 0);
 		},
 		addProduct: (state, action) => {
-			state.quantity += action.payload.quantity;
-			state.products.push(action.payload);
-			let priceToAdd = action.payload.price * action.payload.quantity;
-			let tempCartTotal =
-				Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+			let productInCartId = null;
+			// Check if product is in cart if it is just increment quantity of product
+			for (let i = 0; i < state.products.length; i++) {
+				if (state.products[i]._id === action.payload._id) {
+					console.log(state.products[i]._id === action.payload._id);
+					productInCartId = i;
+				}
+			}
 
-			// New toFixed(2) state total price
-			let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-			state.totalPrice = newCartTotal;
+			console.log(productInCartId);
+
+			if (productInCartId != null) {
+				console.log('Increment product quantity');
+				state.products[productInCartId].quantity += action.payload.quantity;
+				state.quantity += action.payload.quantity;
+				let priceToAdd = action.payload.price * action.payload.quantity;
+				let tempCartTotal =
+					Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+
+				// New toFixed(2) state total price
+				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+				state.totalPrice = newCartTotal;
+			} else {
+				state.quantity += action.payload.quantity;
+				state.products.push(action.payload);
+				let priceToAdd = action.payload.price * action.payload.quantity;
+				let tempCartTotal =
+					Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
+
+				// New toFixed(2) state total price
+				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+				state.totalPrice = newCartTotal;
+			}
 		},
 		removeProduct: (state, action) => {
 			state.quantity -= action.payload.quantity;
