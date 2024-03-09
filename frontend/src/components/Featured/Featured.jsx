@@ -19,24 +19,24 @@ function Featured() {
 					</div>
 				</Link>
 
-				<Link to="/products/best?name=Best+Sellers" className="featured-card">
+				<Link to="/configurator" className="featured-card">
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/DSC01728.jpg?v=1678141076&width=330"
+						src="https://www.jouleperformance.com/media/.renditions/JoulePerformance/LandingPages/Configurator/joule_performance_streaming_pc_config.png"
 						alt=""
 					/>
 					<div>
-						<span>Best Sellers</span>
+						<span>Konfigurator</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
-				<Link to="/products/keyboard?name=Keyboards" className="featured-card">
+				<Link to="/products/Procesori?name=Procesori" className="featured-card">
 					<img
-						src="https://dangkeebs.com/cdn/shop/files/IglooCover_2.jpg?v=1692060598&width=823,https://dangkeebs.com/cdn/shop/files/IglooCover.jpg?v=1692060598&width=823,https://dangkeebs.com/cdn/shop/files/CopyofDSC01883.jpg?v=1692060598&width=823,https://dangkeebs.com/cdn/shop/files/Copyof20230215-DSC01770copy.jpg?v=1692060598&width=823,https://dangkeebs.com/cdn/shop/files/Copyof20230215-DSC01820copy.jpg?v=1692060598&width=823"
+						src="https://www.techspot.com/articles-info/2636/images/2023-02-27-image-15.jpg"
 						alt=""
 					/>
 					<div>
-						<span>Keyboards</span>
+						<span>Procesori</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>

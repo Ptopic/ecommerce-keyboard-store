@@ -26,95 +26,150 @@ function Selection() {
 			<p>Our Products</p>
 
 			<div className="selection-container">
-				<div className="selection-card" ref={sectionRef}>
-					<Link to="/products/keyboard?name=Keyboards">
-						<img
-							src="https://dangkeebs.com/cdn/shop/collections/IMG_0428.jpg?v=1615023959&width=330"
-							alt=""
-						/>
-						<div>
-							<span>Keyboards</span>
-							<AiOutlineArrowRight size={18} />
-						</div>
-					</Link>
-				</div>
-
-				<Link to="/products/macropad?name=Macropads" className="selection-card">
+				<Link
+					to="/products/Procesori?name=Procesori"
+					className="selection-card"
+				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/files/DSC03412_9ba18c22-1b1b-4c2a-a98b-7fd9f98aed20.jpg?v=1692570778&width=823,https://dangkeebs.com/cdn/shop/files/DSC03413_f751a075-404e-45ea-9ee9-fca6f1c6aecb.jpg?v=1692570778&width=823,https://dangkeebs.com/cdn/shop/files/DSC03415_f365d27f-8744-4ec6-9429-93cc4190fc68.jpg?v=1692570778&width=823,https://dangkeebs.com/cdn/shop/files/DSC03320.jpg?v=1692571249&width=823,https://dangkeebs.com/cdn/shop/files/DSC03321_69e1cbe0-ef6b-4f06-a59a-9b72339220cd.jpg?v=1692571249&width=823,https://dangkeebs.com/cdn/shop/files/DSC03325_07d95383-f8d8-4c8a-9484-7e5d56461312.jpg?v=1692571249&width=823"
+						src="https://www.techspot.com/articles-info/2636/images/2023-02-27-image-15.jpg"
 						alt=""
 					/>
 					<div>
-						<span>Macropads</span>
+						<span>Procesori</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
 				<Link
-					to="/products/pcb?name=PCBs+And+Plates"
+					to="/products/CPU Hladnjaci?name=CPU Hladnjaci"
 					className="selection-card"
 				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/PCB_and_Plate_category.jpg?v=1624761645&width=330"
+						src="http://res.cloudinary.com/dcxwnj5jj/image/upload/v1708787179/shop/rqxsp0l8vfdpp9zp110s.jpg"
 						alt=""
 					/>
 					<div>
-						<span>PCBs & Plates</span>
+						<span>CPU Hladnjaci</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
-				<Link to="/products/keycaps?name=Keycaps" className="selection-card">
+				<Link
+					to="/products/Vodena hlađenja?name=Vodena hlađenja"
+					className="selection-card"
+				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/IMG_0461.jpg?v=1615337210&width=330"
+						src="https://v1tech.com/cdn/shop/products/soul-of-the-retrowave-aio-cover-for-corsair-icue-elite-capellix-h100i-h115i-h150i-black-and-white-donnie-art-v1tech-700902.jpg?v=1696293036&width=416"
 						alt=""
 					/>
 					<div>
-						<span>Keycaps</span>
+						<span>Vodena hlađenja</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
-				<Link to="/products/switches?name=Switches" className="selection-card">
+				<Link
+					to="/products/Matične ploče?name=Matične ploče"
+					className="selection-card"
+				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/3G1A0321-6.jpg?v=1615061571&width=330"
+						src="https://www.digitaltrends.com/wp-content/uploads/2023/05/Asus-RTX-4070-hidden-connectors-6.jpg?fit=720%2C480&p=1"
 						alt=""
 					/>
 					<div>
-						<span>Switches</span>
+						<span>Matične Ploče</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
-				<Link to="/products/cables?name=Cables" className="selection-card">
+				<Link
+					to="/products/Radna memorija (RAM)?name=Radna memorija (RAM)"
+					className="selection-card"
+				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/Cable_image.jpg?v=1630961040&width=330"
+						src="https://media.kingston.com/kingston/content/ktc-content-blog-gaming-how-much-memory-for-gaming.jpg"
 						alt=""
 					/>
 					<div>
-						<span>Cables</span>
+						<span>Radna memorija (RAM)</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
-				<Link to="/products/deskmats?name=Deskmats" className="selection-card">
+				<Link
+					to="/products/Pohrana podataka?name=Pohrana podataka"
+					className="selection-card"
+				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/IMG_8340-2.jpg?v=1603003936&width=330"
+						src="https://www.zdnet.com/a/img/resize/0763eef5b93bb7f7f02869e5396ea2c1cb394877/2022/12/13/35b96396-fde4-4a9f-8402-ac13b78b243a/samsung-ssd-990-pro.jpg?auto=webp&fit=crop&height=1200&width=1200"
 						alt=""
 					/>
 					<div>
-						<span>Deskmats</span>
+						<span>Pohrana podataka</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>
 
-				<Link to="/products/tools?name=Tools" className="selection-card">
+				<Link
+					to="/products/Grafičke kartice?name=Grafičke kartice"
+					className="selection-card"
+				>
 					<img
-						src="https://dangkeebs.com/cdn/shop/collections/IMG_8702-2.jpg?v=1604801017&width=535"
+						src="https://www.slashgear.com/img/gallery/gpu-settings-that-are-ruining-your-pc-gaming-experience/intro-1674685151.webp"
 						alt=""
 					/>
 					<div>
-						<span>Tools</span>
+						<span>Grafičke Kartice</span>
+						<AiOutlineArrowRight size={18} />
+					</div>
+				</Link>
+
+				<Link to="/products/Kućišta?name=Kućišta" className="selection-card">
+					<img
+						src="http://res.cloudinary.com/dcxwnj5jj/image/upload/v1708823241/shop/zepfvbzwmoc8nomf6z7e.jpg"
+						alt=""
+					/>
+					<div>
+						<span>Kućišta</span>
+						<AiOutlineArrowRight size={18} />
+					</div>
+				</Link>
+
+				<Link
+					to="/products/Napajanja?name=Napajanja"
+					className="selection-card"
+				>
+					<img
+						src="https://cdn.mos.cms.futurecdn.net/7ME636bQNGEGGrg5qEtWrK.jpg"
+						alt=""
+					/>
+					<div>
+						<span>Napajanja</span>
+						<AiOutlineArrowRight size={18} />
+					</div>
+				</Link>
+
+				<Link to="/products/Monitori?name=Monitori" className="selection-card">
+					<img
+						src="https://cdn.thewirecutter.com/wp-content/media/2023/06/4kmonitors-2048px-9794.jpg"
+						alt=""
+					/>
+					<div>
+						<span>Monitori</span>
+						<AiOutlineArrowRight size={18} />
+					</div>
+				</Link>
+
+				<Link
+					to="/products/Ventilatori za kučišta?name=Ventilatori za kučišta"
+					className="selection-card"
+				>
+					<img
+						src="https://www.pcworld.com/wp-content/uploads/2023/11/case-fan-airflow-2-100898302-orig-1.jpg?quality=50&strip=all"
+						alt=""
+					/>
+					<div>
+						<span>Ventilatori za kučišta</span>
 						<AiOutlineArrowRight size={18} />
 					</div>
 				</Link>

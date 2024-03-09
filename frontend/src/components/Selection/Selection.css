@@ -27,6 +27,13 @@
     position: relative;
     scroll-snap-align: center;
     perspective: 500px;
+    filter: grayscale(1);
+    transition: .4s all ease;
+}
+
+.selection-card:hover {
+    filter: grayscale(0);
+    transition: .4s all ease;
 }
 
 .selection-card>a {
