@@ -1,5 +1,9 @@
 const Order = require('../models/Order');
-const { mailTransport, generateReceiptAdmin } = require('../utils/mail');
+const {
+	mailTransport,
+	generateReceiptAdmin,
+	generateOrderStatusUpdate,
+} = require('../utils/mail');
 
 exports.splitSearchDate = (search) => {
 	let splittedDate = search ? search.split('.') : null;
@@ -309,13 +313,58 @@ exports.createOrder = async (orderData) => {
 };
 
 exports.editOrder = async (id, orderData) => {
+	const {
+		email,
+		firstName,
+		lastName,
+		tvrtka,
+		tvrtkaDostava,
+		oib,
+		products,
+		amount,
+		status,
+		billingDetails,
+		shippingDetails,
+	} = orderData;
+
 	const editedOrder = await Order.findByIdAndUpdate(
 		id,
 		{
-			$set: orderData,
+			$set: {
+				name: firstName + ' ' + lastName,
+				products: products,
+				amount: amount,
+				shippingInfo: shippingDetails,
+				billingInfo: billingDetails,
+				status: status,
+				tvrtka: tvrtka,
+				tvrtkaDostava: tvrtkaDostava,
+				oib: oib,
+			},
 		},
 		{ new: true }
 	);
+
+	// Send email to user that his order has been updated
+	const mailOptions = {
+		from: 'email@email.com',
+		to: email,
+		subject: 'Switchy - Order Status Update',
+		html: generateOrderStatusUpdate(
+			'',
+			editedOrder._id,
+			editedOrder.orderNumber,
+			amount,
+			products
+		),
+	};
+	mailTransport().sendMail(mailOptions, function (err, info) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json({ success: true, message: 'Email sent!' });
+		}
+	});
 	return editedOrder;
 };
 

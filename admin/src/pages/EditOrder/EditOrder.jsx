@@ -31,6 +31,8 @@ import OrderAddProducts from '../../components/OrderAddProducts/OrderAddProducts
 const EditOrder = () => {
 	const orderProductsRedux = useSelector((state) => state.orderProducts);
 
+	const [order, setOrder] = useState(null);
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [r1, setR1] = useState(false);
@@ -181,7 +183,7 @@ const EditOrder = () => {
 		const oib = values.oib;
 
 		try {
-			const res = await userRequest.put('/orders', {
+			const res = await userRequest.put('/orders/' + order._id, {
 				...values,
 				billingDetails,
 				shippingDetails,
@@ -193,15 +195,13 @@ const EditOrder = () => {
 				products: [...orderProductsRedux.orderProducts],
 			});
 
-			formikActions.resetForm();
-
-			// Reset orderProducts formik
-			dispatch(resetState());
-			toast.success('Order created succesfully');
+			toast.success('Order updated succesfully');
 		} catch (error) {
+			console.log(error);
 			toast.error(
-				error.response.data.error
-					? error.response.data.error
+				error?.response?.data?.error &&
+					Object.keys(error?.response?.data?.error).length < 0
+					? error?.response?.data?.error
 					: 'Something went wrong'
 			);
 		}
@@ -240,7 +240,10 @@ const EditOrder = () => {
 			}
 
 			// If tvrtkaDostava is different it means that additional shipping details exist
-			if (orderData?.tvrtkaDostava != '') {
+			if (
+				orderData?.tvrtkaDostava != '' ||
+				orderData?.shippingInfo?.name != orderData?.billingInfo?.name
+			) {
 				setDostava(true);
 				formik.setFieldValue('tvrtka2', orderData?.tvrtkaDostava);
 				formik.setFieldValue(
@@ -268,10 +271,13 @@ const EditOrder = () => {
 
 			dispatch(
 				setState({
-					products: orderData.products, // Set order redux state to order products
+					products: orderData?.products, // Set order redux state to order products
 					totalPrice: orderData?.amount, // Set order redux total to order total
 				})
 			);
+
+			// Set order state
+			setOrder(orderData);
 		} catch (error) {
 			toast.error(
 				error.response.data.error
@@ -812,7 +818,7 @@ const EditOrder = () => {
 								type="submit"
 								isLoading={isLoading}
 								width="100%"
-								text="Add new Order"
+								text="Edit Order"
 							/>
 						</div>
 					</form>

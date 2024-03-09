@@ -48,6 +48,7 @@ exports.editOrder = async (req, res) => {
 		const updatedOrder = await editOrder(id, req.body);
 		return res.status(200).send({ success: true, data: updatedOrder });
 	} catch (err) {
+		console.log(err);
 		return res.status(500).send({ success: false, error: err });
 	}
 };
