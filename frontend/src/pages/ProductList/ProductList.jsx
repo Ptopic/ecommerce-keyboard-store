@@ -240,10 +240,6 @@ const ProductList = () => {
 		getMinMaxPrices();
 		getProductsWithoutDebounce();
 
-		// Reset filters and active filters
-		setActiveFilters([]);
-		setFilters([]);
-
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
@@ -283,6 +279,7 @@ const ProductList = () => {
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
+			console.log(isCategoryFiltersCached['Procesori']);
 			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
 			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
 		}
@@ -292,6 +289,7 @@ const ProductList = () => {
 
 	// Get new prices and regenerate filters only when activeFilters change
 	useEffect(() => {
+		console.log('run');
 		getMinMaxPrices();
 		regenerateFilters(
 			name,
