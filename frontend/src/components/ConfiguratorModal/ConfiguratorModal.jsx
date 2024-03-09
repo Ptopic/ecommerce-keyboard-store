@@ -128,8 +128,6 @@ const ConfiguratorModal = ({
 
 			let data = res.data;
 
-			console.log(data);
-
 			setProducts(data.data);
 			setTotalPages(data.totalPages);
 		} catch (error) {
@@ -165,8 +163,8 @@ const ConfiguratorModal = ({
 
 		setActiveFilters(updatedFilters);
 
-		// // Trigger filters re render
-		// setFilters([...filters]);
+		// Trigger filters re render
+		setFilters([...filters]);
 
 		// Get new products
 		getProducts();
@@ -197,16 +195,6 @@ const ConfiguratorModal = ({
 	};
 
 	useEffect(() => {
-		let constraints = configuratorModalValues['Constraints'];
-
-		for (let constraint of Array.of(Object.keys(constraints))) {
-			for (let i = 0; i < activeFilters.length; i++) {
-				if (Object.keys(activeFilters[i]).toString() == constraint) {
-					activeFilters[i][constraint] = constraints[constraint];
-				}
-			}
-		}
-
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
 		setLoading(true);
@@ -214,42 +202,24 @@ const ConfiguratorModal = ({
 		getProducts();
 		getMinMaxPrices();
 
-		// Cache filters
-
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
-		// Check if filter object with category name is present
-		let isFilterPresent = false;
-		for (let reduxFilter of reduxFilters.filters) {
-			if (categoryName == Object.keys(reduxFilter)) {
-				isFilterPresent = true;
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			for (let reduxFilter of reduxFilters?.filters) {
+				if (Object.keys(reduxFilter) == name) {
+					isCategoryFiltersCached = reduxFilter;
+				}
 			}
 		}
 
-		if (isFilterPresent) {
-			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-				isCategoryFiltersCached = reduxFilters?.filters.map((filter) => {
-					return { ...filter };
-				});
-			}
-
-			if (
-				reduxFilters?.activeFilters &&
-				reduxFilters.activeFilters.length > 0
-			) {
-				isCategoryActiveFiltersCached = reduxFilters?.activeFilters.map(
-					(filter) => {
-						console.log();
-						return Object.keys(filter)[0];
-					}
-				);
-
-				console.log(isCategoryActiveFiltersCached);
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+				if (Object.keys(reduxActiveFilter) == name) {
+					isCategoryActiveFiltersCached = reduxActiveFilter;
+				}
 			}
 		}
-
-		console.log(isCategoryFiltersCached);
 
 		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
 			generateFilters(
@@ -269,54 +239,41 @@ const ConfiguratorModal = ({
 					);
 				})
 				.catch((err) => console.log(err));
+
+			// Map constraints if any
+			let constraints = configuratorModalValues['Constraints'];
+
+			for (let constraint of Array.of(Object.keys(constraints))) {
+				for (let i = 0; i < activeFilters.length; i++) {
+					if (Object.keys(activeFilters[i]) === constraint) {
+						activeFilters[i][constraint] = constraints[constraint];
+					}
+				}
+			}
 		} else {
 			console.log('Cached filters');
-
-			console.log(isCategoryActiveFiltersCached);
-
-			generateFilters(
-				categoryName,
-				isCategoryActiveFiltersCached,
-				categories,
-				setFilters,
-				setActiveFilters
-			);
+			console.log([...Object.values(isCategoryActiveFiltersCached)[0]]);
+			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
+			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
 		}
 		setLoading(false);
 	}, []);
 
-	// // Get new prices with useMemo only when activeFilters change
-	// useMemo(() => {
-	// 	let constraints = configuratorModalValues['Constraints'];
-	// 	let constraintsArray = Array.of(Object.keys(constraints))[0];
+	useEffect(() => {
+		getProducts();
+	}, [priceSliderValues, sort, direction, page, search]);
 
-	// 	let updatedFilters = activeFilters.map((filter) => {
-	// 		return { ...filter };
-	// 	});
-
-	// 	for (let i = 0; i < constraintsArray.length; i++) {
-	// 		for (let j = 0; j < activeFilters.length; j++) {
-	// 			if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-	// 				activeFilters[j][constraintsArray[i]] =
-	// 					constraints[constraintsArray[i]];
-	// 			}
-	// 		}
-	// 	}
-
+	// useEffect(() => {
 	// 	getMinMaxPrices();
 	// 	regenerateFilters(
 	// 		categoryName,
 	// 		activeFilters,
 	// 		categories,
 	// 		setFilters,
-	// 		setActiveFilters,
-	// 		constraints
+	// 		setActiveFilters
 	// 	);
-	// }, [filters]);
-
-	useEffect(() => {
-		getProducts();
-	}, [priceSliderValues, sort, direction, page, search]);
+	// 	getProducts();
+	// }, [activeFilters]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {

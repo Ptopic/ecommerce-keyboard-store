@@ -293,7 +293,6 @@ const ProductList = () => {
 	// Get new prices and regenerate filters only when activeFilters change
 	useEffect(() => {
 		getMinMaxPrices();
-		getProductsWithoutDebounce();
 		regenerateFilters(
 			name,
 			activeFilters,
@@ -349,6 +348,7 @@ const ProductList = () => {
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
+			console.log([...Object.values(isCategoryFiltersCached)[0]]);
 			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
 			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
 		}

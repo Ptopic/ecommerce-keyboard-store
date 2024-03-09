@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../../pages/ProductList/ProductList.css';
 
 import { IoMdCheckmark } from 'react-icons/io';

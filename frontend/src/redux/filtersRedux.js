@@ -19,7 +19,7 @@ const filtersSlice = createSlice({
 			state.activeFilters.push(objActiveFilters);
 		},
 		getFilter: (state, action) => {
-			return state.data;
+			return state.initialState;
 		},
 		resetFilters: (state) => {
 			state.filters = [];

@@ -93,8 +93,6 @@ export const generateFilters = async (
 		},
 	});
 
-	console.log(allProductsRes);
-
 	let productsData = allProductsRes.data.data;
 
 	let categoryFields;
