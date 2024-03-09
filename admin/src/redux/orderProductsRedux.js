@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 
 const orderProductsSlice = createSlice({
 	name: 'orderProducts',
@@ -10,10 +10,11 @@ const orderProductsSlice = createSlice({
 		addProductToOrder: (state, action) => {
 			let productInCartId = null;
 			// Check if product is in cart if it is just increment quantity of product
-			for (let i = 0; i < state.orderProducts.length; i++) {
-				console.log(state.orderProducts);
-				if ((state.orderProducts[i]._id = action.payload._id)) {
-					productInCartId = i;
+			if (state.orderProducts.length > 0) {
+				for (let i = 0; i < state.orderProducts.length; i++) {
+					if (state.orderProducts[i].productId === action.payload._id) {
+						productInCartId = i;
+					}
 				}
 			}
 
