@@ -10,13 +10,18 @@ import Navbar from '../../components/Navbar/Navbar';
 import { toast, Toaster } from 'react-hot-toast';
 
 import { formatPriceDisplay } from '../../utils/formatting';
+import Spinner from '../../components/Spinner/Spinner';
 
 function Wishlist() {
 	const currentUser = useSelector((state) => state.user.currentUser);
 	const [wishlist, setWishlist] = useState([]);
+
+	const [isLoading, setIsLoading] = useState(false);
+
 	useEffect(() => {
 		const getWishlist = async () => {
 			try {
+				setIsLoading(true);
 				// Check if product is in users wishlist
 				const wishlist = await request.get(
 					`/wishlist?userId=${currentUser._id}`
@@ -27,6 +32,7 @@ function Wishlist() {
 				} else {
 					setWishlist(wishlist.data.data.products);
 				}
+				setIsLoading(false);
 			} catch (error) {
 				console.log(error);
 				console.log(error?.response?.data);
@@ -42,23 +48,31 @@ function Wishlist() {
 			<div className="wishlist-container">
 				<h1>Your wishlist:</h1>
 
-				<div className="wishlist-items">
-					{wishlist.length === 0 && (
-						<p className="wishlist-empty">Your wishlist is empty</p>
-					)}
-					{wishlist.map((item) => (
-						<Link to={`/product/${item._id}`} className="wishlist-item">
-							<img src={item?.images[0]?.url} alt="" />
-							<div className="wishlist-item-info">
-								<h2>{item?.title}</h2>
-								<p
-									dangerouslySetInnerHTML={{ __html: item?.specifications }}
-								></p>
-								<p className="item-price">€{formatPriceDisplay(item.price)}</p>
-							</div>
-						</Link>
-					))}
-				</div>
+				{isLoading ? (
+					<div className="wishlist-loading-spinner-container">
+						<Spinner />
+					</div>
+				) : (
+					<div className="wishlist-items">
+						{wishlist.length === 0 && (
+							<p className="wishlist-empty">Your wishlist is empty</p>
+						)}
+						{wishlist.map((item) => (
+							<Link to={`/product/${item._id}`} className="wishlist-item">
+								<img src={item?.images[0]?.url} alt="" />
+								<div className="wishlist-item-info">
+									<h2>{item?.title}</h2>
+									<p
+										dangerouslySetInnerHTML={{ __html: item?.specifications }}
+									></p>
+									<p className="item-price">
+										€{formatPriceDisplay(item.price)}
+									</p>
+								</div>
+							</Link>
+						))}
+					</div>
+				)}
 			</div>
 		</div>
 	);

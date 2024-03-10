@@ -21,10 +21,8 @@ import { addFilter } from '../../redux/filtersRedux';
 
 // Utils
 import { debounce } from '../../utils/debounce';
-import { Checkbox } from '@mui/material';
 import { generateFilters, regenerateFilters } from '../../utils/filters';
 
-import { IoMdCheckmark } from 'react-icons/io';
 import ProductFilters from '../../components/ProductFilters/ProductFilters';
 
 const ProductList = () => {
@@ -32,13 +30,15 @@ const ProductList = () => {
 	const reduxFilters = useSelector((state) => state.filters);
 	let PAGE_SIZE = 12;
 
+	const [isLoading, setIsLoading] = useState(true);
+
 	const dispatch = useDispatch();
 
 	const navigate = useNavigate();
 	const loadMoreBtnRef = useRef(null);
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
-	const [loading, setLoading] = useState(true);
+	const [isProductsLoading, setIsProductsLoading] = useState(false);
 
 	const [products, setProducts] = useState([]);
 
@@ -124,6 +124,7 @@ const ProductList = () => {
 		setPage(0);
 
 		try {
+			setIsProductsLoading(true);
 			const res = await request.get(`/products/category/` + category, {
 				params: {
 					page: 0,
@@ -141,6 +142,7 @@ const ProductList = () => {
 			setProducts(data.data);
 			setPage(1);
 			setTotalPages(data.totalPages);
+			setIsProductsLoading(false);
 		} catch (error) {
 			console.log(error);
 			toast.error('Failed to load products...');
@@ -153,7 +155,6 @@ const ProductList = () => {
 
 		try {
 			let data;
-			setLoading(true);
 			const res = await request.get(`/products/category/` + category, {
 				params: {
 					page: page,
@@ -166,7 +167,6 @@ const ProductList = () => {
 				},
 			});
 			data = res.data;
-			setLoading(false);
 			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
 			setTotalPages(data.totalPages);
@@ -187,7 +187,6 @@ const ProductList = () => {
 		curFilterValue,
 		newFilterValue
 	) => {
-		setLoading(true);
 		// If new filter value is equal to current filter value then remove current value
 		let updatedFilters = activeFilters.map((filter) => {
 			return { ...filter };
@@ -211,7 +210,6 @@ const ProductList = () => {
 
 		// Recalculate prices
 		getMinMaxPrices();
-		setLoading(false);
 	};
 
 	const clearFilters = () => {
@@ -234,12 +232,7 @@ const ProductList = () => {
 		setActiveFilters(initialFiltersArray);
 	};
 
-	// Initial page load and redux state load
-	useEffect(() => {
-		setLoading(true);
-		getMinMaxPrices();
-		getProductsWithoutDebounce();
-
+	const cacheFilters = () => {
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
@@ -291,20 +284,22 @@ const ProductList = () => {
 
 			setActiveFilters([...isCategoryActiveFiltersCached[name]]);
 		}
+	};
 
-		setLoading(false);
+	// Initial page load and redux state load
+	useEffect(() => {
+		setIsLoading(true);
+		getMinMaxPrices();
+		getProductsWithoutDebounce();
+
+		cacheFilters();
+
+		setIsLoading(false);
 	}, [categories]);
 
 	// Get new prices and regenerate filters only when activeFilters change
 	useEffect(() => {
 		getMinMaxPrices();
-		// regenerateFilters(
-		// 	name,
-		// 	activeFilters,
-		// 	categories,
-		// 	setFilters,
-		// 	setActiveFilters
-		// );
 	}, [activeFilters]);
 
 	// If category changes refetch data
@@ -353,7 +348,6 @@ const ProductList = () => {
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
-			console.log([...Object.values(isCategoryFiltersCached)[0]]);
 			setFilters(structuredClone(isCategoryFiltersCached[name]));
 
 			// Reset all previous active filters
@@ -370,154 +364,229 @@ const ProductList = () => {
 		getProducts();
 	}, [priceSliderValues, sort, direction]);
 
+	useEffect(() => {
+		getMinMaxPrices();
+
+		// Check if any value in active filters is != null
+		let isActiveFiltersEmpty = true;
+		for (let activeFilter of activeFilters) {
+			if (Object.values(activeFilter) != '') {
+				console.log(activeFilter);
+				isActiveFiltersEmpty = false;
+			}
+		}
+		// If it is regenerate filters
+		if (!isActiveFiltersEmpty) {
+			regenerateFilters(
+				name,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			);
+		} else {
+			// Set filters as default filters (reset them)
+			let isCategoryFiltersCached;
+			let isCategoryActiveFiltersCached;
+
+			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+				for (let reduxFilter of reduxFilters?.filters) {
+					if (Object.keys(reduxFilter) == name) {
+						isCategoryFiltersCached = structuredClone(reduxFilter);
+					}
+				}
+			}
+
+			if (
+				reduxFilters?.activeFilters &&
+				reduxFilters.activeFilters.length > 0
+			) {
+				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+					if (Object.keys(reduxActiveFilter) == name) {
+						isCategoryActiveFiltersCached = structuredClone(reduxActiveFilter);
+					}
+				}
+			}
+
+			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+				generateFilters(name, categories, setFilters)
+					.then((res) => {
+						dispatch(
+							addFilter({
+								categoryName: name,
+								filters: res?.filters,
+								activeFilters: res?.activeFilters,
+							})
+						);
+					})
+					.catch((err) => console.log(err));
+			} else {
+				console.log('Cached filters');
+				setFilters(structuredClone(isCategoryFiltersCached[name]));
+			}
+		}
+	}, [activeFilters]);
+
 	return (
 		<div className="products-section">
 			<Navbar />
 			<Toaster />
 
-			{/* Filters on mobile layout */}
-			<AnimatePresence>
-				{mobileFiltersOpen && (
-					<m.div
-						className="filter-by-container"
-						initial={{ x: -80, opacity: 0 }}
-						animate={{ x: 0, opacity: 1 }}
-						transition={{ ease: 'easeInOut', duration: 0.4 }}
-						exit={{
-							opacity: 0,
-							x: -80,
-							transition: {
-								ease: 'easeInOut',
-								duration: 0.4,
-							},
-						}}
-					>
-						<div className="filters-by-content">
-							<div className="filters-header-container">
-								<p className="filters-header">IZBOR FILTERA</p>
-								<AiOutlineClose
-									size={26}
-									onClick={() => setMobileFiltersOpen(false)}
-								/>
-							</div>
-							<div className="filters-devider"></div>
-
-							{filters.length !== 0 &&
-								filters != null &&
-								activeFilters.length !== 0 &&
-								activeFilters != null && (
-									<ProductFilters
-										filters={filters}
-										activeFilters={activeFilters}
-										handleFilterCheckboxClick={handleFilterCheckboxClick}
-									/>
-								)}
-
-							<div className="price-filters">
-								<span className="filter-name">CIJENA:</span>
-								<div className="price-ranges current">
-									<p>€{priceSliderValues[0]}</p>
-									<p>€{priceSliderValues[1]}</p>
-								</div>
-								<ReactSlider
-									className="slider"
-									value={priceSliderValues}
-									onChange={(e) => handlePriceFiltersChange(e)}
-									min={min}
-									max={max}
-								/>
-								<div className="price-ranges">
-									<p>€{min}</p>
-									<p>€{max}</p>
-								</div>
-							</div>
-							<button className="clear-filters" onClick={() => clearFilters()}>
-								Izbriši Filtere
-							</button>
-						</div>
-					</m.div>
-				)}
-			</AnimatePresence>
-
-			{/* Desktop layout */}
-			<div className="products-container">
-				<div className="products-content">
-					<div className="sort-container"></div>
-					<div className="products-sort-container">
-						<div className="filters-container">
-							{filters.length !== 0 &&
-								filters != null &&
-								activeFilters.length !== 0 &&
-								activeFilters != null && (
-									<ProductFilters
-										filters={filters}
-										activeFilters={activeFilters}
-										handleFilterCheckboxClick={handleFilterCheckboxClick}
-									/>
-								)}
-							<div className="price-filters">
-								<span className="filter-name">CIJENA:</span>
-								<div className="price-ranges current">
-									<p>€{priceSliderValues[0]}</p>
-									<p>€{priceSliderValues[1]}</p>
-								</div>
-								<ReactSlider
-									className="slider"
-									value={priceSliderValues}
-									onChange={(e) => handlePriceFiltersChange(e)}
-									min={min}
-									max={max}
-								/>
-								<div className="price-ranges">
-									<p>€{min}</p>
-									<p>€{max}</p>
-								</div>
-							</div>
-							<button
-								className="clear-filters"
-								onClick={(e) => clearFilters(e)}
-							>
-								Izbriši Filtere
-							</button>
-						</div>
-						{loading ? (
-							<div className="spinner-container">
-								<Spinner />
-							</div>
-						) : (
-							<>
-								{products.length > 0 ? (
-									<Products
-										products={products}
-										title={name}
-										setMobileFiltersOpen={setMobileFiltersOpen}
-										sort={sort}
-										setSort={setSort}
-										direction={direction}
-										setDirection={setDirection}
-									/>
-								) : (
-									<h2>No products to show...</h2>
-								)}
-
-								<div className="has-more-container" ref={loadMoreBtnRef}>
-									{totalPages != page && products.length > 0 ? (
-										<button
-											className="load-more-btn"
-											onClick={(e) => loadMoreData(e)}
-										>
-											Prikaži više
-											<span>
-												(str. {page}/{totalPages})
-											</span>
-										</button>
-									) : null}
-								</div>
-							</>
-						)}
-					</div>
+			{isLoading == true ? (
+				<div className="product-list-spinner-container">
+					<Spinner />
 				</div>
-			</div>
+			) : (
+				<>
+					{/* Filters on mobile layout */}
+					<AnimatePresence>
+						{mobileFiltersOpen && (
+							<m.div
+								className="filter-by-container"
+								initial={{ x: -80, opacity: 0 }}
+								animate={{ x: 0, opacity: 1 }}
+								transition={{ ease: 'easeInOut', duration: 0.4 }}
+								exit={{
+									opacity: 0,
+									x: -80,
+									transition: {
+										ease: 'easeInOut',
+										duration: 0.4,
+									},
+								}}
+							>
+								<div className="filters-by-content">
+									<div className="filters-header-container">
+										<p className="filters-header">IZBOR FILTERA</p>
+										<AiOutlineClose
+											size={26}
+											onClick={() => setMobileFiltersOpen(false)}
+										/>
+									</div>
+									<div className="filters-devider"></div>
+
+									{filters.length !== 0 &&
+										filters != null &&
+										activeFilters.length !== 0 &&
+										activeFilters != null && (
+											<ProductFilters
+												filters={filters}
+												activeFilters={activeFilters}
+												handleFilterCheckboxClick={handleFilterCheckboxClick}
+											/>
+										)}
+
+									<div className="price-filters">
+										<span className="filter-name">CIJENA:</span>
+										<div className="price-ranges current">
+											<p>€{priceSliderValues[0]}</p>
+											<p>€{priceSliderValues[1]}</p>
+										</div>
+										<ReactSlider
+											className="slider"
+											value={priceSliderValues}
+											onChange={(e) => handlePriceFiltersChange(e)}
+											min={min}
+											max={max}
+										/>
+										<div className="price-ranges">
+											<p>€{min}</p>
+											<p>€{max}</p>
+										</div>
+									</div>
+									<button
+										className="clear-filters"
+										onClick={() => clearFilters()}
+									>
+										Izbriši Filtere
+									</button>
+								</div>
+							</m.div>
+						)}
+					</AnimatePresence>
+
+					{/* Desktop layout */}
+					<div className="products-container">
+						<div className="products-content">
+							<div className="sort-container"></div>
+							<div className="products-sort-container">
+								<div className="filters-container">
+									{filters.length !== 0 &&
+										filters != null &&
+										activeFilters.length !== 0 &&
+										activeFilters != null && (
+											<ProductFilters
+												filters={filters}
+												activeFilters={activeFilters}
+												handleFilterCheckboxClick={handleFilterCheckboxClick}
+											/>
+										)}
+									<div className="price-filters">
+										<span className="filter-name">CIJENA:</span>
+										<div className="price-ranges current">
+											<p>€{priceSliderValues[0]}</p>
+											<p>€{priceSliderValues[1]}</p>
+										</div>
+										<ReactSlider
+											className="slider"
+											value={priceSliderValues}
+											onChange={(e) => handlePriceFiltersChange(e)}
+											min={min}
+											max={max}
+										/>
+										<div className="price-ranges">
+											<p>€{min}</p>
+											<p>€{max}</p>
+										</div>
+									</div>
+									<button
+										className="clear-filters"
+										onClick={(e) => clearFilters(e)}
+									>
+										Izbriši Filtere
+									</button>
+								</div>
+								{isProductsLoading ? (
+									<div className="spinner-container">
+										<Spinner />
+									</div>
+								) : (
+									<>
+										{products.length > 0 ? (
+											<Products
+												products={products}
+												title={name}
+												setMobileFiltersOpen={setMobileFiltersOpen}
+												sort={sort}
+												setSort={setSort}
+												direction={direction}
+												setDirection={setDirection}
+											/>
+										) : (
+											<h2>No products to show...</h2>
+										)}
+
+										<div className="has-more-container" ref={loadMoreBtnRef}>
+											{totalPages != page && products.length > 0 ? (
+												<button
+													className="load-more-btn"
+													onClick={(e) => loadMoreData(e)}
+												>
+													Prikaži više
+													<span>
+														(str. {page}/{totalPages})
+													</span>
+												</button>
+											) : null}
+										</div>
+									</>
+								)}
+							</div>
+						</div>
+					</div>
+				</>
+			)}
+
 			<Footer />
 		</div>
 	);
