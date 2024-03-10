@@ -191,12 +191,6 @@ const ConfiguratorModal = ({
 		setActiveFilters(initialFiltersArray);
 	};
 
-	console.log('test');
-
-	console.log('test2');
-
-	console.log('test3');
-
 	useEffect(() => {
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
