@@ -8,15 +8,15 @@ const filtersSlice = createSlice({
 	},
 	reducers: {
 		addFilter: (state, action) => {
-			const objFilters = {};
-			objFilters[action.payload.categoryName] = action.payload.filters;
+			const { categoryName, filters, activeFilters } = action.payload;
 
-			const objActiveFilters = {};
-			objActiveFilters[action.payload.categoryName] =
-				action.payload.activeFilters;
-
-			state.filters.push(objFilters);
-			state.activeFilters.push(objActiveFilters);
+			// Turn all sets of filters to arrays
+			for (let filter of filters) {
+				let arrayFromSet = Array.from(...Object.values(filter));
+				filter[Object.keys(filter)] = arrayFromSet;
+			}
+			state.filters.push({ [categoryName]: filters });
+			state.activeFilters.push({ [categoryName]: activeFilters });
 		},
 		getFilter: (state, action) => {
 			return state.data;

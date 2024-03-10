@@ -28,6 +28,7 @@ import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
 import { useSearchParams } from 'react-router-dom';
 import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
+import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
 
 const NewProduct = () => {
 	const dispatch = useDispatch();
@@ -96,8 +97,6 @@ const NewProduct = () => {
 
 	const handleAddNewProduct = async (values, formikActions) => {
 		if (files?.length != 0) {
-			console.log(values);
-
 			setIsLoading(true);
 			try {
 				const res = await userRequest.post('/products', {
@@ -157,8 +156,6 @@ const NewProduct = () => {
 			}
 		});
 
-		console.log(curCategory);
-
 		// Check for cached filters or cache them
 
 		// Set fieldDetails to category details
@@ -171,7 +168,7 @@ const NewProduct = () => {
 
 			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
 				for (let reduxFilter of reduxFilters?.filters) {
-					if (Object.keys(reduxFilter) == curCategory) {
+					if (Object.keys(reduxFilter) == curCategory.name) {
 						isCategoryFiltersCached = reduxFilter;
 					}
 				}
@@ -182,13 +179,11 @@ const NewProduct = () => {
 				reduxFilters.activeFilters.length > 0
 			) {
 				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-					if (Object.keys(reduxActiveFilter) == curCategory) {
+					if (Object.keys(reduxActiveFilter) == curCategory.name) {
 						isCategoryActiveFiltersCached = reduxActiveFilter;
 					}
 				}
 			}
-
-			console.log(isCategoryFiltersCached);
 
 			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
 				generateFilterProductAdmin(
@@ -201,10 +196,9 @@ const NewProduct = () => {
 					namesOfActiveFields
 				)
 					.then((res) => {
-						console.log(res);
 						dispatch(
 							addFilter({
-								categoryName: curCategory,
+								categoryName: curCategory.name,
 								filters: res?.filters,
 								activeFilters: res?.activeFilters,
 							})
@@ -213,8 +207,9 @@ const NewProduct = () => {
 					.catch((err) => console.log(err));
 			} else {
 				console.log('Cached filters');
-				console.log(isCategoryActiveFiltersCached);
-				setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+				setFilters(structuredClone(isCategoryFiltersCached[curCategory.name]));
+
+				setActiveFields(namesOfActiveFields);
 			}
 		}
 	};
@@ -385,46 +380,12 @@ const NewProduct = () => {
 							) : null}
 						</div>
 
-						{activeFields && activeFields.length > 0 && (
-							<div className="product-details">
-								<div className="additional-info">
-									<h2>Product Details (Case-sensitive):</h2>
-									<div className="seperator-line"></div>
-								</div>
-
-								{activeFields.map((field, index) => (
-									<>
-										<InputField
-											key={index}
-											type="text"
-											name={field}
-											placeholder={field}
-											value={formik.values[field]}
-											onChange={(e) => {
-												formik.setFieldValue(field, e.target.value);
-											}}
-											onBlur={formik.handleBlur}
-											errors={formik.errors[field]}
-											touched={formik.touched[field]}
-										/>
-										<div className="previous-filters">
-											{filters &&
-												Array.from(Object.values(filters[index])[0]).map(
-													(el) => {
-														return (
-															<div
-																className="previous-filter"
-																onClick={() => formik.setFieldValue(field, el)}
-															>
-																<p>{el}</p>
-															</div>
-														);
-													}
-												)}
-										</div>
-									</>
-								))}
-							</div>
+						{activeFields && (
+							<ProductFiltersDisplay
+								activeFields={activeFields}
+								filters={filters}
+								formik={formik}
+							/>
 						)}
 
 						<div>
