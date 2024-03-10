@@ -137,6 +137,14 @@ select:not(.newest) {
     padding: 2.2rem 0;
 }
 
+.product-list-spinner-container {
+    height: 80dvh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ---------- Media querys ---------- */
 
 /* Phone */

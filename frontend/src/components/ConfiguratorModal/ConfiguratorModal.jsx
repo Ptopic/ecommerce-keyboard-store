@@ -147,8 +147,9 @@ const ConfiguratorModal = ({
 		newFilterValue
 	) => {
 		setLoading(true);
+
 		// If new filter value is equal to current filter value then remove current value
-		let updatedFilters = [...activeFilters];
+		let updatedFilters = structuredClone(activeFilters);
 
 		if (newFilterValue == curFilterValue) {
 			// Reset filter value
@@ -168,6 +169,7 @@ const ConfiguratorModal = ({
 
 		// Recalculate prices
 		getMinMaxPrices();
+
 		setLoading(false);
 	};
 
@@ -191,20 +193,14 @@ const ConfiguratorModal = ({
 		setActiveFilters(initialFiltersArray);
 	};
 
-	useEffect(() => {
-		// Scroll to top on modal open
-		window.scrollTo(0, 0);
-		setLoading(true);
-		getMinMaxPrices();
-		getProducts();
-
+	const checkFilters = () => {
 		let isCategoryFiltersCached;
 		let isCategoryActiveFiltersCached;
 
 		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
 			for (let reduxFilter of reduxFilters?.filters) {
 				if (Object.keys(reduxFilter) == categoryName) {
-					isCategoryFiltersCached = { ...reduxFilter };
+					isCategoryFiltersCached = structuredClone(reduxFilter);
 				}
 			}
 		}
@@ -212,7 +208,7 @@ const ConfiguratorModal = ({
 		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
 			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
 				if (Object.keys(reduxActiveFilter) == categoryName) {
-					isCategoryActiveFiltersCached = { ...reduxActiveFilter };
+					isCategoryActiveFiltersCached = structuredClone(reduxActiveFilter);
 				}
 			}
 		}
@@ -253,6 +249,17 @@ const ConfiguratorModal = ({
 				structuredClone(isCategoryActiveFiltersCached[categoryName])
 			);
 		}
+	};
+
+	useEffect(() => {
+		// Scroll to top on modal open
+		window.scrollTo(0, 0);
+		setLoading(true);
+		getMinMaxPrices();
+		getProducts();
+
+		checkFilters();
+
 		setLoading(false);
 	}, []);
 
@@ -288,6 +295,66 @@ const ConfiguratorModal = ({
 				setFilters,
 				setActiveFilters
 			);
+		} else {
+			// Check if any value in active filters is != null
+			let isActiveFiltersEmpty = true;
+			for (let activeFilter of activeFilters) {
+				if (Object.values(activeFilter) != '') {
+					console.log(activeFilter);
+					isActiveFiltersEmpty = false;
+				}
+			}
+			// If it is regenerate filters
+			if (!isActiveFiltersEmpty) {
+				regenerateFilters(
+					categoryName,
+					activeFilters,
+					categories,
+					setFilters,
+					setActiveFilters
+				);
+			} else {
+				// Set filters as default filters (reset them)
+				let isCategoryFiltersCached;
+				let isCategoryActiveFiltersCached;
+
+				if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+					for (let reduxFilter of reduxFilters?.filters) {
+						if (Object.keys(reduxFilter) == categoryName) {
+							isCategoryFiltersCached = structuredClone(reduxFilter);
+						}
+					}
+				}
+
+				if (
+					reduxFilters?.activeFilters &&
+					reduxFilters.activeFilters.length > 0
+				) {
+					for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+						if (Object.keys(reduxActiveFilter) == categoryName) {
+							isCategoryActiveFiltersCached =
+								structuredClone(reduxActiveFilter);
+						}
+					}
+				}
+
+				if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+					generateFilters(categoryName, categories, setFilters)
+						.then((res) => {
+							dispatch(
+								addFilter({
+									categoryName: categoryName,
+									filters: res?.filters,
+									activeFilters: res?.activeFilters,
+								})
+							);
+						})
+						.catch((err) => console.log(err));
+				} else {
+					console.log('Cached filters');
+					setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
+				}
+			}
 		}
 	}, [activeFilters]);
 

@@ -131,6 +131,14 @@ th {
     display: none;
 }
 
+.user-orders-spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 4rem 0;
+}
+
 /* ---------- Media querys ---------- */
 
 /* Phone */

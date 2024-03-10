@@ -24,6 +24,7 @@ import { formatPriceDisplay } from '../../utils/formatting';
 import { userRequest } from '../../api';
 
 import { useLocation, useSearchParams } from 'react-router-dom';
+import Spinner from '../../components/Spinner/Spinner';
 
 function UserOrders() {
 	const user = useSelector((state) => state.user.currentUser);
@@ -51,9 +52,12 @@ function UserOrders() {
 		direction != null ? direction : ''
 	);
 
+	const [isLoading, setIsLoading] = useState(false);
+
 	// Get all orders from user
 	const getUsersOrders = async () => {
 		try {
+			setIsLoading(true);
 			const res = await userRequest.get('/orders/find/' + user._id, {
 				params: {
 					sort: sortValue,
@@ -89,6 +93,7 @@ function UserOrders() {
 				order['orderDate'] = day + '.' + month + '.' + year;
 			}
 			setOrders(res.data.data);
+			setIsLoading(false);
 		} catch (error) {
 			console.log(error);
 		}
@@ -163,87 +168,93 @@ function UserOrders() {
 						}
 					/>
 
-					<table className="table">
-						<thead className="table-head">
-							<tr>
-								<th>
-									<a
-										href={`/user/orders
+					{isLoading ? (
+						<div className="user-orders-spinner-container">
+							<Spinner />
+						</div>
+					) : (
+						<table className="table">
+							<thead className="table-head">
+								<tr>
+									<th>
+										<a
+											href={`/user/orders
 										?sort=orderNumber
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}`}
-									>
-										<p>Broj narudžbe</p>
-										{filterDirectionIcons('orderNumber')}
-									</a>
-								</th>
-								<th>
-									<a
-										href={`/user/orders
+										>
+											<p>Broj narudžbe</p>
+											{filterDirectionIcons('orderNumber')}
+										</a>
+									</th>
+									<th>
+										<a
+											href={`/user/orders
 										?sort=createdAt
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}`}
-									>
-										<div className="seperator"></div>
-										<p>Datum</p>
-										{filterDirectionIcons('createdAt')}
-									</a>
-								</th>
-								<th>
-									<a
-										href={`/user/orders
+										>
+											<div className="seperator"></div>
+											<p>Datum</p>
+											{filterDirectionIcons('createdAt')}
+										</a>
+									</th>
+									<th>
+										<a
+											href={`/user/orders
 										?sort=status
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}`}
-									>
-										<div className="seperator"></div>
-										<p>Status</p>
-										{filterDirectionIcons('status')}
-									</a>
-								</th>
-								<th>
-									<a
-										href={`/user/orders
+										>
+											<div className="seperator"></div>
+											<p>Status</p>
+											{filterDirectionIcons('status')}
+										</a>
+									</th>
+									<th>
+										<a
+											href={`/user/orders
 										?sort=amount
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}`}
-									>
-										<div className="seperator"></div>
-										<p>Ukupno</p>
-										{filterDirectionIcons('amount')}
-									</a>
-								</th>
-								<th>
-									<a>
-										<div className="seperator"></div>
-										<p>Link</p>
-									</a>
-								</th>
-							</tr>
-						</thead>
-
-						<tbody className="table-content">
-							{orders.map((order) => (
-								<tr className="table-content-row" key={order.orderNumber}>
-									<td>{order.orderNumber}</td>
-									<td>{order.orderDate}</td>
-									<td>{order.status}</td>
-									<td>€{formatPriceDisplay(order.amount)}</td>
-									<td>
-										<Link to={'/order/' + order._id}>Detalji</Link>
-									</td>
+										>
+											<div className="seperator"></div>
+											<p>Ukupno</p>
+											{filterDirectionIcons('amount')}
+										</a>
+									</th>
+									<th>
+										<a>
+											<div className="seperator"></div>
+											<p>Link</p>
+										</a>
+									</th>
 								</tr>
-							))}
-						</tbody>
-					</table>
+							</thead>
+
+							<tbody className="table-content">
+								{orders.map((order) => (
+									<tr className="table-content-row" key={order.orderNumber}>
+										<td>{order.orderNumber}</td>
+										<td>{order.orderDate}</td>
+										<td>{order.status}</td>
+										<td>€{formatPriceDisplay(order.amount)}</td>
+										<td>
+											<Link to={'/order/' + order._id}>Detalji</Link>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					)}
 
 					{/* Mobile cards display instead of table */}
 					<div className="mobile-orders-container">
@@ -266,34 +277,39 @@ function UserOrders() {
 								<option value="amount-desc">Ukupno - Padajuće</option>
 							</select>
 						</div>
-						<div className="order-cards-container">
-							{orders.map((order) => (
-								<div className="order-card">
-									<div className="order-card-top">
-										<div className="order-card-amount">
-											<div>
-												<p>Ukupno</p>
-												<h2>€{order.amount}</h2>
+
+						{isLoading ? (
+							<Spinner />
+						) : (
+							<div className="order-cards-container">
+								{orders.map((order) => (
+									<div className="order-card">
+										<div className="order-card-top">
+											<div className="order-card-amount">
+												<div>
+													<p>Ukupno</p>
+													<h2>€{order.amount}</h2>
+												</div>
+												<div>{order.status}</div>
 											</div>
-											<div>{order.status}</div>
+										</div>
+										<div className="order-card-content">
+											<div className="order-card-content-row">
+												<h2 className="order-row-category">Broj narudžbe</h2>
+												<h3 className="order-row-value">{order.orderNumber}</h3>
+											</div>
+											<div className="order-card-content-row">
+												<h2 className="order-row-category">Datum</h2>
+												<h3 className="order-row-value">{order.orderDate}</h3>
+											</div>
+										</div>
+										<div className="order-card-footer">
+											<Link to={'/order/' + order._id}>Detalji</Link>
 										</div>
 									</div>
-									<div className="order-card-content">
-										<div className="order-card-content-row">
-											<h2 className="order-row-category">Broj narudžbe</h2>
-											<h3 className="order-row-value">{order.orderNumber}</h3>
-										</div>
-										<div className="order-card-content-row">
-											<h2 className="order-row-category">Datum</h2>
-											<h3 className="order-row-value">{order.orderDate}</h3>
-										</div>
-									</div>
-									<div className="order-card-footer">
-										<Link to={'/order/' + order._id}>Detalji</Link>
-									</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						)}
 					</div>
 					<div className="pagination-controls">
 						{page != 0 && totalPages > 0 && (
