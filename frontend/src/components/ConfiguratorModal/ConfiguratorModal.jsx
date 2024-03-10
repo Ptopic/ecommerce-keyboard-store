@@ -237,20 +237,24 @@ const ConfiguratorModal = ({
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
-			// console.log(isCategoryFiltersCached['Procesori']);
-			// console.log(isCategoryActiveFiltersCached[categoryName]);
-			console.log([...isCategoryFiltersCached[categoryName]]);
-			setFilters([...isCategoryFiltersCached[categoryName]]);
-			setActiveFilters([...isCategoryActiveFiltersCached[categoryName]]);
+			setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
+
+			// Reset all previous active filters
+			for (
+				let i = 0;
+				i < isCategoryActiveFiltersCached[categoryName].length;
+				i++
+			) {
+				let key = Object.keys(isCategoryActiveFiltersCached[categoryName][i]);
+				isCategoryActiveFiltersCached[categoryName][i][key] = '';
+			}
+
+			setActiveFilters(
+				structuredClone(isCategoryActiveFiltersCached[categoryName])
+			);
 		}
 		setLoading(false);
 	}, []);
-
-	// On redux filters change
-	useEffect(() => {
-		console.log(reduxFilters?.filters);
-		console.log(reduxFilters?.activeFilters);
-	}, [reduxFilters]);
 
 	// Get new prices with useMemo only when activeFilters change
 	useEffect(() => {
@@ -260,11 +264,9 @@ const ConfiguratorModal = ({
 		let doFilterRefresh = false;
 
 		// If there is any constraints map them to active fields
-
 		if (constraintsArray) {
 			for (let i = 0; i < constraintsArray.length; i++) {
 				for (let j = 0; j < activeFilters.length; j++) {
-					console.log(activeFilters[j]);
 					if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
 						activeFilters[j][constraintsArray[i]] =
 							constraints[constraintsArray[i]];
@@ -278,15 +280,15 @@ const ConfiguratorModal = ({
 
 		getMinMaxPrices();
 
-		// if (doFilterRefresh) {
-		// 	regenerateFilters(
-		// 		categoryName,
-		// 		activeFilters,
-		// 		categories,
-		// 		setFilters,
-		// 		setActiveFilters
-		// 	);
-		// }
+		if (doFilterRefresh) {
+			regenerateFilters(
+				categoryName,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			);
+		}
 	}, [activeFilters]);
 
 	useEffect(() => {

@@ -10,13 +10,10 @@ const filtersSlice = createSlice({
 		addFilter: (state, action) => {
 			const { categoryName, filters, activeFilters } = action.payload;
 
-			console.log(filters);
-
 			// Turn all sets of filters to arrays
 			for (let filter of filters) {
 				let arrayFromSet = Array.from(...Object.values(filter));
 				filter[Object.keys(filter)] = arrayFromSet;
-				console.log(filter);
 			}
 			state.filters.push({ [categoryName]: filters });
 			state.activeFilters.push({ [categoryName]: activeFilters });

@@ -279,9 +279,17 @@ const ProductList = () => {
 				.catch((err) => console.log(err));
 		} else {
 			console.log('Cached filters');
-			console.log(isCategoryFiltersCached['Procesori']);
-			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
-			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+			setFilters([...isCategoryFiltersCached[name]]);
+
+			// Reset all previous active filters
+			for (let i = 0; i < isCategoryActiveFiltersCached[name].length; i++) {
+				let key = Object.keys(isCategoryActiveFiltersCached[name][i]);
+
+				console.log(isCategoryActiveFiltersCached[name][i]);
+				isCategoryActiveFiltersCached[name][i][key] = '';
+			}
+
+			setActiveFilters([...isCategoryActiveFiltersCached[name]]);
 		}
 
 		setLoading(false);
@@ -289,15 +297,14 @@ const ProductList = () => {
 
 	// Get new prices and regenerate filters only when activeFilters change
 	useEffect(() => {
-		console.log('run');
 		getMinMaxPrices();
-		regenerateFilters(
-			name,
-			activeFilters,
-			categories,
-			setFilters,
-			setActiveFilters
-		);
+		// regenerateFilters(
+		// 	name,
+		// 	activeFilters,
+		// 	categories,
+		// 	setFilters,
+		// 	setActiveFilters
+		// );
 	}, [activeFilters]);
 
 	// If category changes refetch data
@@ -347,8 +354,15 @@ const ProductList = () => {
 		} else {
 			console.log('Cached filters');
 			console.log([...Object.values(isCategoryFiltersCached)[0]]);
-			setFilters([...Object.values(isCategoryFiltersCached)[0]]);
-			setActiveFilters([...Object.values(isCategoryActiveFiltersCached)[0]]);
+			setFilters(structuredClone(isCategoryFiltersCached[name]));
+
+			// Reset all previous active filters
+			for (let i = 0; i < isCategoryActiveFiltersCached[name].length; i++) {
+				let key = Object.keys(isCategoryActiveFiltersCached[name][i]);
+				isCategoryActiveFiltersCached[name][i][key] = '';
+			}
+
+			setActiveFilters(structuredClone(isCategoryActiveFiltersCached[name]));
 		}
 	}, [location]);
 
