@@ -195,6 +195,8 @@ const ConfiguratorModal = ({
 
 	console.log('test2');
 
+	console.log('test3');
+
 	useEffect(() => {
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
