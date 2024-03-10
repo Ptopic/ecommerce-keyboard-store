@@ -10,7 +10,11 @@ const filtersSlice = createSlice({
 		addFilter: (state, action) => {
 			const { categoryName, filters, activeFilters } = action.payload;
 
-			// Use immer to update the state immutably
+			// Turn all sets of filters to arrays
+			for (let filter of filters) {
+				let arrayFromSet = Array.from(...Object.values(filter));
+				filter[Object.keys(filter)] = arrayFromSet;
+			}
 			state.filters.push({ [categoryName]: filters });
 			state.activeFilters.push({ [categoryName]: activeFilters });
 		},

@@ -14,7 +14,8 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
 // Redux
-import { useSelector } from 'react-redux/es/hooks/useSelector';
+import { useSelector, useDispatch } from 'react-redux';
+import { addFilter } from '../../redux/filtersRedux';
 
 // Components
 import ReactSlider from 'react-slider';
@@ -40,7 +41,9 @@ const ConfiguratorModal = ({
 	subCategory,
 	mode,
 }) => {
+	const dispatch = useDispatch();
 	const categories = useSelector((state) => state.categories.data);
+	const reduxFilters = useSelector((state) => state.filters);
 	let PAGE_SIZE = 40;
 
 	const [page, setPage] = useState(0);
@@ -189,56 +192,103 @@ const ConfiguratorModal = ({
 	};
 
 	useEffect(() => {
-		let constraints = configuratorModalValues['Constraints'];
-
-		for (let constraint of Array.of(Object.keys(constraints))) {
-			for (let i = 0; i < activeFilters.length; i++) {
-				if (Object.keys(activeFilters[i]).toString() == constraint) {
-					activeFilters[i][constraint] = constraints[constraint];
-				}
-			}
-		}
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
 		setLoading(true);
-
-		getProducts(true);
-		generateFilters(
-			categoryName,
-			activeFilters,
-			categories,
-			setFilters,
-			setActiveFilters,
-			constraints
-		);
-
 		getMinMaxPrices();
+		getProducts();
+
+		let isCategoryFiltersCached;
+		let isCategoryActiveFiltersCached;
+
+		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+			for (let reduxFilter of reduxFilters?.filters) {
+				if (Object.keys(reduxFilter) == categoryName) {
+					isCategoryFiltersCached = { ...reduxFilter };
+				}
+			}
+		}
+
+		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
+			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+				if (Object.keys(reduxActiveFilter) == categoryName) {
+					isCategoryActiveFiltersCached = { ...reduxActiveFilter };
+				}
+			}
+		}
+
+		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			generateFilters(
+				categoryName,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			)
+				.then((res) => {
+					dispatch(
+						addFilter({
+							categoryName: categoryName,
+							filters: res?.filters,
+							activeFilters: res?.activeFilters,
+						})
+					);
+				})
+				.catch((err) => console.log(err));
+		} else {
+			console.log('Cached filters');
+			setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
+
+			// Reset all previous active filters
+			for (
+				let i = 0;
+				i < isCategoryActiveFiltersCached[categoryName].length;
+				i++
+			) {
+				let key = Object.keys(isCategoryActiveFiltersCached[categoryName][i]);
+				isCategoryActiveFiltersCached[categoryName][i][key] = '';
+			}
+
+			setActiveFilters(
+				structuredClone(isCategoryActiveFiltersCached[categoryName])
+			);
+		}
 		setLoading(false);
 	}, []);
 
 	// Get new prices with useMemo only when activeFilters change
-	useMemo(() => {
+	useEffect(() => {
 		let constraints = configuratorModalValues['Constraints'];
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
 
-		for (let i = 0; i < constraintsArray.length; i++) {
-			for (let j = 0; j < activeFilters.length; j++) {
-				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-					activeFilters[j][constraintsArray[i]] =
-						constraints[constraintsArray[i]];
+		let doFilterRefresh = false;
+
+		// If there is any constraints map them to active fields
+		if (constraintsArray) {
+			for (let i = 0; i < constraintsArray.length; i++) {
+				for (let j = 0; j < activeFilters.length; j++) {
+					if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
+						activeFilters[j][constraintsArray[i]] =
+							constraints[constraintsArray[i]];
+
+						// If constraints array contains categoryName values then regenerate filters
+						doFilterRefresh = true;
+					}
 				}
 			}
 		}
 
 		getMinMaxPrices();
-		// regenerateFilters(
-		// 	categoryName,
-		// 	activeFilters,
-		// 	categories,
-		// 	setFilters,
-		// 	setActiveFilters,
-		// 	constraints
-		// );
+
+		if (doFilterRefresh) {
+			regenerateFilters(
+				categoryName,
+				activeFilters,
+				categories,
+				setFilters,
+				setActiveFilters
+			);
+		}
 	}, [activeFilters]);
 
 	useEffect(() => {
