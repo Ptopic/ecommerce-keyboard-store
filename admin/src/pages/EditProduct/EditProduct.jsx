@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
+import { addFilter } from '../../redux/filtersRedux';
 import { setCategoriesArray } from '../../redux/categoriesRedux';
 
 // Components
@@ -44,6 +45,7 @@ const EditProduct = () => {
 	const dispatch = useDispatch();
 
 	const categoriesRedux = useSelector((state) => state.categories.data);
+	const reduxFilters = useSelector((state) => state.filters);
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -235,10 +237,7 @@ const EditProduct = () => {
 				// Set form values as product details values
 				for (let detailsKey of Object.keys(productData.details)) {
 					formik.setFieldValue(detailsKey, productData.details[detailsKey]);
-					console.log(productData.details[detailsKey]);
 				}
-
-				console.log(formik.values);
 			});
 		} catch (error) {
 			console.log(error);
@@ -247,7 +246,6 @@ const EditProduct = () => {
 
 	const handleInitilaFiltersGeneration = async () => {
 		// Check for cached filters or cache them
-
 		setIsFiltersLoading(true);
 		let curCategory;
 		categories.forEach((category) => {
@@ -261,25 +259,54 @@ const EditProduct = () => {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			let object = {};
-			let validationObject = {};
+			let isCategoryFiltersCached;
+			let isCategoryActiveFiltersCached;
 
-			// Map names of active fields as object
-			for (let i = 0; i < namesOfActiveFields.length; i++) {
-				object[namesOfActiveFields[i]] = '';
-				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
+			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+				for (let reduxFilter of reduxFilters?.filters) {
+					if (Object.keys(reduxFilter) == curCategory.name) {
+						isCategoryFiltersCached = reduxFilter;
+					}
+				}
 			}
 
-			generateFilterProductAdmin(
-				selectedCategory,
-				activeFilters,
-				curCategory,
-				setFilters,
-				setActiveFilters,
-				setActiveFields,
-				namesOfActiveFields,
-				setIsFiltersLoading
-			);
+			if (
+				reduxFilters?.activeFilters &&
+				reduxFilters.activeFilters.length > 0
+			) {
+				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+					if (Object.keys(reduxActiveFilter) == curCategory.name) {
+						isCategoryActiveFiltersCached = reduxActiveFilter;
+					}
+				}
+			}
+
+			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+				generateFilterProductAdmin(
+					selectedCategory,
+					activeFilters,
+					curCategory,
+					setFilters,
+					setActiveFilters,
+					setActiveFields,
+					namesOfActiveFields,
+					setIsFiltersLoading
+				)
+					.then((res) => {
+						dispatch(
+							addFilter({
+								categoryName: curCategory.name,
+								filters: res?.filters,
+								activeFilters: res?.activeFilters,
+							})
+						);
+					})
+					.catch((err) => console.log(err));
+			} else {
+				console.log('Cached filters');
+				setFilters(structuredClone(isCategoryFiltersCached[curCategory.name]));
+				setActiveFields(namesOfActiveFields);
+			}
 		}
 	};
 
@@ -307,24 +334,53 @@ const EditProduct = () => {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			let object = {};
-			let validationObject = {};
+			let isCategoryFiltersCached;
+			let isCategoryActiveFiltersCached;
 
-			// Map names of active fields as object
-			for (let i = 0; i < namesOfActiveFields.length; i++) {
-				object[namesOfActiveFields[i]] = '';
-				validationObject[namesOfActiveFields[i]] = Yup.string().notRequired();
+			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+				for (let reduxFilter of reduxFilters?.filters) {
+					if (Object.keys(reduxFilter) == curCategory.name) {
+						isCategoryFiltersCached = reduxFilter;
+					}
+				}
 			}
 
-			generateFilterProductAdmin(
-				newCategory,
-				activeFilters,
-				curCategory,
-				setFilters,
-				setActiveFilters,
-				setActiveFields,
-				namesOfActiveFields
-			);
+			if (
+				reduxFilters?.activeFilters &&
+				reduxFilters.activeFilters.length > 0
+			) {
+				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+					if (Object.keys(reduxActiveFilter) == curCategory.name) {
+						isCategoryActiveFiltersCached = reduxActiveFilter;
+					}
+				}
+			}
+
+			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+				generateFilterProductAdmin(
+					newCategory,
+					activeFilters,
+					curCategory,
+					setFilters,
+					setActiveFilters,
+					setActiveFields,
+					namesOfActiveFields
+				)
+					.then((res) => {
+						dispatch(
+							addFilter({
+								categoryName: curCategory.name,
+								filters: res?.filters,
+								activeFilters: res?.activeFilters,
+							})
+						);
+					})
+					.catch((err) => console.log(err));
+			} else {
+				console.log('Cached filters');
+				setFilters(structuredClone(isCategoryFiltersCached[curCategory.name]));
+				setActiveFields(namesOfActiveFields);
+			}
 		}
 	};
 
@@ -520,7 +576,7 @@ const EditProduct = () => {
 							) : null}
 						</div>
 
-						{isFiltersLoading && <div>Loading</div>}
+						{/* {isFiltersLoading && <div>Loading</div>} */}
 
 						{activeFields && (
 							<ProductFiltersDisplay

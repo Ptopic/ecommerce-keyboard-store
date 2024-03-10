@@ -67,7 +67,6 @@ const Products = () => {
 					search: searchTermValue,
 				},
 			});
-			console.log(res.data.data);
 			setTotalPages(res.data.totalPages - 1);
 			setData(res.data.data);
 		} catch (err) {
@@ -110,7 +109,6 @@ const Products = () => {
 
 	const handleProductDelete = async () => {
 		const res = await userRequest.delete(`/products/${productIdToDelete}`);
-		console.log(res);
 		setProductIdToDelete(null);
 		setDeleteModal({ open: false, text: '' });
 		// Reset all filters
@@ -241,9 +239,9 @@ const Products = () => {
 					</thead>
 
 					<tbody className="table-content">
-						{data.map((product) => {
+						{data.map((product, index) => {
 							return (
-								<tr className="table-content-row">
+								<tr className="table-content-row" key={index}>
 									<td>{product._id.toString().substring(0, 5) + '...'}</td>
 									<td style={{ width: '600px' }}>
 										<div className="product-title-and-image">

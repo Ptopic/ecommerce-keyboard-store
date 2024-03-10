@@ -25,7 +25,7 @@ const ProductFiltersDisplay = ({ activeFields, filters, formik }) => {
 						errors={formik.errors[field]}
 						touched={formik.touched[field]}
 					/>
-					<div className="previous-filters">
+					<div className="previous-filters" key={field + '-' + index}>
 						{filters &&
 							filters != [] &&
 							Array.from(Object.values(filters[index])[0]).map((el) => {
@@ -33,6 +33,7 @@ const ProductFiltersDisplay = ({ activeFields, filters, formik }) => {
 									<div
 										className="previous-filter"
 										onClick={() => formik.setFieldValue(field, el)}
+										key={index + '-' + el}
 									>
 										<p>{el}</p>
 									</div>

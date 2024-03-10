@@ -74,6 +74,13 @@ export const generateFilterProductAdmin = async (
 	setActiveFileds(namesOfActiveFields);
 
 	setIsFiltersLoading ? setIsFiltersLoading(false) : null;
+
+	let returnObj = {};
+
+	returnObj['filters'] = filtersArray;
+	returnObj['activeFilters'] = initialFiltersArray;
+
+	return returnObj;
 };
 
 export const generateFilters = async (
