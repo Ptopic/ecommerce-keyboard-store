@@ -24,6 +24,10 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+// React query
+import { QueryClientProvider, QueryClient } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -106,84 +110,89 @@ const App = () => {
 		},
 	});
 
-	return (
-		<ThemeProvider theme={theme}>
-			<Router>
-				<Routes>
-					<Route exact path="/" element={<Home />} />
-					<Route exact path="/configurator" element={<Configurator />} />
-					<Route exact path="/products" element={<ProductList />} />
-					<Route exact path="/products/all" element={<AllProductList />} />
-					<Route exact path="/products/:category" element={<ProductList />} />
-					<Route exact path="/product/:id" element={<Product />} />
-					<Route
-						exact
-						path="/login"
-						element={user?.length > 0 ? <Navigate to="/" /> : <Login />}
-					/>
-					<Route
-						exact
-						path="/forgot-password"
-						element={
-							user?.length > 0 ? <Navigate to="/" /> : <ForgotPassword />
-						}
-					/>
-					<Route
-						exact
-						path="/register"
-						element={user?.length > 0 ? <Navigate to="/" /> : <Register />}
-					/>
-					<Route
-						exact
-						path="/wishlist"
-						element={
-							user?.length == 0 ? <Navigate to="/login" /> : <Wishlist />
-						}
-					/>
-					<Route
-						exact
-						path="/user/details"
-						element={
-							user?.length == 0 ? <Navigate to="/login" /> : <UserDetails />
-						}
-					/>
-					<Route
-						exact
-						path="/user/orders"
-						element={
-							user?.length == 0 ? <Navigate to="/login" /> : <UserOrders />
-						}
-					/>
-					<Route
-						exact
-						path="/user/changePassword"
-						element={
-							user?.length == 0 ? (
-								<Navigate to="/login" />
-							) : (
-								<UserChangePassword />
-							)
-						}
-					/>
-					<Route
-						exact
-						path="/user/registerThanks"
-						element={<UserRegisterThanks />}
-					/>
-					<Route exact path="/reset-password" element={<ResetPassword />} />
-					<Route exact path="/success" element={<Success />} />
-					<Route exast path="/checkout" element={<Checkout />} />
-					<Route
-						exast
-						path="/payment"
-						element={<Payment stripePromise={stripePromise} />}
-					/>
-					<Route exact path="/order/:id" element={<Order />} />
+	const queryClient = new QueryClient();
 
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			</Router>
-		</ThemeProvider>
+	return (
+		<QueryClientProvider client={queryClient}>
+			<ThemeProvider theme={theme}>
+				<Router>
+					<Routes>
+						<Route exact path="/" element={<Home />} />
+						<Route exact path="/configurator" element={<Configurator />} />
+						<Route exact path="/products" element={<ProductList />} />
+						<Route exact path="/products/all" element={<AllProductList />} />
+						<Route exact path="/products/:category" element={<ProductList />} />
+						<Route exact path="/product/:id" element={<Product />} />
+						<Route
+							exact
+							path="/login"
+							element={user?.length > 0 ? <Navigate to="/" /> : <Login />}
+						/>
+						<Route
+							exact
+							path="/forgot-password"
+							element={
+								user?.length > 0 ? <Navigate to="/" /> : <ForgotPassword />
+							}
+						/>
+						<Route
+							exact
+							path="/register"
+							element={user?.length > 0 ? <Navigate to="/" /> : <Register />}
+						/>
+						<Route
+							exact
+							path="/wishlist"
+							element={
+								user?.length == 0 ? <Navigate to="/login" /> : <Wishlist />
+							}
+						/>
+						<Route
+							exact
+							path="/user/details"
+							element={
+								user?.length == 0 ? <Navigate to="/login" /> : <UserDetails />
+							}
+						/>
+						<Route
+							exact
+							path="/user/orders"
+							element={
+								user?.length == 0 ? <Navigate to="/login" /> : <UserOrders />
+							}
+						/>
+						<Route
+							exact
+							path="/user/changePassword"
+							element={
+								user?.length == 0 ? (
+									<Navigate to="/login" />
+								) : (
+									<UserChangePassword />
+								)
+							}
+						/>
+						<Route
+							exact
+							path="/user/registerThanks"
+							element={<UserRegisterThanks />}
+						/>
+						<Route exact path="/reset-password" element={<ResetPassword />} />
+						<Route exact path="/success" element={<Success />} />
+						<Route exast path="/checkout" element={<Checkout />} />
+						<Route
+							exast
+							path="/payment"
+							element={<Payment stripePromise={stripePromise} />}
+						/>
+						<Route exact path="/order/:id" element={<Order />} />
+
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</Router>
+			</ThemeProvider>
+			<ReactQueryDevtools />
+		</QueryClientProvider>
 	);
 };
 

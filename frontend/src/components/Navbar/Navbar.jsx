@@ -28,13 +28,20 @@ import { request } from '../../api';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { setCategories } from '../../redux/categoriesRedux';
 import { logout } from '../../redux/userRedux';
 import { openCart, closeCart } from '../../redux/cartRedux';
 
 import { useCookies } from 'react-cookie';
 
+import { useQuery } from 'react-query';
+import { getCategories } from '../../api/http/categories';
+
 const Navbar = () => {
+	const { isLoading, data, isError, error, isFetching } = useQuery(
+		'categories',
+		getCategories
+	);
+
 	const [cookies, setCookie] = useCookies();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -42,16 +49,11 @@ const Navbar = () => {
 	const user = useSelector((state) => state.user.currentUser);
 
 	const quantity = useSelector((state) => state.cart.quantity);
-	const categories = useSelector((state) => state.categories.data);
 
 	const { open } = useSelector((state) => state.cart);
 
 	const [navOpen, setNavOpen] = useState(false);
 	const [searchOpen, setSearchOpen] = useState(false);
-
-	const [categoriesData, setCategoriesData] = useState([]);
-
-	const [loading, setLoading] = useState(false);
 
 	const toggleSearchOpen = () => {
 		if (searchOpen) {
@@ -95,30 +97,6 @@ const Navbar = () => {
 		navigate('/');
 		window.location.reload();
 	};
-
-	const getAllCategories = async () => {
-		setLoading(true);
-
-		// Cache categories in redux persist store
-		if (categories.length == 0) {
-			try {
-				const res = await request('/categories');
-				dispatch(setCategories({ categories: res.data.data }));
-				setCategoriesData(res.data.data);
-				setLoading(false);
-			} catch (error) {
-				console.log(error);
-			}
-		} else {
-			setCategoriesData(categories);
-			setLoading(false);
-		}
-	};
-
-	// When navbar loads get all categories
-	useEffect(() => {
-		getAllCategories();
-	}, []);
 
 	return (
 		<nav className="navbar">
@@ -224,7 +202,7 @@ const Navbar = () => {
 								},
 							}}
 						>
-							{loading ? (
+							{isLoading ? (
 								<Spinner />
 							) : (
 								<>
@@ -245,8 +223,8 @@ const Navbar = () => {
 									/>
 
 									{/* Map thru categories */}
-									{!loading &&
-										[...categoriesData]
+									{!isLoading &&
+										[...data.data.data]
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((category) => {
 												return (
