@@ -205,7 +205,7 @@ const EditProduct = () => {
 		// Cache categories in redux persist store
 		if (categoriesRedux.length == 0) {
 			try {
-				const res = await request('/categories');
+				const res = await userRequest('/categories');
 				dispatch(setCategoriesArray({ categories: res.data.data }));
 				setCategories(res.data.data);
 			} catch (error) {

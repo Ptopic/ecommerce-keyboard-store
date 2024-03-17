@@ -15,6 +15,7 @@ export default function Home() {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 	const [sales, setSales] = useState([]);
+	const [salesMax, setSalesMax] = useState(0);
 	const [salesForChart, setSalesForChart] = useState([]);
 	const [salesPercentage, setSalesPercentage] = useState(0);
 	const [curSales, setCurSales] = useState(0);
@@ -103,6 +104,8 @@ export default function Home() {
 	// When sales changes accumulate totals of sales
 	useEffect(() => {
 		if (sales.length > 1) {
+			const salesValuesArray = sales.map((sale) => sale.totalSales);
+
 			// Set curSales to latest sale
 			let curSalesValues = convertToObj(sales, 'totalSales');
 
@@ -130,6 +133,9 @@ export default function Home() {
 			}
 
 			setSalesForChart(sortedSales);
+
+			const salesMaxValue = Math.max(...salesValuesArray);
+			setSalesMax(salesMaxValue);
 		} else {
 			setCurSales(sales[0]?.totalSales);
 			setSalesPercentage(Number(0).toFixed(1));
@@ -202,6 +208,7 @@ export default function Home() {
 				title="Sales Analytics"
 				grid
 				dataKey="value"
+				maxValue={salesMax}
 			/>
 			<div className="homeWidgets">
 				<WidgetLg data={latestOrders} />

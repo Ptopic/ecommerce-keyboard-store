@@ -34,6 +34,7 @@
     color: var(--error-text);
     border: 0.4px solid var(--error-text);
     margin-right: 1rem;
+    width: fit-content;
     text-decoration: none;
 }
 
@@ -43,5 +44,13 @@
     border-radius: .4rem;
     padding: 1rem 1.6rem;
     border: 0.4px solid black;
+    width: fit-content;
     color: black;
+}
+
+.modal-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }

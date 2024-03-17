@@ -16,10 +16,13 @@ const Analytics = () => {
 
 	const [sales, setSales] = useState([]);
 	const [salesChartData, setSalesChartData] = useState([]);
+	const [salesMax, setSalesMax] = useState(0);
 	const [users, setUsers] = useState([]);
 	const [usersChartData, setUsersChartData] = useState([]);
+	const [usersMax, setUsersMax] = useState(0);
 	const [orders, setOrders] = useState([]);
 	const [ordersChartData, setOrdersChartData] = useState([]);
+	const [orderMax, setOrderMax] = useState(0);
 
 	const getSalesData = async () => {
 		try {
@@ -83,6 +86,8 @@ const Analytics = () => {
 	// When salesData changes convert them to object and put it in state for chart usage
 	useEffect(() => {
 		if (sales.length > 1) {
+			const salesValuesArray = sales.map((sale) => sale.totalSales);
+
 			let curSalesValues = convertToObj(sales, 'totalSales');
 
 			// Convert sales arr for chart usage
@@ -94,6 +99,9 @@ const Analytics = () => {
 				sortedSales[i].value = sortedSales[i].value.toFixed(2);
 			}
 
+			const salesMaxValue = Math.max(...salesValuesArray);
+			setSalesMax(salesMaxValue);
+
 			setSalesChartData(sortedSales);
 		}
 	}, [sales]);
@@ -101,13 +109,15 @@ const Analytics = () => {
 	// When usersData changes convert them to object and put it in state for chart usage
 	useEffect(() => {
 		if (users.length > 1) {
+			const usersValuesArray = users.map((user) => user.usersCount);
 			let curUsersValues = convertToObj(users, 'usersCount');
 
 			// Convert users arr for chart usage
 			// Sort values by date
 			let sortedUsers = curUsersValues.sort((a, b) => b.date - a.date);
 
-			console.log(sortedUsers);
+			const usersMaxValue = Math.max(...usersValuesArray);
+			setUsersMax(usersMaxValue);
 
 			setUsersChartData(sortedUsers);
 		}
@@ -116,11 +126,15 @@ const Analytics = () => {
 	// When ordersData changes convert them to object and put it in state for chart usage
 	useEffect(() => {
 		if (orders.length > 1) {
+			const ordersValuesArray = orders.map((order) => order.ordersCount);
 			let curOrdersValues = convertToObj(orders, 'ordersCount');
 
 			// Convert orders arr for chart usage
 			// Sort values by date
 			let sortedOrders = curOrdersValues.sort((a, b) => b.date - a.date);
+
+			const ordersMaxValue = Math.max(...ordersValuesArray);
+			setOrderMax(ordersMaxValue);
 
 			setOrdersChartData(sortedOrders);
 		}
@@ -133,6 +147,7 @@ const Analytics = () => {
 				title="Sales Analytics"
 				grid
 				dataKey="value"
+				maxValue={salesMax}
 			/>
 
 			<Chart
@@ -140,6 +155,7 @@ const Analytics = () => {
 				title="Users Analytics"
 				grid
 				dataKey="value"
+				maxValue={usersMax}
 			/>
 
 			<Chart
@@ -147,6 +163,7 @@ const Analytics = () => {
 				title="Orders Analytics"
 				grid
 				dataKey="value"
+				maxValue={orderMax}
 			/>
 		</div>
 	);
