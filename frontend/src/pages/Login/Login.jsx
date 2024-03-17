@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { login } from '../../redux/apiCalls';
+
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
+import { loginFailure } from '../../redux/userRedux';
 import { Link } from 'react-router-dom';
 
 // Formik
@@ -40,9 +43,7 @@ const Login = () => {
 
 	const loginSchema = Yup.object().shape({
 		email: Yup.string().email('Invalid email').required('Email is required'),
-		password: Yup.string()
-			.min(5, 'Too Short!')
-			.required('Password is required'),
+		password: Yup.string().required('Password is required'),
 	});
 
 	const initialValues = {
@@ -73,6 +74,8 @@ const Login = () => {
 			navigate('/');
 		} else {
 			toast.error(res.error);
+
+			dispatch(loginFailure());
 		}
 	};
 
