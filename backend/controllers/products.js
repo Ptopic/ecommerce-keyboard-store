@@ -304,7 +304,7 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 
 	let query = { category: category };
 
-	if (activeFilters != null) {
+	if (activeFilters != null && activeFilters.length > 0) {
 		for (let activeFilter of activeFilters) {
 			if (Object.values(activeFilter)[0] != '') {
 				query['details.' + Object.keys(activeFilter)] =

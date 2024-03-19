@@ -93,7 +93,8 @@ export const generateFilters = async (
 	// Get all products by category to generate filters for it
 	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
-			activeFilters: activeFilters != [] ? activeFilters : null,
+			activeFilters:
+				activeFilters && activeFilters.length > 0 ? activeFilters : null,
 		},
 	});
 
@@ -181,7 +182,8 @@ export const regenerateFilters = async (
 	// Get all products by category to generate filters for it
 	const allProductsRes = await userRequest.get(`/products/filters/` + name, {
 		params: {
-			activeFilters: activeFilters != [] ? activeFilters : null,
+			activeFilters:
+				activeFilters && activeFilters.length > 0 ? activeFilters : null,
 		},
 	});
 

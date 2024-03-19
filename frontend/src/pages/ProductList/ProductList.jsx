@@ -15,32 +15,22 @@ import { toast, Toaster } from 'react-hot-toast';
 // Styles for input boxes
 import '../Checkout/Checkout.css';
 
-// Redux
-import { useSelector, useDispatch } from 'react-redux';
-import { addFilter } from '../../redux/filtersRedux';
-
 // Utils
 import { debounce } from '../../utils/debounce';
 import { generateFilters, regenerateFilters } from '../../utils/filters';
 
 import ProductFilters from '../../components/ProductFilters/ProductFilters';
+import { useGetProductPrices } from '../../hooks/useGetProductPrices';
+import {
+	getInitialProducts,
+	getProductPrices,
+	getProducts,
+} from '../../api/http/products';
+import { useGetCategories } from '../../hooks/useGetCategories';
+import { useGetInitialProducts } from '../../hooks/useGetInitialProducts';
 
 const ProductList = () => {
-	const categories = useSelector((state) => state.categories.data);
-	const reduxFilters = useSelector((state) => state.filters);
 	let PAGE_SIZE = 12;
-
-	const [isLoading, setIsLoading] = useState(true);
-
-	const dispatch = useDispatch();
-
-	const navigate = useNavigate();
-	const loadMoreBtnRef = useRef(null);
-	const [page, setPage] = useState(0);
-	const [totalPages, setTotalPages] = useState(0);
-	const [isProductsLoading, setIsProductsLoading] = useState(false);
-
-	const [products, setProducts] = useState([]);
 
 	const [searchParams] = useSearchParams();
 	const location = useLocation();
@@ -60,17 +50,29 @@ const ProductList = () => {
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
 
+	const { data: categories } = useGetCategories();
+	// const { data: productsData } = useGetInitialProducts(
+	// 	category,
+	// 	sort,
+	// 	direction
+	// );
+
+	const [products, setProducts] = useState([]);
+
+	const [isLoading, setIsLoading] = useState(true);
+
+	const loadMoreBtnRef = useRef(null);
+	const [page, setPage] = useState(0);
+	const [totalPages, setTotalPages] = useState(0);
+	const [isProductsLoading, setIsProductsLoading] = useState(false);
+
 	const getMinMaxPrices = async () => {
 		try {
 			let minPrice = 0;
 			let maxPrice = 0;
 			// Get min max prices of products
-			const resPrices = await request.get('/products/prices/' + category, {
-				params: {
-					activeFilters: activeFilters != [] ? activeFilters : null,
-				},
-			});
-			let pricesData = resPrices.data;
+			const data = await getProductPrices(category, activeFilters);
+			let pricesData = data.data;
 
 			if (
 				pricesData &&
@@ -97,16 +99,12 @@ const ProductList = () => {
 		setPage(0);
 
 		try {
-			const res = await request.get(`/products/category/` + category, {
-				params: {
-					page: 0,
-					pageSize: PAGE_SIZE,
-					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
-					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
-					sort: sort != '' ? sort : null,
-					direction: direction != '' ? direction : null,
-				},
-			});
+			const res = await getInitialProducts(
+				category,
+				priceSliderValues,
+				sort,
+				direction
+			);
 
 			let data = res.data;
 
@@ -119,23 +117,19 @@ const ProductList = () => {
 		}
 	};
 
-	const getProducts = debounce(async () => {
+	const getProductsData = debounce(async () => {
 		// Reset page
 		setPage(0);
 
 		try {
 			setIsProductsLoading(true);
-			const res = await request.get(`/products/category/` + category, {
-				params: {
-					page: 0,
-					pageSize: PAGE_SIZE,
-					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
-					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
-					sort: sort != '' ? sort : null,
-					direction: direction != '' ? direction : null,
-					activeFilters: activeFilters != [] ? activeFilters : null,
-				},
-			});
+			const res = await getProducts(
+				category,
+				priceSliderValues,
+				sort,
+				direction,
+				activeFilters
+			);
 
 			let data = res.data;
 
@@ -155,17 +149,14 @@ const ProductList = () => {
 
 		try {
 			let data;
-			const res = await request.get(`/products/category/` + category, {
-				params: {
-					page: page,
-					pageSize: PAGE_SIZE,
-					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
-					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
-					sort: sort != '' ? sort : null,
-					direction: direction != '' ? direction : direction,
-					activeFilters: activeFilters != [] ? activeFilters : null,
-				},
-			});
+			const res = await getProducts(
+				category,
+				priceSliderValues,
+				sort,
+				direction,
+				activeFilters
+			);
+
 			data = res.data;
 			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
@@ -178,6 +169,7 @@ const ProductList = () => {
 
 	const handlePriceFiltersChange = (e) => {
 		setPriceSliderValues([e[0], e[1]]);
+		getProductsData();
 	};
 
 	// Filter check box click
@@ -204,18 +196,12 @@ const ProductList = () => {
 
 		// Trigger filters re render
 		setFilters([...filters]);
-
-		// Get new products
-		getProducts();
-
-		// Recalculate prices
-		getMinMaxPrices();
 	};
 
 	const clearFilters = () => {
 		setPriceSliderValues([min, max]);
 
-		let categoryFields = categories.find(
+		let categoryFields = categories?.data.find(
 			(category) => category.name === name
 		)?.fields;
 
@@ -233,57 +219,15 @@ const ProductList = () => {
 	};
 
 	const cacheFilters = () => {
-		let isCategoryFiltersCached;
-		let isCategoryActiveFiltersCached;
-
-		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-			for (let reduxFilter of reduxFilters?.filters) {
-				if (Object.keys(reduxFilter) == name) {
-					isCategoryFiltersCached = reduxFilter;
-				}
-			}
-		}
-
-		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
-			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-				if (Object.keys(reduxActiveFilter) == name) {
-					isCategoryActiveFiltersCached = reduxActiveFilter;
-				}
-			}
-		}
-
-		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
-			generateFilters(
-				name,
-				activeFilters,
-				categories,
-				setFilters,
-				setActiveFilters
-			)
-				.then((res) => {
-					dispatch(
-						addFilter({
-							categoryName: name,
-							filters: res?.filters,
-							activeFilters: res?.activeFilters,
-						})
-					);
-				})
-				.catch((err) => console.log(err));
-		} else {
-			console.log('Cached filters');
-			setFilters([...isCategoryFiltersCached[name]]);
-
-			// Reset all previous active filters
-			for (let i = 0; i < isCategoryActiveFiltersCached[name].length; i++) {
-				let key = Object.keys(isCategoryActiveFiltersCached[name][i]);
-
-				console.log(isCategoryActiveFiltersCached[name][i]);
-				isCategoryActiveFiltersCached[name][i][key] = '';
-			}
-
-			setActiveFilters([...isCategoryActiveFiltersCached[name]]);
-		}
+		generateFilters(
+			name,
+			activeFilters,
+			categories?.data,
+			setFilters,
+			setActiveFilters
+		)
+			.then((res) => {})
+			.catch((err) => console.log(err));
 	};
 
 	// Initial page load and redux state load
@@ -297,133 +241,32 @@ const ProductList = () => {
 		setIsLoading(false);
 	}, [categories]);
 
-	// Get new prices and regenerate filters only when activeFilters change
 	useEffect(() => {
-		getMinMaxPrices();
-	}, [activeFilters]);
-
-	// If category changes refetch data
-	// If products array changes generate filters (initial load or load more data) or location changes
-	useEffect(() => {
-		// Reset filters and active filters
 		setActiveFilters([]);
 		setFilters([]);
 
-		let isCategoryFiltersCached;
-		let isCategoryActiveFiltersCached;
+		cacheFilters();
 
-		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-			for (let reduxFilter of reduxFilters?.filters) {
-				if (Object.keys(reduxFilter) == name) {
-					isCategoryFiltersCached = reduxFilter;
-				}
-			}
-		}
-
-		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
-			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-				if (Object.keys(reduxActiveFilter) == name) {
-					isCategoryActiveFiltersCached = reduxActiveFilter;
-				}
-			}
-		}
-
-		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
-			generateFilters(
-				name,
-				activeFilters,
-				categories,
-				setFilters,
-				setActiveFilters
-			)
-				.then((res) => {
-					dispatch(
-						addFilter({
-							categoryName: name,
-							filters: res?.filters,
-							activeFilters: res?.activeFilters,
-						})
-					);
-				})
-				.catch((err) => console.log(err));
-		} else {
-			console.log('Cached filters');
-			setFilters(structuredClone(isCategoryFiltersCached[name]));
-
-			// Reset all previous active filters
-			for (let i = 0; i < isCategoryActiveFiltersCached[name].length; i++) {
-				let key = Object.keys(isCategoryActiveFiltersCached[name][i]);
-				isCategoryActiveFiltersCached[name][i][key] = '';
-			}
-
-			setActiveFilters(structuredClone(isCategoryActiveFiltersCached[name]));
-		}
+		getProductsData();
 	}, [location]);
 
 	useEffect(() => {
-		getProducts();
-	}, [priceSliderValues, sort, direction]);
+		getProductsData();
+	}, [sort, direction]);
 
 	useEffect(() => {
-		getMinMaxPrices();
+		if (activeFilters.length > 0) {
+			getMinMaxPrices();
 
-		// Check if any value in active filters is != null
-		let isActiveFiltersEmpty = true;
-		for (let activeFilter of activeFilters) {
-			if (Object.values(activeFilter) != '') {
-				console.log(activeFilter);
-				isActiveFiltersEmpty = false;
-			}
-		}
-		// If it is regenerate filters
-		if (!isActiveFiltersEmpty) {
+			getProductsData();
+
 			regenerateFilters(
 				name,
 				activeFilters,
-				categories,
+				categories?.data,
 				setFilters,
 				setActiveFilters
 			);
-		} else {
-			// Set filters as default filters (reset them)
-			let isCategoryFiltersCached;
-			let isCategoryActiveFiltersCached;
-
-			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-				for (let reduxFilter of reduxFilters?.filters) {
-					if (Object.keys(reduxFilter) == name) {
-						isCategoryFiltersCached = structuredClone(reduxFilter);
-					}
-				}
-			}
-
-			if (
-				reduxFilters?.activeFilters &&
-				reduxFilters.activeFilters.length > 0
-			) {
-				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-					if (Object.keys(reduxActiveFilter) == name) {
-						isCategoryActiveFiltersCached = structuredClone(reduxActiveFilter);
-					}
-				}
-			}
-
-			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
-				generateFilters(name, categories, setFilters)
-					.then((res) => {
-						dispatch(
-							addFilter({
-								categoryName: name,
-								filters: res?.filters,
-								activeFilters: res?.activeFilters,
-							})
-						);
-					})
-					.catch((err) => console.log(err));
-			} else {
-				console.log('Cached filters');
-				setFilters(structuredClone(isCategoryFiltersCached[name]));
-			}
 		}
 	}, [activeFilters]);
 

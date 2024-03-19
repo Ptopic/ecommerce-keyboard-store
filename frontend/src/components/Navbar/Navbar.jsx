@@ -32,15 +32,11 @@ import { logout } from '../../redux/userRedux';
 import { openCart, closeCart } from '../../redux/cartRedux';
 
 import { useCookies } from 'react-cookie';
-
-import { useQuery } from 'react-query';
-import { getCategories } from '../../api/http/categories';
+import { useGetCategories } from '../../hooks/useGetCategories';
+import { Toaster, toast } from 'react-hot-toast';
 
 const Navbar = () => {
-	const { isLoading, data, isError, error, isFetching } = useQuery(
-		'categories',
-		getCategories
-	);
+	const { isLoading, data, isError, error, isFetching } = useGetCategories();
 
 	const [cookies, setCookie] = useCookies();
 	const navigate = useNavigate();
@@ -100,6 +96,7 @@ const Navbar = () => {
 
 	return (
 		<nav className="navbar">
+			<Toaster />
 			<div className="navbar-wrapper">
 				<div className="navbar-left">
 					<AnimatePresence>
@@ -224,7 +221,8 @@ const Navbar = () => {
 
 									{/* Map thru categories */}
 									{!isLoading &&
-										[...data.data.data]
+										data &&
+										[...data.data]
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((category) => {
 												return (
