@@ -8,66 +8,68 @@ const ProductFilters = ({
 	activeFilters,
 	handleFilterCheckboxClick,
 }) => {
+	console.log(filters);
 	return (
 		<>
-			{filters.map((filter, filterIndex) => {
-				return (
-					<div className="filter" key={filterIndex}>
-						<div className="filter-name">{Object.keys(filter)}:</div>
-						<div className="filter-values">
-							{Object.values(filter).map((el) => {
-								return Array.from(el).map((filterValue) => {
-									return (
-										<div
-											className="checkout-checkbox"
-											key={
-												Object.keys(activeFilters[filterIndex]) +
-												'-' +
-												filterValue
-											}
-										>
-											<button
-												type="button"
-												style={{
-													background:
-														Object.values(
-															activeFilters && activeFilters[filterIndex]
-														)[0] == filterValue
-															? '#E81123'
-															: '#fff',
-													border:
-														Object.values(
-															activeFilters && activeFilters[filterIndex]
-														) == filterValue
-															? 'none'
-															: '1px solid black',
-												}}
-												onClick={() =>
-													handleFilterCheckboxClick(
-														filterIndex,
-														Object.keys(
-															activeFilters && activeFilters[filterIndex]
-														),
-														Object.values(
-															activeFilters && activeFilters[filterIndex]
-														),
-														filterValue
-													)
+			{filters &&
+				filters?.map((filter, filterIndex) => {
+					return (
+						<div className="filter" key={filterIndex}>
+							<div className="filter-name">{Object.keys(filter)}:</div>
+							<div className="filter-values">
+								{Object.values(filter).map((el) => {
+									return Array.from(el).map((filterValue) => {
+										return (
+											<div
+												className="checkout-checkbox"
+												key={
+													Object.keys(activeFilters[filterIndex]) +
+													'-' +
+													filterValue
 												}
 											>
-												{activeFilters[Object.keys(filter)[0]] != '' ? (
-													<IoMdCheckmark color={'white'} size={24} />
-												) : null}
-											</button>
-											<p>{filterValue}</p>
-										</div>
-									);
-								});
-							})}
+												<button
+													type="button"
+													style={{
+														background:
+															Object.values(
+																activeFilters && activeFilters[filterIndex]
+															)[0] == filterValue
+																? '#E81123'
+																: '#fff',
+														border:
+															Object.values(
+																activeFilters && activeFilters[filterIndex]
+															) == filterValue
+																? 'none'
+																: '1px solid black',
+													}}
+													onClick={() =>
+														handleFilterCheckboxClick(
+															filterIndex,
+															Object.keys(
+																activeFilters && activeFilters[filterIndex]
+															),
+															Object.values(
+																activeFilters && activeFilters[filterIndex]
+															),
+															filterValue
+														)
+													}
+												>
+													{activeFilters[Object.keys(filter)[0]] != '' ? (
+														<IoMdCheckmark color={'white'} size={24} />
+													) : null}
+												</button>
+												<p>{filterValue}</p>
+											</div>
+										);
+									});
+								})}
+							</div>
 						</div>
-					</div>
-				);
-			})}
+					);
+				})}
 		</>
 	);
 };

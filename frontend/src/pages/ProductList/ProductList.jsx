@@ -252,6 +252,9 @@ const ProductList = () => {
 	}, [categories]);
 
 	useEffect(() => {
+		setActiveFilters(null);
+		setFilters(null);
+
 		getProductsWithoutDebounce();
 
 		cacheFilters();
@@ -262,7 +265,7 @@ const ProductList = () => {
 	}, [priceSliderValues, sort, direction]);
 
 	useEffect(() => {
-		if (activeFilters.length > 0) {
+		if (activeFilters && activeFilters.length > 0) {
 			getMinMaxPrices();
 
 			getProducts();
@@ -315,16 +318,13 @@ const ProductList = () => {
 									</div>
 									<div className="filters-devider"></div>
 
-									{filters.length !== 0 &&
-										filters != null &&
-										activeFilters.length !== 0 &&
-										activeFilters != null && (
-											<ProductFilters
-												filters={filters}
-												activeFilters={activeFilters}
-												handleFilterCheckboxClick={handleFilterCheckboxClick}
-											/>
-										)}
+									{filters && activeFilters && (
+										<ProductFilters
+											filters={filters}
+											activeFilters={activeFilters}
+											handleFilterCheckboxClick={handleFilterCheckboxClick}
+										/>
+									)}
 
 									<div className="price-filters">
 										<span className="filter-name">CIJENA:</span>
@@ -361,16 +361,13 @@ const ProductList = () => {
 							<div className="sort-container"></div>
 							<div className="products-sort-container">
 								<div className="filters-container">
-									{filters.length !== 0 &&
-										filters != null &&
-										activeFilters.length !== 0 &&
-										activeFilters != null && (
-											<ProductFilters
-												filters={filters}
-												activeFilters={activeFilters}
-												handleFilterCheckboxClick={handleFilterCheckboxClick}
-											/>
-										)}
+									{filters && activeFilters && (
+										<ProductFilters
+											filters={filters}
+											activeFilters={activeFilters}
+											handleFilterCheckboxClick={handleFilterCheckboxClick}
+										/>
+									)}
 									<div className="price-filters">
 										<span className="filter-name">CIJENA:</span>
 										<div className="price-ranges current">
