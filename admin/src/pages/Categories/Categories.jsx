@@ -21,20 +21,21 @@ import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
+import { useGetCategories } from '../../hooks/useGetCategories';
+import Spinner from '../../components/Spinner/Spinner';
+
 function Categories() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
 
 	const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
-	const [data, setData] = useState([]);
 	const [deleteModal, setDeleteModal] = useState({
 		open: false,
 		text: '',
 	});
 
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [totalPages, setTotalPages] = useState(0);
 
 	// Search params
 	const [searchTermValue, setSearchTermValue] = useState(
@@ -48,35 +49,24 @@ function Categories() {
 	const pageDisplay = Number(page) + 1;
 	const pageSize = 5;
 
-	const getCategoriesData = async () => {
-		// Get params from url and sort data if needed or change page
-		try {
-			const res = await userRequest.get('/categories', {
-				params: {
-					sort: sort,
-					direction: direction,
-					page: page,
-					pageSize: pageSize,
-					search: searchTermValue,
-				},
-			});
-			setTotalPages(res.data.totalPages - 1);
-			setData(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { isLoading, isFetching, data } = useGetCategories(
+		sort,
+		direction,
+		page,
+		pageSize,
+		searchTermValue
+	);
+
+	const totalPages = data ? data?.totalPages - 1 : 0;
+
+	console.log(data);
+
+	console.log(totalPages);
 
 	useEffect(() => {
 		// On page load set active screen to Users to display in side bar
 		dispatch(setActiveScreen('Categories'));
-
-		getCategoriesData();
 	}, []);
-
-	useEffect(() => {
-		getCategoriesData();
-	}, [page, pageSize, sort, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -152,97 +142,117 @@ function Categories() {
 						Add new Category
 					</Link>
 				</div>
-				<table className="table">
-					<thead className="table-head">
-						<tr>
-							<th>
-								<a href="">ID</a>
-							</th>
-							<th>
-								<a
-									href={`/categories
+				{isLoading || isFetching ? (
+					<div className="loading-spinner-container">
+						<Spinner />
+					</div>
+				) : (
+					<>
+						<table className="table">
+							<thead className="table-head">
+								<tr>
+									<th>
+										<a href="">ID</a>
+									</th>
+									<th>
+										<a
+											href={`/categories
 										?sort=name
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
-								>
-									<div className="seperator"></div>
-									<h1>Name</h1>
-									{filterDirectionIcons('name')}
-								</a>
-							</th>
-							<th>
-								<a>
-									<div className="seperator"></div>Actions
-								</a>
-							</th>
-						</tr>
-					</thead>
+										>
+											<div className="seperator"></div>
+											<h1>Name</h1>
+											{filterDirectionIcons('name')}
+										</a>
+									</th>
+									<th>
+										<a>
+											<div className="seperator"></div>Actions
+										</a>
+									</th>
+								</tr>
+							</thead>
 
-					<tbody className="table-content">
-						{data.map((category) => {
-							return (
-								<tr className="table-content-row">
-									<td>{category._id.toString().substring(0, 5) + '...'}</td>
-									<td>{category.name}</td>
-									<td className="actions-row">
-										<Link
-											to={`/categories/edit/${
-												category._id
-											}?page=${page}&pageSize=${pageSize}${
-												sort != null ? '&sort=' + sort : ''
-											}${direction != null ? '&direction=' + direction : ''}
+							<tbody className="table-content">
+								{isLoading || isFetching ? (
+									<Spinner />
+								) : (
+									data?.data?.map((category) => {
+										return (
+											<tr className="table-content-row">
+												<td>
+													{category._id.toString().substring(0, 5) + '...'}
+												</td>
+												<td>{category.name}</td>
+												<td className="actions-row">
+													<Link
+														to={`/categories/edit/${
+															category._id
+														}?page=${page}&pageSize=${pageSize}${
+															sort != null ? '&sort=' + sort : ''
+														}${
+															direction != null ? '&direction=' + direction : ''
+														}
 													${searchTermValue != null ? '&search=' + searchTermValue : ''}
 									`}
-											className="action-btn"
-											title="Edit Category"
-										>
-											<FaPen />
-										</Link>
-										<button
-											type="button"
-											className="delete-btn"
-											title="Delete Category"
-											onClick={() =>
-												openDeleteModal(`${category.name}`, category._id)
-											}
-										>
-											<FaTrash />
-										</button>
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-				<div className="pagination-controls">
-					{page != 0 && totalPages > 0 && (
-						<Link
-							className="prev-btn"
-							to={`/categories?page=${Number(page) - 1}&pageSize=${pageSize}${
-								sort != null ? '&sort=' + sort : ''
-							}${direction != null ? '&direction=' + direction : ''}
+														className="action-btn"
+														title="Edit Category"
+													>
+														<FaPen />
+													</Link>
+													<button
+														type="button"
+														className="delete-btn"
+														title="Delete Category"
+														onClick={() =>
+															openDeleteModal(`${category.name}`, category._id)
+														}
+													>
+														<FaTrash />
+													</button>
+												</td>
+											</tr>
+										);
+									})
+								)}
+							</tbody>
+						</table>
+						<div className="pagination-controls">
+							{page != 0 && totalPages > 0 && (
+								<Link
+									className="prev-btn"
+									to={`/categories?page=${
+										Number(page) - 1
+									}&pageSize=${pageSize}${sort != null ? '&sort=' + sort : ''}${
+										direction != null ? '&direction=' + direction : ''
+									}
 									${searchTermValue != null ? '&search=' + searchTermValue : ''}
                             `}
-						>
-							<FaChevronLeft />
-						</Link>
-					)}
-					<p className="current-page">{pageDisplay}</p>
-					{page != totalPages && totalPages > 0 && (
-						<Link
-							className="next-btn"
-							to={`/categories?page=${Number(page) + 1}&pageSize=${pageSize}${
-								sort != null ? '&sort=' + sort : ''
-							}${direction != null ? '&direction=' + direction : ''}
+								>
+									<FaChevronLeft />
+								</Link>
+							)}
+							<p className="current-page">{pageDisplay}</p>
+							{page != totalPages && totalPages > 0 && (
+								<Link
+									className="next-btn"
+									to={`/categories?page=${
+										Number(page) + 1
+									}&pageSize=${pageSize}${sort != null ? '&sort=' + sort : ''}${
+										direction != null ? '&direction=' + direction : ''
+									}
 							${searchTermValue != null ? '&search=' + searchTermValue : ''}
 							`}
-						>
-							<FaChevronRight />
-						</Link>
-					)}
-				</div>
+								>
+									<FaChevronRight />
+								</Link>
+							)}
+						</div>
+					</>
+				)}
 			</div>
 			{deleteModal.open && (
 				<DeleteModal
