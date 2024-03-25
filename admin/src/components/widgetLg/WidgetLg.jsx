@@ -53,7 +53,7 @@ export default function WidgetLg({ data }) {
 				</thead>
 
 				<tbody>
-					{data.map((order, index) => {
+					{data?.map((order, index) => {
 						return (
 							<tr className="widgetLgTr" key={index}>
 								<td className="widgetLgUser">

@@ -341,6 +341,8 @@ exports.getAllProductsByCategory = async (req, res) => {
 		search,
 	} = req.query;
 
+	console.log(page);
+
 	// If sort and direction is null use default
 	if (sort == null && direction == null) {
 		(sort = 'createdAt'), (direction = 'desc');

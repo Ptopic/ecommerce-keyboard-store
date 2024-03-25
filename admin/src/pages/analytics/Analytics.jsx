@@ -10,46 +10,25 @@ import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
 import { admin_request, userRequest } from '../../api';
+import { useGetSales } from '../../hooks/useGetSales';
+import { useGetUsersStats } from '../../hooks/useGetUsersStats';
+import { useGetOrdersStats } from '../../hooks/useGetOrdersStats';
 
 const Analytics = () => {
 	const dispatch = useDispatch();
 
-	const [sales, setSales] = useState([]);
 	const [salesChartData, setSalesChartData] = useState([]);
 	const [salesMax, setSalesMax] = useState(0);
-	const [users, setUsers] = useState([]);
 	const [usersChartData, setUsersChartData] = useState([]);
 	const [usersMax, setUsersMax] = useState(0);
-	const [orders, setOrders] = useState([]);
 	const [ordersChartData, setOrdersChartData] = useState([]);
 	const [orderMax, setOrderMax] = useState(0);
 
-	const getSalesData = async () => {
-		try {
-			const res = await userRequest.get('/orders/income');
-			setSales(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: sales } = useGetSales();
 
-	const getUsersData = async () => {
-		try {
-			const res = await userRequest.get('/user/count');
-			setUsers(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: users } = useGetUsersStats();
 
-	const getOrdersData = async () => {
-		try {
-			const res = await userRequest.get('/orders/count');
-			setOrders(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: orders } = useGetOrdersStats();
 
 	const convertToObj = (arr, field) => {
 		const converted = [];
@@ -76,16 +55,11 @@ const Analytics = () => {
 	useEffect(() => {
 		// On page load set active screen to Home to display in side bar
 		dispatch(setActiveScreen('Analytics'));
-
-		// Load data
-		getSalesData();
-		getUsersData();
-		getOrdersData();
 	}, []);
 
 	// When salesData changes convert them to object and put it in state for chart usage
 	useEffect(() => {
-		if (sales.length > 1) {
+		if (sales?.length > 1) {
 			const salesValuesArray = sales.map((sale) => sale.totalSales);
 
 			let curSalesValues = convertToObj(sales, 'totalSales');
@@ -108,7 +82,7 @@ const Analytics = () => {
 
 	// When usersData changes convert them to object and put it in state for chart usage
 	useEffect(() => {
-		if (users.length > 1) {
+		if (users?.length > 1) {
 			const usersValuesArray = users.map((user) => user.usersCount);
 			let curUsersValues = convertToObj(users, 'usersCount');
 
@@ -125,7 +99,7 @@ const Analytics = () => {
 
 	// When ordersData changes convert them to object and put it in state for chart usage
 	useEffect(() => {
-		if (orders.length > 1) {
+		if (orders?.length > 1) {
 			const ordersValuesArray = orders.map((order) => order.ordersCount);
 			let curOrdersValues = convertToObj(orders, 'ordersCount');
 

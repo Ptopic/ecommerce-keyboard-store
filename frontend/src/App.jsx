@@ -43,6 +43,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { setUserData } from './redux/userRedux';
 
+const queryClient = new QueryClient();
+
 const App = () => {
 	const [cookies, setCookie] = useCookies();
 	const [stripePromise, setStripePromise] = useState(null);
@@ -109,8 +111,6 @@ const App = () => {
 			},
 		},
 	});
-
-	const queryClient = new QueryClient();
 
 	return (
 		<QueryClientProvider client={queryClient}>

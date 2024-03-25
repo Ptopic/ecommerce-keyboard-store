@@ -1,67 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Chart from '../../components/chart/Chart';
 import FeaturedInfo from '../../components/featuredInfo/FeaturedInfo';
 import './Home.css';
-import WidgetLg from '../../components/widgetLg/WidgetLg';
 
 // Redux
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setActiveScreen } from '../../redux/userRedux';
 
 // Api
-import { userRequest } from '../../api';
+import { useGetLatestOrders } from '../../hooks/useGetLatestOrders';
+import { useGetOrdersStats } from '../../hooks/useGetOrdersStats';
+import { useGetSales } from '../../hooks/useGetSales';
+import { useGetUsersStats } from '../../hooks/useGetUsersStats';
+
+import WidgetLg from '../../components/widgetLg/WidgetLg';
 
 export default function Home() {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user);
-	const [sales, setSales] = useState([]);
 	const [salesMax, setSalesMax] = useState(0);
 	const [salesForChart, setSalesForChart] = useState([]);
 	const [salesPercentage, setSalesPercentage] = useState(0);
 	const [curSales, setCurSales] = useState(0);
-	const [users, setUsers] = useState([]);
 	const [usersCount, setUsersCount] = useState(0);
 	const [usersPercentage, setUsersPercentage] = useState(0);
-	const [orders, setOrders] = useState([]);
 	const [ordersCount, setOrdersCount] = useState(0);
 	const [ordersPercentage, setOrdersPercentage] = useState(0);
-	const [latestOrders, setLatestOrders] = useState([]);
 
-	const getSalesData = async () => {
-		try {
-			const res = await userRequest.get('/orders/income');
-			setSales(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: sales } = useGetSales();
 
-	const getUsersData = async () => {
-		try {
-			const res = await userRequest.get('/user/count');
-			setUsers(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: users } = useGetUsersStats();
 
-	const getOrdersData = async () => {
-		try {
-			const res = await userRequest.get('orders/count');
-			setOrders(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: orders } = useGetOrdersStats();
 
-	const getLatestOrders = async () => {
-		try {
-			const res = await userRequest.get('orders/?pageSize=4&page=0');
-			setLatestOrders(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { data: latestOrders } = useGetLatestOrders();
 
 	const calculatePercentageChange = (cur, prev) => {
 		let value = ((cur - prev) / prev) * 100;
@@ -95,15 +67,11 @@ export default function Home() {
 	useEffect(() => {
 		// On page load set active screen to Home to display in side bar
 		dispatch(setActiveScreen('Home'));
-		getSalesData();
-		getUsersData();
-		getOrdersData();
-		getLatestOrders();
 	}, []);
 
 	// When sales changes accumulate totals of sales
 	useEffect(() => {
-		if (sales.length > 1) {
+		if (sales?.length > 1) {
 			const salesValuesArray = sales.map((sale) => sale.totalSales);
 
 			// Set curSales to latest sale
@@ -137,20 +105,19 @@ export default function Home() {
 			const salesMaxValue = Math.max(...salesValuesArray);
 			setSalesMax(salesMaxValue);
 		} else {
-			setCurSales(sales[0]?.totalSales);
+			setCurSales(sales?.length > 0 ? sales[0]?.totalSales : 0);
 			setSalesPercentage(Number(0).toFixed(1));
 		}
 	}, [sales]);
 
 	// When users changes accumulate total of users
 	useEffect(() => {
-		if (users.length > 1) {
+		if (users?.length > 1) {
 			// Get latest users count
 			// Set curUsers to latest users
 			let curUsersValues = convertToObj(users, 'usersCount');
 			let latestUsersValue = curUsersValues.sort((a, b) => b.date - a.date);
 
-			console.log(latestUsersValue);
 			setUsersCount(latestUsersValue[0].value);
 
 			// Calculate users percentage increase/decrease compared to previous month
@@ -170,7 +137,7 @@ export default function Home() {
 
 	// When orders changes accumulate total of orders
 	useEffect(() => {
-		if (orders.length > 1) {
+		if (orders?.length > 1) {
 			// Get latest orders count
 			// Set curOrders to latest sale
 			let curOrdersValues = convertToObj(orders, 'ordersCount');
@@ -189,7 +156,7 @@ export default function Home() {
 
 			setOrdersPercentage(percentageChange);
 		} else {
-			setOrdersCount(orders[0]?.ordersCount);
+			setOrdersCount(orders?.length > 0 ? orders[0]?.ordersCount : 0);
 			setOrdersPercentage(Number(0).toFixed(1));
 		}
 	}, [orders]);
@@ -211,7 +178,7 @@ export default function Home() {
 				maxValue={salesMax}
 			/>
 			<div className="homeWidgets">
-				<WidgetLg data={latestOrders} />
+				{latestOrders && <WidgetLg data={latestOrders} />}
 			</div>
 		</div>
 	);

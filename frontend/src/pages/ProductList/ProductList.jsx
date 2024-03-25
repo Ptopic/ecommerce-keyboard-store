@@ -51,11 +51,6 @@ const ProductList = () => {
 	const [activeFilters, setActiveFilters] = useState([]);
 
 	const { data: categories } = useGetCategories();
-	// const { data: productsData } = useGetInitialProducts(
-	// 	category,
-	// 	sort,
-	// 	direction
-	// );
 
 	const [products, setProducts] = useState([]);
 
@@ -71,7 +66,11 @@ const ProductList = () => {
 			let minPrice = 0;
 			let maxPrice = 0;
 			// Get min max prices of products
-			const data = await getProductPrices(category, activeFilters);
+			const data = await request.get('/products/prices/' + category, {
+				params: {
+					activeFilters: activeFilters != [] ? activeFilters : null,
+				},
+			});
 			let pricesData = data.data;
 
 			if (
@@ -99,12 +98,16 @@ const ProductList = () => {
 		setPage(0);
 
 		try {
-			const res = await getInitialProducts(
-				category,
-				priceSliderValues,
-				sort,
-				direction
-			);
+			const res = await request.get(`/products/category/` + category, {
+				params: {
+					page: 0,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : null,
+				},
+			});
 
 			let data = res.data;
 
@@ -117,19 +120,23 @@ const ProductList = () => {
 		}
 	};
 
-	const getProductsData = debounce(async () => {
+	const getProducts = debounce(async () => {
 		// Reset page
 		setPage(0);
 
 		try {
 			setIsProductsLoading(true);
-			const res = await getProducts(
-				category,
-				priceSliderValues,
-				sort,
-				direction,
-				activeFilters
-			);
+			const res = await request.get(`/products/category/` + category, {
+				params: {
+					page: 0,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : null,
+					activeFilters: activeFilters != [] ? activeFilters : null,
+				},
+			});
 
 			let data = res.data;
 
@@ -149,14 +156,17 @@ const ProductList = () => {
 
 		try {
 			let data;
-			const res = await getProducts(
-				category,
-				priceSliderValues,
-				sort,
-				direction,
-				activeFilters
-			);
-
+			const res = await request.get(`/products/category/` + category, {
+				params: {
+					page: page,
+					pageSize: PAGE_SIZE,
+					minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+					sort: sort != '' ? sort : null,
+					direction: direction != '' ? direction : direction,
+					activeFilters: activeFilters != [] ? activeFilters : null,
+				},
+			});
 			data = res.data;
 			setProducts((prev) => [...prev, ...data.data]);
 			setPage((prevPage) => prevPage + 1);
@@ -169,7 +179,7 @@ const ProductList = () => {
 
 	const handlePriceFiltersChange = (e) => {
 		setPriceSliderValues([e[0], e[1]]);
-		getProductsData();
+		getProducts();
 	};
 
 	// Filter check box click
@@ -242,23 +252,20 @@ const ProductList = () => {
 	}, [categories]);
 
 	useEffect(() => {
-		setActiveFilters([]);
-		setFilters([]);
+		getProductsWithoutDebounce();
 
 		cacheFilters();
-
-		getProductsData();
 	}, [location]);
 
 	useEffect(() => {
-		getProductsData();
-	}, [sort, direction]);
+		getProducts();
+	}, [priceSliderValues, sort, direction]);
 
 	useEffect(() => {
 		if (activeFilters.length > 0) {
 			getMinMaxPrices();
 
-			getProductsData();
+			getProducts();
 
 			regenerateFilters(
 				name,

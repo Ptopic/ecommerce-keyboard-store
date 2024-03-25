@@ -3,7 +3,7 @@ import { getCategories } from '../api/http/categories';
 import { toast } from 'react-hot-toast';
 
 export const useGetCategories = () => {
-	return useQuery('categories', getCategories, {
+	return useQuery('categories', () => getCategories(), {
 		select: (data) => {
 			return data.data;
 		},

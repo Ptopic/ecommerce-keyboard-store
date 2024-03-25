@@ -22,6 +22,7 @@ export const getInitialProducts = async (
 
 export const getProducts = async (
 	category,
+	page,
 	priceSliderValues,
 	sort,
 	direction,
@@ -29,7 +30,7 @@ export const getProducts = async (
 ) => {
 	return request.get(`/products/category/` + category, {
 		params: {
-			page: 0,
+			page: page ? page : 0,
 			pageSize: PAGE_SIZE,
 			minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
 			maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
