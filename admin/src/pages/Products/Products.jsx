@@ -23,23 +23,20 @@ import { AiOutlineSearch } from 'react-icons/ai';
 
 // Utils
 import { formatPriceDisplay } from '../../../../frontend/src/utils/formatting';
+import { useGetProducts } from '../../hooks/useGetProducts';
+import Spinner from '../../components/Spinner/Spinner';
 
 const Products = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const user = useSelector((state) => state.user);
 
 	const [productIdToDelete, setProductIdToDelete] = useState(null);
-	const [data, setData] = useState([]);
 	const [deleteModal, setDeleteModal] = useState({
 		open: false,
 		text: '',
 	});
 
-	let userToken = user.currentUser.token;
-
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [totalPages, setTotalPages] = useState(0);
 
 	// Search params
 	const [searchTermValue, setSearchTermValue] = useState(
@@ -55,35 +52,20 @@ const Products = () => {
 	const pageDisplay = Number(page) + 1;
 	const pageSize = 5;
 
-	const getProductsData = async () => {
-		// Get params from url and sort data if needed or change page
-		try {
-			const res = await userRequest.get('/products/admin', {
-				params: {
-					sort: sort,
-					direction: direction,
-					page: page,
-					pageSize: pageSize,
-					search: searchTermValue,
-				},
-			});
-			setTotalPages(res.data.totalPages - 1);
-			setData(res.data.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	const { isLoading, isFetching, data } = useGetProducts(
+		sort,
+		direction,
+		page,
+		pageSize,
+		searchTermValue
+	);
+
+	const totalPages = data ? data?.totalPages - 1 : 0;
 
 	useEffect(() => {
 		// On page load set active screen to Users to display in side bar
 		dispatch(setActiveScreen('Products'));
-
-		getProductsData();
 	}, []);
-
-	useEffect(() => {
-		getProductsData();
-	}, [page, pageSize, sort, search, direction]);
 
 	const filterDirectionIcons = (fieldName) => {
 		if (sort == fieldName) {
@@ -162,101 +144,109 @@ const Products = () => {
 						Add new Product
 					</Link>
 				</div>
-				<table className="table">
-					<thead className="table-head">
-						<tr>
-							<th>
-								<a href="">ID</a>
-							</th>
-							<th>
-								<a
-									href={`/products
+				{isLoading || isFetching ? (
+					<div className="loading-spinner-container">
+						<Spinner />
+					</div>
+				) : (
+					<>
+						<table className="table">
+							<thead className="table-head">
+								<tr>
+									<th>
+										<a href="">ID</a>
+									</th>
+									<th>
+										<a
+											href={`/products
 										?sort=title
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
-								>
-									<div className="seperator"></div>
-									<h1>Title</h1>
-									{filterDirectionIcons('title')}
-								</a>
-							</th>
-							{/* <th>
+										>
+											<div className="seperator"></div>
+											<h1>Title</h1>
+											{filterDirectionIcons('title')}
+										</a>
+									</th>
+									{/* <th>
 								<a href="">
 									<div className="seperator"></div>
 									<h1>Variants</h1>
 								</a>
 							</th> */}
-							<th>
-								<a
-									href={`/products
+									<th>
+										<a
+											href={`/products
 										?sort=category
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
-								>
-									<div className="seperator"></div>
-									<h1>Category</h1>
-									{filterDirectionIcons('category')}
-								</a>
-							</th>
-							<th>
-								<a
-									href={`/products
+										>
+											<div className="seperator"></div>
+											<h1>Category</h1>
+											{filterDirectionIcons('category')}
+										</a>
+									</th>
+									<th>
+										<a
+											href={`/products
 										?sort=price
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
-								>
-									<div className="seperator"></div>
-									<h1>Price</h1>
-									{filterDirectionIcons('price')}
-								</a>
-							</th>
-							<th>
-								<a
-									href={`/products
+										>
+											<div className="seperator"></div>
+											<h1>Price</h1>
+											{filterDirectionIcons('price')}
+										</a>
+									</th>
+									<th>
+										<a
+											href={`/products
 										?sort=stock
 										&page=${page}
 										&pageSize=${pageSize}
 										&search=${searchTermValue}
 										&direction=${direction == 'asc' ? 'desc' : 'asc'}`}
-								>
-									<div className="seperator"></div>
-									<h1>Stock</h1>
-									{filterDirectionIcons('stock')}
-								</a>
-							</th>
-							<th>
-								<a>
-									<div className="seperator"></div>Actions
-								</a>
-							</th>
-						</tr>
-					</thead>
+										>
+											<div className="seperator"></div>
+											<h1>Stock</h1>
+											{filterDirectionIcons('stock')}
+										</a>
+									</th>
+									<th>
+										<a>
+											<div className="seperator"></div>Actions
+										</a>
+									</th>
+								</tr>
+							</thead>
 
-					<tbody className="table-content">
-						{data.map((product, index) => {
-							return (
-								<tr className="table-content-row" key={index}>
-									<td>{product._id.toString().substring(0, 5) + '...'}</td>
-									<td style={{ width: '600px' }}>
-										<div className="product-title-and-image">
-											{product.images.length > 0 && (
-												<img
-													src={product.images[0].url}
-													alt="product image"
-													className="product-image"
-													loading="lazy"
-												/>
-											)}
-											<div className="title-and-variants">{product.title}</div>
-										</div>
-									</td>
-									{/* <td className="variants-container">
+							<tbody className="table-content">
+								{data?.data?.map((product, index) => {
+									return (
+										<tr className="table-content-row" key={index}>
+											<td>{product._id.toString().substring(0, 5) + '...'}</td>
+											<td style={{ width: '600px' }}>
+												<div className="product-title-and-image">
+													{product.images.length > 0 && (
+														<img
+															src={product.images[0].url}
+															alt="product image"
+															className="product-image"
+															loading="lazy"
+														/>
+													)}
+													<div className="title-and-variants">
+														{product.title}
+													</div>
+												</div>
+											</td>
+											{/* <td className="variants-container">
 										<div className="variants">
 											<Link
 												to={`/products/${product._id}/variants`}
@@ -266,66 +256,68 @@ const Products = () => {
 											</Link>
 										</div>
 									</td> */}
-									<td>{product.category}</td>
-									<td>€{formatPriceDisplay(product.price)}</td>
-									<td>{product.stock}</td>
-									<td className="actions-row products">
-										<Link
-											to={`/products/edit/${
-												product._id
-											}?page=${page}&pageSize=${pageSize}${
-												sort != null ? '&sort=' + sort : ''
-											}${direction != null ? '&direction=' + direction : ''}
+											<td>{product.category}</td>
+											<td>€{formatPriceDisplay(product.price)}</td>
+											<td>{product.stock}</td>
+											<td className="actions-row products">
+												<Link
+													to={`/products/edit/${
+														product._id
+													}?page=${page}&pageSize=${pageSize}${
+														sort != null ? '&sort=' + sort : ''
+													}${direction != null ? '&direction=' + direction : ''}
 													${searchTermValue != null ? '&search=' + searchTermValue : ''}
 									`}
-											className="action-btn"
-											title="Edit Product"
-										>
-											<FaPen />
-										</Link>
-										<button
-											type="button"
-											className="delete-btn"
-											title="Delete Product"
-											onClick={() =>
-												openDeleteModal(`${product.title}`, product._id)
-											}
-										>
-											<FaTrash />
-										</button>
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-				<div className="pagination-controls">
-					{page != 0 && totalPages > 0 && (
-						<Link
-							className="prev-btn"
-							to={`/products?page=${Number(page) - 1}&pageSize=${pageSize}${
-								sort != null ? '&sort=' + sort : ''
-							}${direction != null ? '&direction=' + direction : ''}
+													className="action-btn"
+													title="Edit Product"
+												>
+													<FaPen />
+												</Link>
+												<button
+													type="button"
+													className="delete-btn"
+													title="Delete Product"
+													onClick={() =>
+														openDeleteModal(`${product.title}`, product._id)
+													}
+												>
+													<FaTrash />
+												</button>
+											</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+						<div className="pagination-controls">
+							{page != 0 && totalPages > 0 && (
+								<Link
+									className="prev-btn"
+									to={`/products?page=${Number(page) - 1}&pageSize=${pageSize}${
+										sort != null ? '&sort=' + sort : ''
+									}${direction != null ? '&direction=' + direction : ''}
 									${searchTermValue != null ? '&search=' + searchTermValue : ''}
                             `}
-						>
-							<FaChevronLeft />
-						</Link>
-					)}
-					<p className="current-page">{pageDisplay}</p>
-					{page != totalPages && totalPages > 0 && (
-						<Link
-							className="next-btn"
-							to={`/products?page=${Number(page) + 1}&pageSize=${pageSize}${
-								sort != null ? '&sort=' + sort : ''
-							}${direction != null ? '&direction=' + direction : ''}
+								>
+									<FaChevronLeft />
+								</Link>
+							)}
+							<p className="current-page">{pageDisplay}</p>
+							{page != totalPages && totalPages > 0 && (
+								<Link
+									className="next-btn"
+									to={`/products?page=${Number(page) + 1}&pageSize=${pageSize}${
+										sort != null ? '&sort=' + sort : ''
+									}${direction != null ? '&direction=' + direction : ''}
 							${searchTermValue != null ? '&search=' + searchTermValue : ''}
 							`}
-						>
-							<FaChevronRight />
-						</Link>
-					)}
-				</div>
+								>
+									<FaChevronRight />
+								</Link>
+							)}
+						</div>
+					</>
+				)}
 			</div>
 			{deleteModal.open && (
 				<DeleteModal

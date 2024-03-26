@@ -23,3 +23,14 @@ export const useGetCategories = (
 		}
 	);
 };
+
+export const useGetAllCategories = () => {
+	return useQuery('categories', () => getCategories(), {
+		select: (data) => {
+			return data.data.data;
+		},
+		onError: (error) => {
+			toast.error('Something went wrong');
+		},
+	});
+};

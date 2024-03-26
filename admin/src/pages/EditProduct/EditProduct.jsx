@@ -39,6 +39,7 @@ import Spinner from '../../components/Spinner/Spinner';
 // Utils
 import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
 import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
+import { useGetAllCategories } from '../../hooks/useGetCategories';
 
 const EditProduct = () => {
 	const navigate = useNavigate();
@@ -61,7 +62,6 @@ const EditProduct = () => {
 
 	const [product, setProduct] = useState([]);
 
-	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 
 	const [activeFields, setActiveFields] = useState([]);
@@ -74,7 +74,8 @@ const EditProduct = () => {
 
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
-	const [isFiltersLoading, setIsFiltersLoading] = useState(null);
+
+	const { data: categories } = useGetAllCategories();
 
 	const modules = {
 		toolbar: [
@@ -198,22 +199,6 @@ const EditProduct = () => {
 				setIsLoading(false);
 				resetAllFormData();
 			}
-		}
-	};
-
-	const getAllCategories = async () => {
-		// Cache categories in redux persist store
-		if (categoriesRedux.length == 0) {
-			try {
-				const res = await userRequest('/categories');
-				dispatch(setCategoriesArray({ categories: res.data.data }));
-				setCategories(res.data.data);
-			} catch (error) {
-				console.log(error);
-			}
-		} else {
-			console.log('Cached categories');
-			setCategories(categoriesRedux);
 		}
 	};
 
@@ -386,7 +371,6 @@ const EditProduct = () => {
 
 	// Get all categories options
 	useEffect(() => {
-		getAllCategories();
 		getProduct();
 
 		handleInitilaFiltersGeneration();

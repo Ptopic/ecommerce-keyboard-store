@@ -29,11 +29,11 @@ import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 import { useSearchParams } from 'react-router-dom';
 import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
 import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
+import { useGetAllCategories } from '../../hooks/useGetCategories';
 
 const NewProduct = () => {
 	const dispatch = useDispatch();
 
-	const categoriesRedux = useSelector((state) => state.categories.data);
 	const reduxFilters = useSelector((state) => state.filters);
 
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +45,6 @@ const NewProduct = () => {
 	const direction = searchParams ? searchParams.get('direction') : null;
 	const searchTermValue = searchParams ? searchParams.get('search') : null;
 
-	const [categories, setCategories] = useState(categoriesRedux);
 	const [selectedCategory, setSelectedCategory] = useState('');
 
 	const [activeFields, setActiveFields] = useState([]);
@@ -56,6 +55,8 @@ const NewProduct = () => {
 
 	const [filters, setFilters] = useState([]);
 	const [activeFilters, setActiveFilters] = useState([]);
+
+	const { data: categories } = useGetAllCategories();
 
 	const modules = {
 		toolbar: [
@@ -121,27 +122,6 @@ const NewProduct = () => {
 			}
 		}
 	};
-
-	const getAllCategories = async () => {
-		// Cache categories in redux persist store
-		if (categoriesRedux.length == 0) {
-			try {
-				const res = await request('/categories');
-				dispatch(setCategoriesArray({ categories: res.data.data }));
-				setCategories(res.data.data);
-			} catch (error) {
-				console.log(error);
-			}
-		} else {
-			console.log('Cached categories');
-			setCategories(categoriesRedux);
-		}
-	};
-
-	// Get all categories options
-	useEffect(() => {
-		getAllCategories();
-	}, []);
 
 	const dragAndDropOnChange = (e) => {
 		setFieldValue('files', e.target.files[0]);
@@ -366,7 +346,7 @@ const NewProduct = () => {
 									onBlur={formik.handleBlur}
 								>
 									<option disabled>Select category</option>
-									{categories.map((category, id) => {
+									{categories?.map((category, id) => {
 										return (
 											<option value={category.name} key={id}>
 												{category.name}
