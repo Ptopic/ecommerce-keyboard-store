@@ -36,7 +36,7 @@ import { useGetCategories } from '../../hooks/useGetCategories';
 import { Toaster, toast } from 'react-hot-toast';
 
 const Navbar = () => {
-	const { isLoading, data, isError, error, isFetching } = useGetCategories();
+	const { isLoading, data, isFetching } = useGetCategories();
 
 	const [cookies, setCookie] = useCookies();
 	const navigate = useNavigate();
@@ -199,7 +199,7 @@ const Navbar = () => {
 								},
 							}}
 						>
-							{isLoading ? (
+							{isLoading || isFetching ? (
 								<Spinner />
 							) : (
 								<>

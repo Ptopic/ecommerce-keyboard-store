@@ -126,50 +126,34 @@ const App = () => {
 						<Route
 							exact
 							path="/login"
-							element={user?.length > 0 ? <Navigate to="/" /> : <Login />}
+							element={user ? <Navigate to="/" /> : <Login />}
 						/>
-						<Route
-							exact
-							path="/forgot-password"
-							element={
-								user?.length > 0 ? <Navigate to="/" /> : <ForgotPassword />
-							}
-						/>
+						<Route exact path="/forgot-password" element={<ForgotPassword />} />
 						<Route
 							exact
 							path="/register"
-							element={user?.length > 0 ? <Navigate to="/" /> : <Register />}
+							element={user ? <Navigate to="/" /> : <Register />}
 						/>
 						<Route
 							exact
 							path="/wishlist"
-							element={
-								user?.length == 0 ? <Navigate to="/login" /> : <Wishlist />
-							}
+							element={!user ? <Navigate to="/login" /> : <Wishlist />}
 						/>
 						<Route
 							exact
 							path="/user/details"
-							element={
-								user?.length == 0 ? <Navigate to="/login" /> : <UserDetails />
-							}
+							element={!user ? <Navigate to="/login" /> : <UserDetails />}
 						/>
 						<Route
 							exact
 							path="/user/orders"
-							element={
-								user?.length == 0 ? <Navigate to="/login" /> : <UserOrders />
-							}
+							element={!user ? <Navigate to="/login" /> : <UserOrders />}
 						/>
 						<Route
 							exact
 							path="/user/changePassword"
 							element={
-								user?.length == 0 ? (
-									<Navigate to="/login" />
-								) : (
-									<UserChangePassword />
-								)
+								!user ? <Navigate to="/login" /> : <UserChangePassword />
 							}
 						/>
 						<Route
