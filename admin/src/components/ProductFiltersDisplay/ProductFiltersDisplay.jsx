@@ -10,7 +10,7 @@ const ProductFiltersDisplay = ({ activeFields, filters, formik }) => {
 				<div className="seperator-line"></div>
 			</div>
 
-			{activeFields.map((field, index) => (
+			{activeFields?.map((field, index) => (
 				<>
 					<InputField
 						key={index}

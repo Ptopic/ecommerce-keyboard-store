@@ -29,6 +29,7 @@ import NewOrder from './pages/NewOrder/NewOrder';
 import EditOrder from './pages/EditOrder/EditOrder';
 
 import { QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { getQueryClient } from './shared/queryClient';
 
 const queryClient = getQueryClient;
@@ -100,6 +101,7 @@ function App() {
 					</Routes>
 				)}
 			</Router>
+			<ReactQueryDevtools />
 		</QueryClientProvider>
 	);
 }

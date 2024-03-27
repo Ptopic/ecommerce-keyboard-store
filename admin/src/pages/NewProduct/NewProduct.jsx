@@ -30,11 +30,10 @@ import { useSearchParams } from 'react-router-dom';
 import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
 import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
 import { useGetAllCategories } from '../../hooks/useGetCategories';
+import { getQueryClient } from '../../shared/queryClient';
 
 const NewProduct = () => {
-	const dispatch = useDispatch();
-
-	const reduxFilters = useSelector((state) => state.filters);
+	const queryClient = getQueryClient;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -143,29 +142,23 @@ const NewProduct = () => {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			let isCategoryFiltersCached;
-			let isCategoryActiveFiltersCached;
+			// Check if filters exist in query cache
+			const filters = queryClient.getQueryData([
+				'products',
+				'admin',
+				'filters',
+				curCategory,
+			]);
 
-			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-				for (let reduxFilter of reduxFilters?.filters) {
-					if (Object.keys(reduxFilter) == curCategory.name) {
-						isCategoryFiltersCached = reduxFilter;
-					}
-				}
-			}
+			const activeFields = queryClient.getQueryData([
+				'products',
+				'admin',
+				'activeFields',
+				curCategory,
+			]);
 
-			if (
-				reduxFilters?.activeFilters &&
-				reduxFilters.activeFilters.length > 0
-			) {
-				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-					if (Object.keys(reduxActiveFilter) == curCategory.name) {
-						isCategoryActiveFiltersCached = reduxActiveFilter;
-					}
-				}
-			}
-
-			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			if (!filters && !activeFields) {
+				console.log('Generate filters');
 				generateFilterProductAdmin(
 					selectedCategory,
 					activeFilters,
@@ -174,22 +167,10 @@ const NewProduct = () => {
 					setActiveFilters,
 					setActiveFields,
 					namesOfActiveFields
-				)
-					.then((res) => {
-						dispatch(
-							addFilter({
-								categoryName: curCategory.name,
-								filters: res?.filters,
-								activeFilters: res?.activeFilters,
-							})
-						);
-					})
-					.catch((err) => console.log(err));
+				);
 			} else {
-				console.log('Cached filters');
-				setFilters(structuredClone(isCategoryFiltersCached[curCategory.name]));
-
-				setActiveFields(namesOfActiveFields);
+				setFilters(filters);
+				setActiveFields(activeFields);
 			}
 		}
 	};

@@ -40,13 +40,12 @@ import Spinner from '../../components/Spinner/Spinner';
 import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
 import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
 import { useGetAllCategories } from '../../hooks/useGetCategories';
+import { getQueryClient } from '../../shared/queryClient';
 
 const EditProduct = () => {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
 
-	const categoriesRedux = useSelector((state) => state.categories.data);
-	const reduxFilters = useSelector((state) => state.filters);
+	const queryClient = getQueryClient;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -231,7 +230,6 @@ const EditProduct = () => {
 
 	const handleInitilaFiltersGeneration = async () => {
 		// Check for cached filters or cache them
-		setIsFiltersLoading(true);
 		let curCategory;
 		categories.forEach((category) => {
 			if (category['name'] == selectedCategory) {
@@ -244,53 +242,34 @@ const EditProduct = () => {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			let isCategoryFiltersCached;
-			let isCategoryActiveFiltersCached;
+			// Check if filters exist in query cache
+			const filters = queryClient.getQueryData([
+				'products',
+				'admin',
+				'filters',
+				curCategory,
+			]);
 
-			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-				for (let reduxFilter of reduxFilters?.filters) {
-					if (Object.keys(reduxFilter) == curCategory.name) {
-						isCategoryFiltersCached = reduxFilter;
-					}
-				}
-			}
+			const activeFields = queryClient.getQueryData([
+				'products',
+				'admin',
+				'activeFields',
+				curCategory,
+			]);
 
-			if (
-				reduxFilters?.activeFilters &&
-				reduxFilters.activeFilters.length > 0
-			) {
-				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-					if (Object.keys(reduxActiveFilter) == curCategory.name) {
-						isCategoryActiveFiltersCached = reduxActiveFilter;
-					}
-				}
-			}
-
-			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			if (!filters && !activeFields) {
+				console.log('Generate filters');
 				generateFilterProductAdmin(
-					selectedCategory,
 					activeFilters,
 					curCategory,
 					setFilters,
 					setActiveFilters,
 					setActiveFields,
-					namesOfActiveFields,
-					setIsFiltersLoading
-				)
-					.then((res) => {
-						dispatch(
-							addFilter({
-								categoryName: curCategory.name,
-								filters: res?.filters,
-								activeFilters: res?.activeFilters,
-							})
-						);
-					})
-					.catch((err) => console.log(err));
+					namesOfActiveFields
+				);
 			} else {
-				console.log('Cached filters');
-				setFilters(structuredClone(isCategoryFiltersCached[curCategory.name]));
-				setActiveFields(namesOfActiveFields);
+				setFilters(filters);
+				setActiveFields(activeFields);
 			}
 		}
 	};
@@ -319,52 +298,35 @@ const EditProduct = () => {
 			// Format active fields
 			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
 
-			let isCategoryFiltersCached;
-			let isCategoryActiveFiltersCached;
+			// Check if filters exist in query cache
+			const filters = queryClient.getQueryData([
+				'products',
+				'admin',
+				'filters',
+				curCategory,
+			]);
 
-			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-				for (let reduxFilter of reduxFilters?.filters) {
-					if (Object.keys(reduxFilter) == curCategory.name) {
-						isCategoryFiltersCached = reduxFilter;
-					}
-				}
-			}
+			const activeFields = queryClient.getQueryData([
+				'products',
+				'admin',
+				'activeFields',
+				curCategory,
+			]);
 
-			if (
-				reduxFilters?.activeFilters &&
-				reduxFilters.activeFilters.length > 0
-			) {
-				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-					if (Object.keys(reduxActiveFilter) == curCategory.name) {
-						isCategoryActiveFiltersCached = reduxActiveFilter;
-					}
-				}
-			}
-
-			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+			if (!filters && !activeFields) {
+				console.log('Generate filters');
 				generateFilterProductAdmin(
-					newCategory,
+					selectedCategory,
 					activeFilters,
 					curCategory,
 					setFilters,
 					setActiveFilters,
 					setActiveFields,
 					namesOfActiveFields
-				)
-					.then((res) => {
-						dispatch(
-							addFilter({
-								categoryName: curCategory.name,
-								filters: res?.filters,
-								activeFilters: res?.activeFilters,
-							})
-						);
-					})
-					.catch((err) => console.log(err));
+				);
 			} else {
-				console.log('Cached filters');
-				setFilters(structuredClone(isCategoryFiltersCached[curCategory.name]));
-				setActiveFields(namesOfActiveFields);
+				setFilters(filters);
+				setActiveFields(activeFields);
 			}
 		}
 	};
