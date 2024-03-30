@@ -18,6 +18,7 @@ const cartRoute = require('./routes/cart');
 const ordersRoute = require('./routes/order');
 const stripeRoute = require('./routes/stripe');
 const wishlistRoute = require('./routes/wishlist');
+const filtersRoute = require('./routes/filters');
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use('/api/products', productsRoute);
 app.use('/api/cart', cartRoute);
 app.use('/api/orders', ordersRoute);
 app.use('/api/', wishlistRoute);
+app.use('/api/filters', filtersRoute);
 
 app.listen(process.env.PORT || 3001, () => {
 	console.log('API is running');

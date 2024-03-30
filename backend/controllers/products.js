@@ -313,6 +313,8 @@ exports.getAllProductsByCategoryWithoutPagination = async (req, res) => {
 		}
 	}
 
+	console.log(query);
+
 	try {
 		let products;
 		// Sortiraj prema najnovijima po defaultu
