@@ -6,6 +6,7 @@ export const queryClientDefaultOptions = {
 			staleTime: Infinity,
 			retry: false,
 			refetchOnWindowFocus: false,
+			retryDelay: 1000,
 		},
 		mutations: {
 			retry: false,

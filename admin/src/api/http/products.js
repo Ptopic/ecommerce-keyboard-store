@@ -17,3 +17,8 @@ export const getProducts = (
 		},
 	});
 };
+
+export const getProductById = (id) => {
+	console.log(id);
+	return userRequest.get('/products/find/' + id);
+};

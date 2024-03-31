@@ -14,7 +14,6 @@ const DragAndDrop = ({
 	let dropArea = useRef(null);
 
 	const [curFiles, setCurFiles] = useState(currentImages ? currentImages : []);
-	const [displayFiles, setDisplayFiles] = useState([]);
 
 	// Drag events
 	const handleDragEnter = (e) => {
@@ -75,7 +74,6 @@ const DragAndDrop = ({
 				})
 			);
 
-			console.log(transformedFiles);
 			setCurFiles((prevFiles) => [...prevFiles, ...transformedFiles]);
 		}
 	};
@@ -95,7 +93,6 @@ const DragAndDrop = ({
 		} else {
 			setFiles(curFiles);
 		}
-		console.log(curFiles);
 	}, [curFiles]);
 
 	return (

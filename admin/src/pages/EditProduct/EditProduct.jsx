@@ -12,11 +12,6 @@ import { IoClose } from 'react-icons/io5';
 import { Formik, Form, Field, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 
-// Redux
-import { useSelector, useDispatch } from 'react-redux';
-import { addFilter } from '../../redux/filtersRedux';
-import { setCategoriesArray } from '../../redux/categoriesRedux';
-
 // Components
 import Button from '../../../../frontend/src/components/Button/Button';
 import InputField from '../../../../frontend/src/components/InputField/InputField';
@@ -40,7 +35,9 @@ import Spinner from '../../components/Spinner/Spinner';
 import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filters';
 import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
 import { useGetAllCategories } from '../../hooks/useGetCategories';
+import { useGetProductById } from '../../hooks/useGetProductById';
 import { getQueryClient } from '../../shared/queryClient';
+import { generateFilters } from '../../api/http/filters';
 
 const EditProduct = () => {
 	const navigate = useNavigate();
@@ -59,20 +56,14 @@ const EditProduct = () => {
 	const location = useLocation();
 	const id = location.pathname.split('/edit/')[1];
 
-	const [product, setProduct] = useState([]);
-
-	const [selectedCategory, setSelectedCategory] = useState('');
-
 	const [activeFields, setActiveFields] = useState([]);
 
 	const [files, setFiles] = useState([]);
-	const [previousFiles, setPreviousFiles] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [imageRemoveIsLoading, setImageRemoveIsLoading] = useState(false);
 
 	const [filters, setFilters] = useState([]);
-	const [activeFilters, setActiveFilters] = useState([]);
 
 	const { data: categories } = useGetAllCategories();
 
@@ -114,7 +105,7 @@ const EditProduct = () => {
 
 	const getActiveFieldsValidationSchema = () => {
 		let schema = {};
-		activeFields.forEach((field) => {
+		activeFields?.forEach((field) => {
 			schema[field] = Yup.string().required(`${field} is required`);
 		});
 		return schema;
@@ -201,146 +192,62 @@ const EditProduct = () => {
 		}
 	};
 
-	const getProduct = async () => {
-		try {
-			await userRequest.get('/products/find/' + id).then((res) => {
-				let productData = res.data.data;
+	const { data: product } = useGetProductById(id);
 
-				formik.initialValues.title = productData?.title;
-				formik.initialValues.price = productData?.price;
-				formik.initialValues.stock = productData?.stock;
-				formik.initialValues.category = productData?.category;
-				formik.initialValues.specifications = productData?.specifications;
-				formik.initialValues.description = productData?.description;
-				setSelectedCategory(productData?.category);
+	formik.initialValues.title = product?.title;
+	formik.initialValues.price = product?.price;
+	formik.initialValues.stock = product?.stock;
+	formik.initialValues.category = product?.category;
+	formik.initialValues.specifications = product?.specifications;
+	formik.initialValues.description = product?.description;
 
-				setProduct(productData);
-
-				setPreviousFiles(productData.images);
-
-				// Set form values as product details values
-				for (let detailsKey of Object.keys(productData.details)) {
-					formik.setFieldValue(detailsKey, productData.details[detailsKey]);
-				}
-			});
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const handleInitilaFiltersGeneration = async () => {
-		// Check for cached filters or cache them
+	const onSelectedCategoryChange = async (newCategory) => {
 		let curCategory;
-		categories.forEach((category) => {
-			if (category['name'] == selectedCategory) {
+		categories?.forEach((category) => {
+			if (category['name'] == newCategory) {
 				curCategory = category;
 			}
 		});
 
 		// Set fieldDetails to category details
 		if (curCategory != null) {
-			// Format active fields
-			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
-
 			// Check if filters exist in query cache
 			const filters = queryClient.getQueryData([
 				'products',
 				'admin',
 				'filters',
-				curCategory,
+				curCategory?.name,
 			]);
 
 			const activeFields = queryClient.getQueryData([
 				'products',
 				'admin',
 				'activeFields',
-				curCategory,
+				curCategory?.name,
 			]);
 
 			if (!filters && !activeFields) {
 				console.log('Generate filters');
-				generateFilterProductAdmin(
-					activeFilters,
-					curCategory,
-					setFilters,
-					setActiveFilters,
-					setActiveFields,
-					namesOfActiveFields
+				const generatedFiltersRes = await generateFilters(curCategory?.name);
+				const generatedFilters = generatedFiltersRes.data;
+
+				// Set query data
+				queryClient.setQueryData(
+					['products', 'admin', 'filters', curCategory?.name],
+					generatedFilters.filters
 				);
+				queryClient.setQueryData(
+					['products', 'admin', 'activeFields', curCategory?.name],
+					generatedFilters.activeFields
+				);
+				setFilters(generatedFilters?.filters);
+				setActiveFields(generatedFilters?.activeFields);
 			} else {
 				setFilters(filters);
 				setActiveFields(activeFields);
 			}
 		}
 	};
-
-	const handleOnCategoryChangeFiltersGeneration = async (newCategory) => {
-		// Check for cached filters or cache them
-
-		// Find selected category in category data
-		newCategory ? setSelectedCategory(newCategory) : null;
-
-		let curCategory;
-		categories.forEach((category) => {
-			if (newCategory) {
-				if (category['name'] == newCategory) {
-					curCategory = category;
-				}
-			} else {
-				if (category['name'] == selectedCategory) {
-					curCategory = category;
-				}
-			}
-		});
-
-		// Set fieldDetails to category details
-		if (curCategory != null) {
-			// Format active fields
-			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
-
-			// Check if filters exist in query cache
-			const filters = queryClient.getQueryData([
-				'products',
-				'admin',
-				'filters',
-				curCategory,
-			]);
-
-			const activeFields = queryClient.getQueryData([
-				'products',
-				'admin',
-				'activeFields',
-				curCategory,
-			]);
-
-			if (!filters && !activeFields) {
-				console.log('Generate filters');
-				generateFilterProductAdmin(
-					selectedCategory,
-					activeFilters,
-					curCategory,
-					setFilters,
-					setActiveFilters,
-					setActiveFields,
-					namesOfActiveFields
-				);
-			} else {
-				setFilters(filters);
-				setActiveFields(activeFields);
-			}
-		}
-	};
-
-	// Get all categories options
-	useEffect(() => {
-		getProduct();
-
-		handleInitilaFiltersGeneration();
-	}, []);
-
-	useMemo(() => {
-		handleInitilaFiltersGeneration();
-	}, [product, selectedCategory]);
 
 	const dragAndDropOnChange = (e) => {
 		formik.setFieldValue('files', e.target.files[0]);
@@ -367,6 +274,16 @@ const EditProduct = () => {
 
 		setImageRemoveIsLoading(false);
 	};
+
+	useEffect(() => {
+		onSelectedCategoryChange(product?.category);
+
+		if (product) {
+			for (let detailsKey of Object.keys(product?.details)) {
+				formik.setFieldValue(detailsKey, product?.details[detailsKey]);
+			}
+		}
+	}, [product]);
 
 	return (
 		<div className="form">
@@ -464,9 +381,9 @@ const EditProduct = () => {
 							<div className="file-container">
 								<p>Current Files</p>
 								<div className="previous-images-container">
-									{previousFiles &&
-										previousFiles != [] &&
-										previousFiles.map((prevFile, id) => {
+									{product?.images &&
+										product?.images != [] &&
+										product?.images.map((prevFile, id) => {
 											return (
 												<div className="uploaded-image" key={id}>
 													<button
@@ -498,12 +415,11 @@ const EditProduct = () => {
 									placeholder="Category *"
 									as="select"
 									name="category"
-									value={selectedCategory}
+									value={formik.values.category}
 									onBlur={formik.handleBlur}
 									onChange={(e) => {
 										formik.setFieldValue('category', e.target.value);
-										setSelectedCategory(e.target.value);
-										handleOnCategoryChangeFiltersGeneration(e.target.value);
+										onSelectedCategoryChange(e.target.value);
 									}}
 								>
 									<option disabled>Select category</option>
@@ -521,8 +437,6 @@ const EditProduct = () => {
 								<div className="error">{formik.errors.category}</div>
 							) : null}
 						</div>
-
-						{/* {isFiltersLoading && <div>Loading</div>} */}
 
 						{activeFields && (
 							<ProductFiltersDisplay

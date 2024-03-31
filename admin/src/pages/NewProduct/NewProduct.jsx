@@ -31,6 +31,8 @@ import { generateFilterProductAdmin } from '../../../../frontend/src/utils/filte
 import ProductFiltersDisplay from '../../components/ProductFiltersDisplay/ProductFiltersDisplay';
 import { useGetAllCategories } from '../../hooks/useGetCategories';
 import { getQueryClient } from '../../shared/queryClient';
+import { useGenerateFilters } from '../../hooks/useGenerateFilters';
+import { generateFilters } from '../../api/http/filters';
 
 const NewProduct = () => {
 	const queryClient = getQueryClient;
@@ -53,7 +55,6 @@ const NewProduct = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [filters, setFilters] = useState([]);
-	const [activeFilters, setActiveFilters] = useState([]);
 
 	const { data: categories } = useGetAllCategories();
 
@@ -126,10 +127,10 @@ const NewProduct = () => {
 		setFieldValue('files', e.target.files[0]);
 	};
 
-	const onSelectedCategoryChange = async () => {
+	const onSelectedCategoryChange = async (selectedCategory) => {
 		// Find selected category in category data
 		let curCategory;
-		categories.forEach((category) => {
+		categories?.forEach((category) => {
 			if (category['name'] == selectedCategory) {
 				curCategory = category;
 			}
@@ -139,35 +140,37 @@ const NewProduct = () => {
 
 		// Set fieldDetails to category details
 		if (curCategory != null) {
-			// Format active fields
-			const namesOfActiveFields = curCategory.fields.map((field) => field.name);
-
 			// Check if filters exist in query cache
 			const filters = queryClient.getQueryData([
 				'products',
 				'admin',
 				'filters',
-				curCategory,
+				curCategory?.name,
 			]);
 
 			const activeFields = queryClient.getQueryData([
 				'products',
 				'admin',
 				'activeFields',
-				curCategory,
+				curCategory?.name,
 			]);
 
 			if (!filters && !activeFields) {
 				console.log('Generate filters');
-				generateFilterProductAdmin(
-					selectedCategory,
-					activeFilters,
-					curCategory,
-					setFilters,
-					setActiveFilters,
-					setActiveFields,
-					namesOfActiveFields
+				const generatedFiltersRes = await generateFilters(curCategory?.name);
+				const generatedFilters = generatedFiltersRes?.data;
+
+				// Set query data
+				queryClient.setQueryData(
+					['products', 'admin', 'filters', curCategory?.name],
+					generatedFilters?.filters
 				);
+				queryClient.setQueryData(
+					['products', 'admin', 'activeFields', curCategory?.name],
+					generatedFilters?.activeFields
+				);
+				setFilters(generatedFilters?.filters);
+				setActiveFields(generatedFilters?.activeFields);
 			} else {
 				setFilters(filters);
 				setActiveFields(activeFields);
@@ -175,15 +178,12 @@ const NewProduct = () => {
 		}
 	};
 
-	useEffect(() => {
-		onSelectedCategoryChange();
-	}, [selectedCategory]);
-
 	const getActiveFieldsValidationSchema = () => {
 		let schema = {};
-		activeFields.forEach((field) => {
-			schema[field] = Yup.string().required(`${field} is required`);
-		});
+		activeFields &&
+			activeFields?.forEach((field) => {
+				schema[field] = Yup.string().required(`${field} is required`);
+			});
 		return schema;
 	};
 
@@ -322,7 +322,7 @@ const NewProduct = () => {
 									name="category"
 									onChange={(e) => {
 										formik.setFieldValue('category', e.target.value);
-										setSelectedCategory(e.target.value);
+										onSelectedCategoryChange(e.target.value);
 									}}
 									onBlur={formik.handleBlur}
 								>
