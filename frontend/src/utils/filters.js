@@ -1,4 +1,7 @@
 import { userRequest } from '../api';
+import { getQueryClient } from '../../../admin/src/shared/queryClient';
+
+const queryClient = getQueryClient;
 
 export const generateFilterProductAdmin = async (
 	selectedCategory,
@@ -69,6 +72,16 @@ export const generateFilterProductAdmin = async (
 			curSet.add(value);
 		}
 	}
+
+	// Set react query data
+	queryClient.setQueryData(
+		['products', 'admin', 'filters', curCategory],
+		filtersArray
+	);
+	queryClient.setQueryData(
+		['products', 'admin', 'activeFields', curCategory],
+		namesOfActiveFields
+	);
 
 	setFilters(filtersArray);
 	setActiveFileds(namesOfActiveFields);

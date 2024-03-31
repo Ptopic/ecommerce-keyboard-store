@@ -71,8 +71,10 @@ const { mailTransport, generateReceipt } = require('../utils/mail');
 // };
 
 exports.stripe = async (req, res) => {
-	const { amount, items, tvrtka, tvrtkaDostava, oib, userId } = req.body;
+	let { amount, items, tvrtka, tvrtkaDostava, oib, userId } = req.body;
 	console.log(userId);
+
+	amount = amount.toFixed(0);
 
 	try {
 		// Create customer

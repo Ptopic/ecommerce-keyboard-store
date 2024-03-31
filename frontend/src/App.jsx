@@ -42,6 +42,7 @@ import { jwtDecode } from 'jwt-decode';
 // Redux
 import { useDispatch } from 'react-redux';
 import { setUserData } from './redux/userRedux';
+import ScrollToTop from './components/ScrollToTop';
 
 const queryClient = new QueryClient();
 
@@ -116,63 +117,73 @@ const App = () => {
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider theme={theme}>
 				<Router>
-					<Routes>
-						<Route exact path="/" element={<Home />} />
-						<Route exact path="/configurator" element={<Configurator />} />
-						<Route exact path="/products" element={<ProductList />} />
-						<Route exact path="/products/all" element={<AllProductList />} />
-						<Route exact path="/products/:category" element={<ProductList />} />
-						<Route exact path="/product/:id" element={<Product />} />
-						<Route
-							exact
-							path="/login"
-							element={user ? <Navigate to="/" /> : <Login />}
-						/>
-						<Route exact path="/forgot-password" element={<ForgotPassword />} />
-						<Route
-							exact
-							path="/register"
-							element={user ? <Navigate to="/" /> : <Register />}
-						/>
-						<Route
-							exact
-							path="/wishlist"
-							element={!user ? <Navigate to="/login" /> : <Wishlist />}
-						/>
-						<Route
-							exact
-							path="/user/details"
-							element={!user ? <Navigate to="/login" /> : <UserDetails />}
-						/>
-						<Route
-							exact
-							path="/user/orders"
-							element={!user ? <Navigate to="/login" /> : <UserOrders />}
-						/>
-						<Route
-							exact
-							path="/user/changePassword"
-							element={
-								!user ? <Navigate to="/login" /> : <UserChangePassword />
-							}
-						/>
-						<Route
-							exact
-							path="/user/registerThanks"
-							element={<UserRegisterThanks />}
-						/>
-						<Route exact path="/reset-password" element={<ResetPassword />} />
-						<Route exact path="/success" element={<Success />} />
-						<Route exast path="/checkout" element={<Checkout />} />
-						<Route
-							exast
-							path="/payment"
-							element={<Payment stripePromise={stripePromise} />}
-						/>
-						<Route exact path="/order/:id" element={<Order />} />
+					<ScrollToTop>
+						<Routes>
+							<Route exact path="/" element={<Home />} />
+							<Route exact path="/configurator" element={<Configurator />} />
+							<Route exact path="/products" element={<ProductList />} />
+							<Route exact path="/products/all" element={<AllProductList />} />
+							<Route
+								exact
+								path="/products/:category"
+								element={<ProductList />}
+							/>
+							<Route exact path="/product/:id" element={<Product />} />
+							<Route
+								exact
+								path="/login"
+								element={user ? <Navigate to="/" /> : <Login />}
+							/>
+							<Route
+								exact
+								path="/forgot-password"
+								element={<ForgotPassword />}
+							/>
+							<Route
+								exact
+								path="/register"
+								element={user ? <Navigate to="/" /> : <Register />}
+							/>
+							<Route
+								exact
+								path="/wishlist"
+								element={!user ? <Navigate to="/login" /> : <Wishlist />}
+							/>
+							<Route
+								exact
+								path="/user/details"
+								element={!user ? <Navigate to="/login" /> : <UserDetails />}
+							/>
+							<Route
+								exact
+								path="/user/orders"
+								element={!user ? <Navigate to="/login" /> : <UserOrders />}
+							/>
+							<Route
+								exact
+								path="/user/changePassword"
+								element={
+									!user ? <Navigate to="/login" /> : <UserChangePassword />
+								}
+							/>
+							<Route
+								exact
+								path="/user/registerThanks"
+								element={<UserRegisterThanks />}
+							/>
+							<Route exact path="/reset-password" element={<ResetPassword />} />
+							<Route exact path="/success" element={<Success />} />
+							<Route exast path="/checkout" element={<Checkout />} />
+							<Route
+								exast
+								path="/payment"
+								element={<Payment stripePromise={stripePromise} />}
+							/>
+							<Route exact path="/order/:id" element={<Order />} />
 
-						<Route path="*" element={<NotFound />} />
-					</Routes>
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</ScrollToTop>
 				</Router>
 			</ThemeProvider>
 			<ReactQueryDevtools />
