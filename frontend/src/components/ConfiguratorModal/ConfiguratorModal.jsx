@@ -27,6 +27,8 @@ import { generateFilters, regenerateFilters } from '../../utils/filters';
 import { request } from '../../api';
 import { formatPriceDisplay } from '../../utils/formatting';
 
+import { getQueryClient } from '../../shared/queryClient';
+
 /**
  * Mode param will define if data is pushed or set into configurator modal values
  * tjst is it singular select or multiple select
@@ -41,6 +43,7 @@ const ConfiguratorModal = ({
 	subCategory,
 	mode,
 }) => {
+	const queryClient = getQueryClient;
 	const dispatch = useDispatch();
 	const categories = useSelector((state) => state.categories.data);
 	const reduxFilters = useSelector((state) => state.filters);
@@ -102,6 +105,54 @@ const ConfiguratorModal = ({
 		} catch (error) {
 			console.log(error);
 			toast.error('Failed to load prices...');
+		}
+	};
+
+	const getInitialFilters = async (newCategory) => {
+		let curCategory;
+		categories?.forEach((category) => {
+			if (category['name'] == newCategory) {
+				curCategory = category;
+			}
+		});
+
+		// Set fieldDetails to category details
+		if (curCategory != null) {
+			// Check if filters exist in query cache
+			const filters = queryClient.getQueryData([
+				'products',
+				'admin',
+				'filters',
+				curCategory?.name,
+			]);
+
+			const activeFields = queryClient.getQueryData([
+				'products',
+				'admin',
+				'activeFields',
+				curCategory?.name,
+			]);
+
+			if (!filters && !activeFields) {
+				console.log('Generate filters');
+				const generatedFiltersRes = await generateFilters(curCategory?.name);
+				const generatedFilters = generatedFiltersRes.data;
+
+				// Set query data
+				queryClient.setQueryData(
+					['products', 'admin', 'filters', curCategory?.name],
+					generatedFilters.filters
+				);
+				queryClient.setQueryData(
+					['products', 'admin', 'activeFields', curCategory?.name],
+					generatedFilters.activeFields
+				);
+				setFilters(generatedFilters?.filters);
+				setActiveFields(generatedFilters?.activeFields);
+			} else {
+				setFilters(filters);
+				setActiveFields(activeFields);
+			}
 		}
 	};
 
@@ -193,64 +244,6 @@ const ConfiguratorModal = ({
 		setActiveFilters(initialFiltersArray);
 	};
 
-	const checkFilters = () => {
-		let isCategoryFiltersCached;
-		let isCategoryActiveFiltersCached;
-
-		if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-			for (let reduxFilter of reduxFilters?.filters) {
-				if (Object.keys(reduxFilter) == categoryName) {
-					isCategoryFiltersCached = structuredClone(reduxFilter);
-				}
-			}
-		}
-
-		if (reduxFilters?.activeFilters && reduxFilters.activeFilters.length > 0) {
-			for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-				if (Object.keys(reduxActiveFilter) == categoryName) {
-					isCategoryActiveFiltersCached = structuredClone(reduxActiveFilter);
-				}
-			}
-		}
-
-		if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
-			generateFilters(
-				categoryName,
-				activeFilters,
-				categories,
-				setFilters,
-				setActiveFilters
-			)
-				.then((res) => {
-					dispatch(
-						addFilter({
-							categoryName: categoryName,
-							filters: res?.filters,
-							activeFilters: res?.activeFilters,
-						})
-					);
-				})
-				.catch((err) => console.log(err));
-		} else {
-			console.log('Cached filters');
-			setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
-
-			// Reset all previous active filters
-			for (
-				let i = 0;
-				i < isCategoryActiveFiltersCached[categoryName].length;
-				i++
-			) {
-				let key = Object.keys(isCategoryActiveFiltersCached[categoryName][i]);
-				isCategoryActiveFiltersCached[categoryName][i][key] = '';
-			}
-
-			setActiveFilters(
-				structuredClone(isCategoryActiveFiltersCached[categoryName])
-			);
-		}
-	};
-
 	useEffect(() => {
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
@@ -258,12 +251,11 @@ const ConfiguratorModal = ({
 		getMinMaxPrices();
 		getProducts();
 
-		checkFilters();
+		getInitialFilters(products?.category);
 
 		setLoading(false);
 	}, []);
 
-	// Get new prices with useMemo only when activeFilters change
 	useEffect(() => {
 		let constraints = configuratorModalValues['Constraints'];
 		let constraintsArray = Array.of(Object.keys(constraints))[0];
