@@ -61,11 +61,14 @@ const EditProduct = () => {
 	const [files, setFiles] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(false);
+	const [isFiltersLoading, setIsFiltersLoading] = useState(false);
+
 	const [imageRemoveIsLoading, setImageRemoveIsLoading] = useState(false);
 
 	const [filters, setFilters] = useState([]);
 
-	const { data: categories } = useGetAllCategories();
+	const { data: categories, isLoading: isCategoriesLoading } =
+		useGetAllCategories();
 
 	const modules = {
 		toolbar: [
@@ -197,7 +200,7 @@ const EditProduct = () => {
 		}
 	};
 
-	const { data: product } = useGetProductById(id);
+	const { data: product, isLoading: isProductLoading } = useGetProductById(id);
 
 	formik.initialValues.title = product?.title;
 	formik.initialValues.price = product?.price;
@@ -209,13 +212,14 @@ const EditProduct = () => {
 	const onSelectedCategoryChange = async (newCategory) => {
 		let curCategory;
 		categories?.forEach((category) => {
-			if (category['name'] == newCategory) {
+			if (category['name'] == String(newCategory)) {
 				curCategory = category;
 			}
 		});
 
 		// Set fieldDetails to category details
 		if (curCategory != null) {
+			setIsFiltersLoading(true);
 			// Check if filters exist in query cache
 			const filters = queryClient.getQueryData([
 				'products',
@@ -246,10 +250,15 @@ const EditProduct = () => {
 					generatedFilters.activeFields
 				);
 				setFilters(generatedFilters?.filters);
+				console.log(generatedFilters?.filters);
 				setActiveFields(generatedFilters?.activeFields);
+				console.log(generatedFilters?.activeFields);
+				setIsFiltersLoading(false);
 			} else {
+				setIsFiltersLoading(true);
 				setFilters(filters);
 				setActiveFields(activeFields);
+				setIsFiltersLoading(false);
 			}
 		}
 	};
@@ -281,14 +290,14 @@ const EditProduct = () => {
 	};
 
 	useEffect(() => {
-		onSelectedCategoryChange(product?.category);
-
 		if (product) {
+			onSelectedCategoryChange(product.category);
+
 			for (let detailsKey of Object.keys(product?.details)) {
 				formik.setFieldValue(detailsKey, product?.details[detailsKey]);
 			}
 		}
-	}, [product]);
+	}, [product, categories]);
 
 	return (
 		<div className="form">
@@ -296,171 +305,177 @@ const EditProduct = () => {
 			<h1>Edit Product</h1>
 
 			<div className="box">
-				<h2>Product Information:</h2>
-				<div className="seperator-line"></div>
+				{isProductLoading || isFiltersLoading || isCategoriesLoading ? (
+					<Spinner />
+				) : (
+					<>
+						<h2>Product Information:</h2>
+						<div className="seperator-line"></div>
 
-				<FormikProvider value={formik}>
-					<Form>
-						<div className="form-container">
-							<InputField
-								type={'text'}
-								name={'title'}
-								placeholder={'Title *'}
-								value={formik.values.title}
-								onBlur={formik.handleBlur}
-								onChange={(e) => {
-									formik.setFieldValue('title', e.target.value);
-								}}
-								errors={formik.errors.title}
-								touched={formik.touched.title}
-							/>
-							<div className="row">
-								<div>
+						<FormikProvider value={formik}>
+							<Form>
+								<div className="form-container">
 									<InputField
 										type={'text'}
-										name={'price'}
-										placeholder={'Price *'}
-										value={formik.values.price}
+										name={'title'}
+										placeholder={'Title *'}
+										value={formik.values.title}
 										onBlur={formik.handleBlur}
 										onChange={(e) => {
-											formik.setFieldValue('price', e.target.value);
+											formik.setFieldValue('title', e.target.value);
 										}}
-										errors={formik.errors.price}
-										touched={formik.touched.price}
+										errors={formik.errors.title}
+										touched={formik.touched.title}
 									/>
+									<div className="row">
+										<div>
+											<InputField
+												type={'text'}
+												name={'price'}
+												placeholder={'Price *'}
+												value={formik.values.price}
+												onBlur={formik.handleBlur}
+												onChange={(e) => {
+													formik.setFieldValue('price', e.target.value);
+												}}
+												errors={formik.errors.price}
+												touched={formik.touched.price}
+											/>
+										</div>
+
+										<div>
+											<InputField
+												type={'number'}
+												name={'stock'}
+												placeholder={'Stock *'}
+												value={formik.values.stock}
+												onBlur={formik.handleBlur}
+												onChange={(e) => {
+													formik.setFieldValue('stock', e.target.value);
+												}}
+												errors={formik.errors.stock}
+												touched={formik.touched.stock}
+											/>
+										</div>
+									</div>
+
+									<div className="description-container">
+										<p>Specifications</p>
+										<ReactQuill
+											name="specifications"
+											theme="snow"
+											modules={modules}
+											formats={formats}
+											value={formik.values.specifications}
+											onChange={(newValue) => {
+												formik.setFieldValue('specifications', newValue);
+											}}
+										/>
+									</div>
+
+									<div className="description-container">
+										<p>Description</p>
+										<ReactQuill
+											name="description"
+											theme="snow"
+											modules={modules}
+											formats={formats}
+											value={formik.values.description}
+											onChange={(newValue) => {
+												formik.setFieldValue('description', newValue);
+											}}
+										/>
+									</div>
+
+									<div className="file-container">
+										<p>Files</p>
+										<DragAndDrop
+											onChange={dragAndDropOnChange}
+											setFiles={setFiles}
+											currentImages={files}
+										/>
+									</div>
+
+									<div className="file-container">
+										<p>Current Files</p>
+										<div className="previous-images-container">
+											{product?.images &&
+												product?.images != [] &&
+												product?.images.map((prevFile, id) => {
+													return (
+														<div className="uploaded-image" key={id}>
+															<button
+																type="button"
+																className="close-img-btn"
+																onClick={(e) => removePreviousImage(e, id)}
+															>
+																{imageRemoveIsLoading === true ? (
+																	<Spinner
+																		width={22}
+																		height={22}
+																		borderWidth={2}
+																		color={'#a94442'}
+																	/>
+																) : (
+																	<IoClose />
+																)}
+															</button>
+															<img src={prevFile.url} alt="uploaded image" />
+														</div>
+													);
+												})}
+										</div>
+									</div>
+
+									<div className="select-container">
+										<p>Select category</p>
+										<Field
+											placeholder="Category *"
+											as="select"
+											name="category"
+											value={formik.values.category}
+											onBlur={formik.handleBlur}
+											onChange={(e) => {
+												formik.setFieldValue('category', e.target.value);
+												onSelectedCategoryChange(e.target.value);
+											}}
+										>
+											<option disabled>Select category</option>
+											{categories &&
+												categories.map((category, id) => {
+													return (
+														<option value={category.name} key={id}>
+															{category.name}
+														</option>
+													);
+												})}
+										</Field>
+									</div>
+									{formik.errors.category && formik.touched.category ? (
+										<div className="error">{formik.errors.category}</div>
+									) : null}
 								</div>
+
+								{activeFields && (
+									<ProductFiltersDisplay
+										activeFields={activeFields}
+										filters={filters}
+										formik={formik}
+									/>
+								)}
 
 								<div>
-									<InputField
-										type={'number'}
-										name={'stock'}
-										placeholder={'Stock *'}
-										value={formik.values.stock}
-										onBlur={formik.handleBlur}
-										onChange={(e) => {
-											formik.setFieldValue('stock', e.target.value);
-										}}
-										errors={formik.errors.stock}
-										touched={formik.touched.stock}
+									<Button
+										type="submit"
+										isLoading={isLoading}
+										width="100%"
+										text="Edit Product"
 									/>
 								</div>
-							</div>
-
-							<div className="description-container">
-								<p>Specifications</p>
-								<ReactQuill
-									name="specifications"
-									theme="snow"
-									modules={modules}
-									formats={formats}
-									value={formik.values.specifications}
-									onChange={(newValue) => {
-										formik.setFieldValue('specifications', newValue);
-									}}
-								/>
-							</div>
-
-							<div className="description-container">
-								<p>Description</p>
-								<ReactQuill
-									name="description"
-									theme="snow"
-									modules={modules}
-									formats={formats}
-									value={formik.values.description}
-									onChange={(newValue) => {
-										formik.setFieldValue('description', newValue);
-									}}
-								/>
-							</div>
-
-							<div className="file-container">
-								<p>Files</p>
-								<DragAndDrop
-									onChange={dragAndDropOnChange}
-									setFiles={setFiles}
-									currentImages={files}
-								/>
-							</div>
-
-							<div className="file-container">
-								<p>Current Files</p>
-								<div className="previous-images-container">
-									{product?.images &&
-										product?.images != [] &&
-										product?.images.map((prevFile, id) => {
-											return (
-												<div className="uploaded-image" key={id}>
-													<button
-														type="button"
-														className="close-img-btn"
-														onClick={(e) => removePreviousImage(e, id)}
-													>
-														{imageRemoveIsLoading === true ? (
-															<Spinner
-																width={22}
-																height={22}
-																borderWidth={2}
-																color={'#a94442'}
-															/>
-														) : (
-															<IoClose />
-														)}
-													</button>
-													<img src={prevFile.url} alt="uploaded image" />
-												</div>
-											);
-										})}
-								</div>
-							</div>
-
-							<div className="select-container">
-								<p>Select category</p>
-								<Field
-									placeholder="Category *"
-									as="select"
-									name="category"
-									value={formik.values.category}
-									onBlur={formik.handleBlur}
-									onChange={(e) => {
-										formik.setFieldValue('category', e.target.value);
-										onSelectedCategoryChange(e.target.value);
-									}}
-								>
-									<option disabled>Select category</option>
-									{categories &&
-										categories.map((category, id) => {
-											return (
-												<option value={category.name} key={id}>
-													{category.name}
-												</option>
-											);
-										})}
-								</Field>
-							</div>
-							{formik.errors.category && formik.touched.category ? (
-								<div className="error">{formik.errors.category}</div>
-							) : null}
-						</div>
-
-						{activeFields && (
-							<ProductFiltersDisplay
-								activeFields={activeFields}
-								filters={filters}
-								formik={formik}
-							/>
-						)}
-
-						<div>
-							<Button
-								type="submit"
-								isLoading={isLoading}
-								width="100%"
-								text="Edit Product"
-							/>
-						</div>
-					</Form>
-				</FormikProvider>
+							</Form>
+						</FormikProvider>
+					</>
+				)}
 			</div>
 			<Link
 				to={`/products?page=${page}&pageSize=${pageSize}${
