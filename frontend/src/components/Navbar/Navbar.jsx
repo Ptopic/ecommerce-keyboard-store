@@ -114,7 +114,11 @@ const Navbar = () => {
 							/>
 						)}
 					</AnimatePresence>
-					<Link to={'/'} style={{ textDecoration: 'none', color: 'black' }}>
+					<Link
+						to={'/'}
+						style={{ textDecoration: 'none', color: 'black' }}
+						reloadDocument
+					>
 						{/* <h1>Switchy</h1> */}
 						<img src={logo} alt="" />
 					</Link>
@@ -133,6 +137,7 @@ const Navbar = () => {
 								color: 'black',
 							}}
 							to={'/login'}
+							reloadDocument
 						>
 							<AiOutlineUser size={26} />
 						</Link>
@@ -145,6 +150,7 @@ const Navbar = () => {
 								color: 'black',
 							}}
 							to={'/user/details'}
+							reloadDocument
 						>
 							<AiOutlineUser size={26} />
 						</Link>
@@ -157,6 +163,7 @@ const Navbar = () => {
 					<Link
 						style={{ textDecoration: 'none', color: 'black' }}
 						to={'/wishlist'}
+						reloadDocument
 					>
 						<AiOutlineHeart size={26} />
 					</Link>

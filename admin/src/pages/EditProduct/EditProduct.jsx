@@ -120,7 +120,7 @@ const EditProduct = () => {
 		price: Yup.number().required('Price is required'),
 		stock: Yup.number().required('Stock is required'),
 		files: Yup.array(),
-		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
+		// ...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
 
 	const initialValues = {
@@ -142,8 +142,11 @@ const EditProduct = () => {
 	});
 
 	const handleEditProduct = async (values, formikActions) => {
+		console.log('submit');
 		if (files?.length != 0) {
 			setIsLoading(true);
+			console.log(values);
+
 			try {
 				const res = await userRequest.put('/products/' + id, {
 					...values,
@@ -155,19 +158,21 @@ const EditProduct = () => {
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
-				navigate(0);
 			} catch (error) {
 				toast.error(
 					error.response.data.error
 						? 'Product already exists'
 						: 'Something went wrong'
 				);
+
+				console.log(error);
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
 			}
 		} else {
 			setIsLoading(true);
+			console.log(values);
 			try {
 				const res = await userRequest.put('/products/' + id, {
 					...values,
@@ -177,7 +182,6 @@ const EditProduct = () => {
 				toast.success('Product added successfully');
 				formikActions.resetForm();
 				setIsLoading(false);
-				navigate(-1);
 			} catch (error) {
 				toast.error(
 					error.response.data.error
@@ -185,6 +189,7 @@ const EditProduct = () => {
 						: 'Something went wrong'
 				);
 
+				console.log(error);
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
@@ -295,7 +300,7 @@ const EditProduct = () => {
 				<div className="seperator-line"></div>
 
 				<FormikProvider value={formik}>
-					<form onSubmit={formik.handleSubmit}>
+					<Form>
 						<div className="form-container">
 							<InputField
 								type={'text'}
@@ -454,7 +459,7 @@ const EditProduct = () => {
 								text="Edit Product"
 							/>
 						</div>
-					</form>
+					</Form>
 				</FormikProvider>
 			</div>
 			<Link
@@ -463,6 +468,7 @@ const EditProduct = () => {
 				}${direction != null ? '&direction=' + direction : ''}
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>

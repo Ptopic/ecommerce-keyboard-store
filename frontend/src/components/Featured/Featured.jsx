@@ -11,7 +11,7 @@ function Featured() {
 			<p>Featured Collections</p>
 
 			<div className="featured-container">
-				<Link to="/products/all" className="featured-card">
+				<Link to="/products/all" className="featured-card" reloadDocument>
 					<img src={newArrivalsImage} alt="" />
 					<div>
 						<span>New Arrivals</span>
@@ -19,7 +19,7 @@ function Featured() {
 					</div>
 				</Link>
 
-				<Link to="/configurator" className="featured-card">
+				<Link to="/configurator" className="featured-card" reloadDocument>
 					<img
 						src="https://www.jouleperformance.com/media/.renditions/JoulePerformance/LandingPages/Configurator/joule_performance_streaming_pc_config.png"
 						alt=""
@@ -30,7 +30,11 @@ function Featured() {
 					</div>
 				</Link>
 
-				<Link to="/products/Procesori?name=Procesori" className="featured-card">
+				<Link
+					to="/products/Procesori?name=Procesori"
+					className="featured-card"
+					reloadDocument
+				>
 					<img
 						src="https://www.techspot.com/articles-info/2636/images/2023-02-27-image-15.jpg"
 						alt=""

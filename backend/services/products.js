@@ -12,6 +12,8 @@ exports.mapActiveFields = (activeFields, req) => {
 	for (let field of activeFields) {
 		details[field] = String(req.body[field]);
 	}
+
+	console.log(details);
 	return details;
 };
 

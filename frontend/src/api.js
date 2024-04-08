@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 // Get token from cookie
 const cookies = new Cookies();
-let TOKEN = cookies.cookies.token ? cookies.cookies.token : '';
+let TOKEN = cookies?.cookies?.token ? cookies?.cookies?.token : '';
 
 export const request = axios.create({
 	baseURL: BASE_URL,

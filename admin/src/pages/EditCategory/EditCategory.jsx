@@ -111,7 +111,7 @@ function EditCategory() {
 			});
 			formikActions.resetForm();
 			setIsLoading(false);
-			navigate(`/categories?page=${page}`);
+			toast.success('Category updated successfully');
 		} catch (error) {
 			console.log(error);
 			toast.error(
@@ -227,6 +227,7 @@ function EditCategory() {
 				}${direction != null ? '&direction=' + direction : ''}
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>

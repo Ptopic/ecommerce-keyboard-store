@@ -124,13 +124,12 @@ const Product = () => {
 	};
 
 	const handleAddToWishlist = async () => {
-		if (currentUser.length == 0) {
+		if (!currentUser || currentUser?.length == 0) {
 			navigate('/login');
 		}
 
 		// Add product to users wishlist (token might be needed)
-		console.log(currentUser);
-		if (Object.keys(currentUser).length != 0) {
+		if (Object.keys(currentUser)?.length != 0) {
 			const productId = product._id;
 			const userId = currentUser._id;
 

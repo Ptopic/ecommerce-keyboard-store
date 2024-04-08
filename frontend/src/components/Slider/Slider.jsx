@@ -54,7 +54,9 @@ function Slider() {
 
 						<p>Shipping October 2024</p>
 
-						<Link to={'/product/65d7d823692c5832af873d10'}>Buy now</Link>
+						<Link to={'/product/65d7d823692c5832af873d10'} reloadDocument>
+							Buy now
+						</Link>
 					</div>
 				</div>
 
@@ -70,7 +72,9 @@ function Slider() {
 
 						<p>In-stock and ready to ship</p>
 
-						<Link to={'/product/65dcc55dba2a6ad7a9ff4ec9'}>Buy now</Link>
+						<Link to={'/product/65dcc55dba2a6ad7a9ff4ec9'} reloadDocument>
+							Buy now
+						</Link>
 					</div>
 				</div>
 
@@ -86,7 +90,9 @@ function Slider() {
 
 						<p>In-stock and ready to ship</p>
 
-						<Link to={'/product/65d3c813b9c7e4b6ad8322b7'}>Buy now</Link>
+						<Link to={'/product/65d3c813b9c7e4b6ad8322b7'} reloadDocument>
+							Buy now
+						</Link>
 					</div>
 				</div>
 			</div>

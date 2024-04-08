@@ -65,7 +65,7 @@ const Login = () => {
 		if (res.success == true) {
 			// Set token cookie
 			let token = res.token;
-			setCookie('token', token, {
+			await setCookie('token', token, {
 				expires: new Date(new Date().getTime() + 1440 * 60000),
 				path: '/',
 			});

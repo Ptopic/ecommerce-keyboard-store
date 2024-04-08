@@ -28,7 +28,7 @@ export default function Sidebar() {
 				<div className="sidebarMenu">
 					<h3 className="sidebarTitle">Dashboard</h3>
 					<ul className="sidebarList">
-						<Link to="/" className="link">
+						<Link to="/" className="link" reloadDocument>
 							<li
 								className={`sidebarListItem ${
 									active == 'Home' ? 'active' : ''
@@ -38,7 +38,7 @@ export default function Sidebar() {
 								Home
 							</li>
 						</Link>
-						<Link to="/analytics" className="link">
+						<Link to="/analytics" className="link" reloadDocument>
 							<li
 								className={`sidebarListItem ${
 									active == 'Analytics' ? 'active' : ''
@@ -53,7 +53,7 @@ export default function Sidebar() {
 				<div className="sidebarMenu">
 					<h3 className="sidebarTitle">Quick Menu</h3>
 					<ul className="sidebarList">
-						<Link to="/users" className="link">
+						<Link to="/users" className="link" reloadDocument>
 							<li
 								className={`sidebarListItem ${
 									active == 'Users' ? 'active' : ''
@@ -63,7 +63,7 @@ export default function Sidebar() {
 								Users
 							</li>
 						</Link>
-						<Link to="/categories" className="link">
+						<Link to="/categories" className="link" reloadDocument>
 							<li
 								className={`sidebarListItem ${
 									active == 'Categories' ? 'active' : ''
@@ -73,7 +73,7 @@ export default function Sidebar() {
 								Categories
 							</li>
 						</Link>
-						<Link to="/products" className="link">
+						<Link to="/products" className="link" reloadDocument>
 							<li
 								className={`sidebarListItem ${
 									active == 'Products' ? 'active' : ''
@@ -83,7 +83,7 @@ export default function Sidebar() {
 								Products
 							</li>
 						</Link>
-						<Link to="/orders" className="link">
+						<Link to="/orders" className="link" reloadDocument>
 							<li
 								className={`sidebarListItem ${
 									active == 'Orders' ? 'active' : ''

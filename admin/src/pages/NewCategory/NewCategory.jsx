@@ -190,6 +190,7 @@ function NewCategory() {
 				}${direction != null ? '&direction=' + direction : ''}
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>

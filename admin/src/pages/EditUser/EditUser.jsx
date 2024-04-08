@@ -103,7 +103,7 @@ function EditUser() {
 			// toast.success('User added successfully');
 			formikActions.resetForm();
 			setIsLoading(false);
-			navigate('/users');
+			toast.success('User updated successfully');
 		} catch (error) {
 			toast.error(
 				error.response.data.error
@@ -245,6 +245,7 @@ function EditUser() {
 				}${direction != null ? '&direction=' + direction : ''}
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>

@@ -827,6 +827,7 @@ const EditOrder = () => {
 			<Link
 				to={`/orders?page=${page}&pageSize=${pageSize}`}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>

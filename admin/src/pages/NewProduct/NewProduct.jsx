@@ -197,7 +197,7 @@ const NewProduct = () => {
 		price: Yup.number().required('Price is required'),
 		stock: Yup.number().required('Stock is required'),
 		files: Yup.array().required('Files are required'),
-		...getActiveFieldsValidationSchema(), // Add validation schema for active fields
+		// ...getActiveFieldsValidationSchema(), // Add validation schema for active fields
 	});
 
 	const initialValues = {
@@ -366,6 +366,7 @@ const NewProduct = () => {
 				}${direction != null ? '&direction=' + direction : ''}
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}`}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>

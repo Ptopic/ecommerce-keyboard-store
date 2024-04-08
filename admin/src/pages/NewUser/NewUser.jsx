@@ -210,6 +210,7 @@ function NewUser() {
 				${searchTermValue != null ? '&search=' + searchTermValue : ''}
 `}
 				className="back-btn"
+				reloadDocument
 			>
 				Back
 			</Link>
