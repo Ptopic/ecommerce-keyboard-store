@@ -82,12 +82,11 @@ exports.updateProduct = async (req, res) => {
 		names,
 	} = req.body;
 
-	console.log(activeFields);
-
 	const { id } = req.params;
 
 	price = parseFloat(price).toFixed(2);
 
+	console.log(activeFields[0]);
 	try {
 		if (images) {
 			let details = {};

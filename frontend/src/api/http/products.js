@@ -31,13 +31,31 @@ export const getProducts = async (
 	return request.get(`/products/category/` + category, {
 		params: {
 			page: page ? page : 0,
-			pageSize: PAGE_SIZE,
+			pageSize: 12,
 			minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
 			maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
 			sort: sort != '' ? sort : null,
 			direction: direction != '' ? direction : null,
 			activeFilters:
 				activeFilters && activeFilters.length > 0 ? activeFilters : null,
+		},
+	});
+};
+
+export const getAllProducts = async (
+	page,
+	sort,
+	direction,
+	priceSliderValues
+) => {
+	return request.get(`/products/all`, {
+		params: {
+			page: page ? page : 1,
+			pageSize: 12,
+			minPrice: priceSliderValues[0] != 0 ? priceSliderValues[0] : null,
+			maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
+			sort: sort != '' ? sort : null,
+			direction: direction != '' ? direction : null,
 		},
 	});
 };
