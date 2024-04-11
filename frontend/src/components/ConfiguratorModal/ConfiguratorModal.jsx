@@ -23,11 +23,13 @@ import ProductFilters from '../ProductFilters/ProductFilters';
 import InputField from '../InputField/InputField';
 
 // Utils
-import { generateFilters, regenerateFilters } from '../../utils/filters';
+import { regenerateFilters } from '../../utils/filters';
+import { generateFilters } from '../../api/http/filters';
 import { request } from '../../api';
 import { formatPriceDisplay } from '../../utils/formatting';
 
 import { getQueryClient } from '../../shared/queryClient';
+import { useGetAllCategories } from '../../../../admin/src/hooks/useGetCategories';
 
 /**
  * Mode param will define if data is pushed or set into configurator modal values
@@ -44,10 +46,9 @@ const ConfiguratorModal = ({
 	mode,
 }) => {
 	const queryClient = getQueryClient;
-	const dispatch = useDispatch();
-	const categories = useSelector((state) => state.categories.data);
-	const reduxFilters = useSelector((state) => state.filters);
 	let PAGE_SIZE = 40;
+
+	const { data: categories } = useGetAllCategories();
 
 	const [page, setPage] = useState(0);
 	const pageDisplay = Number(page) + 1;
@@ -93,8 +94,8 @@ const ConfiguratorModal = ({
 				pricesData.minPrice.length > 0 &&
 				pricesData.maxPrice.length > 0
 			) {
-				minPrice = pricesData.minPrice[0].price;
-				maxPrice = pricesData.maxPrice[0].price;
+				minPrice = Math.ceil(pricesData.minPrice[0].price);
+				maxPrice = Math.ceil(pricesData.maxPrice[0].price);
 			} else {
 				minPrice = 0;
 				maxPrice = 0;
@@ -121,14 +122,14 @@ const ConfiguratorModal = ({
 			// Check if filters exist in query cache
 			const filters = queryClient.getQueryData([
 				'products',
-				'admin',
+				'configurator',
 				'filters',
 				curCategory?.name,
 			]);
 
 			const activeFields = queryClient.getQueryData([
 				'products',
-				'admin',
+				'configurator',
 				'activeFields',
 				curCategory?.name,
 			]);
@@ -140,18 +141,18 @@ const ConfiguratorModal = ({
 
 				// Set query data
 				queryClient.setQueryData(
-					['products', 'admin', 'filters', curCategory?.name],
+					['products', 'configurator', 'filters', curCategory?.name],
 					generatedFilters.filters
 				);
 				queryClient.setQueryData(
-					['products', 'admin', 'activeFields', curCategory?.name],
+					['products', 'configurator', 'activeFields', curCategory?.name],
 					generatedFilters.activeFields
 				);
 				setFilters(generatedFilters?.filters);
-				setActiveFields(generatedFilters?.activeFields);
+				setActiveFilters(generatedFilters?.activeFields);
 			} else {
 				setFilters(filters);
-				setActiveFields(activeFields);
+				setActiveFilters(activeFields);
 			}
 		}
 	};
@@ -251,104 +252,106 @@ const ConfiguratorModal = ({
 		getMinMaxPrices();
 		getProducts();
 
-		getInitialFilters(products?.category);
-
 		setLoading(false);
 	}, []);
 
 	useEffect(() => {
-		let constraints = configuratorModalValues['Constraints'];
-		let constraintsArray = Array.of(Object.keys(constraints))[0];
+		getInitialFilters(products[0]?.category);
+	}, [products]);
 
-		let doFilterRefresh = false;
+	// useEffect(() => {
+	// 	let constraints = configuratorModalValues['Constraints'];
+	// 	let constraintsArray = Array.of(Object.keys(constraints))[0];
 
-		// If there is any constraints map them to active fields
-		if (constraintsArray) {
-			for (let i = 0; i < constraintsArray.length; i++) {
-				for (let j = 0; j < activeFilters.length; j++) {
-					if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-						activeFilters[j][constraintsArray[i]] =
-							constraints[constraintsArray[i]];
+	// 	let doFilterRefresh = false;
 
-						// If constraints array contains categoryName values then regenerate filters
-						doFilterRefresh = true;
-					}
-				}
-			}
-		}
+	// 	// If there is any constraints map them to active fields
+	// 	if (constraintsArray) {
+	// 		for (let i = 0; i < constraintsArray.length; i++) {
+	// 			for (let j = 0; j < activeFilters.length; j++) {
+	// 				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
+	// 					activeFilters[j][constraintsArray[i]] =
+	// 						constraints[constraintsArray[i]];
 
-		getMinMaxPrices();
+	// 					// If constraints array contains categoryName values then regenerate filters
+	// 					doFilterRefresh = true;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-		if (doFilterRefresh) {
-			regenerateFilters(
-				categoryName,
-				activeFilters,
-				categories,
-				setFilters,
-				setActiveFilters
-			);
-		} else {
-			// Check if any value in active filters is != null
-			let isActiveFiltersEmpty = true;
-			for (let activeFilter of activeFilters) {
-				if (Object.values(activeFilter) != '') {
-					console.log(activeFilter);
-					isActiveFiltersEmpty = false;
-				}
-			}
-			// If it is regenerate filters
-			if (!isActiveFiltersEmpty) {
-				regenerateFilters(
-					categoryName,
-					activeFilters,
-					categories,
-					setFilters,
-					setActiveFilters
-				);
-			} else {
-				// Set filters as default filters (reset them)
-				let isCategoryFiltersCached;
-				let isCategoryActiveFiltersCached;
+	// 	getMinMaxPrices();
 
-				if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-					for (let reduxFilter of reduxFilters?.filters) {
-						if (Object.keys(reduxFilter) == categoryName) {
-							isCategoryFiltersCached = structuredClone(reduxFilter);
-						}
-					}
-				}
+	// 	if (doFilterRefresh) {
+	// 		regenerateFilters(
+	// 			categoryName,
+	// 			activeFilters,
+	// 			categories,
+	// 			setFilters,
+	// 			setActiveFilters
+	// 		);
+	// 	} else {
+	// 		// Check if any value in active filters is != null
+	// 		let isActiveFiltersEmpty = true;
+	// 		for (let activeFilter of activeFilters) {
+	// 			if (Object.values(activeFilter) != '') {
+	// 				console.log(activeFilter);
+	// 				isActiveFiltersEmpty = false;
+	// 			}
+	// 		}
+	// 		// If it is regenerate filters
+	// 		if (!isActiveFiltersEmpty) {
+	// 			regenerateFilters(
+	// 				categoryName,
+	// 				activeFilters,
+	// 				categories,
+	// 				setFilters,
+	// 				setActiveFilters
+	// 			);
+	// 		} else {
+	// 			// Set filters as default filters (reset them)
+	// 			let isCategoryFiltersCached;
+	// 			let isCategoryActiveFiltersCached;
 
-				if (
-					reduxFilters?.activeFilters &&
-					reduxFilters.activeFilters.length > 0
-				) {
-					for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-						if (Object.keys(reduxActiveFilter) == categoryName) {
-							isCategoryActiveFiltersCached =
-								structuredClone(reduxActiveFilter);
-						}
-					}
-				}
+	// 			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
+	// 				for (let reduxFilter of reduxFilters?.filters) {
+	// 					if (Object.keys(reduxFilter) == categoryName) {
+	// 						isCategoryFiltersCached = structuredClone(reduxFilter);
+	// 					}
+	// 				}
+	// 			}
 
-				if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
-					generateFilters(categoryName, categories, setFilters)
-						.then((res) => {
-							dispatch(
-								addFilter({
-									categoryName: categoryName,
-									filters: res?.filters,
-									activeFilters: res?.activeFilters,
-								})
-							);
-						})
-						.catch((err) => console.log(err));
-				} else {
-					console.log('Cached filters');
-					setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
-				}
-			}
-		}
-	}, [activeFilters]);
+	// 			if (
+	// 				reduxFilters?.activeFilters &&
+	// 				reduxFilters.activeFilters.length > 0
+	// 			) {
+	// 				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
+	// 					if (Object.keys(reduxActiveFilter) == categoryName) {
+	// 						isCategoryActiveFiltersCached =
+	// 							structuredClone(reduxActiveFilter);
+	// 					}
+	// 				}
+	// 			}
+
+	// 			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
+	// 				generateFilters(categoryName, categories, setFilters)
+	// 					.then((res) => {
+	// 						dispatch(
+	// 							addFilter({
+	// 								categoryName: categoryName,
+	// 								filters: res?.filters,
+	// 								activeFilters: res?.activeFilters,
+	// 							})
+	// 						);
+	// 					})
+	// 					.catch((err) => console.log(err));
+	// 			} else {
+	// 				console.log('Cached filters');
+	// 				setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
+	// 			}
+	// 		}
+	// 	}
+	// }, [activeFilters]);
 
 	useEffect(() => {
 		getProducts();
@@ -476,16 +479,13 @@ const ConfiguratorModal = ({
 							</div>
 							<div className="filters-devider"></div>
 
-							{filters.length !== 0 &&
-								filters != null &&
-								activeFilters.length !== 0 &&
-								activeFilters != null && (
-									<ProductFilters
-										filters={filters}
-										activeFilters={activeFilters}
-										handleFilterCheckboxClick={handleFilterCheckboxClick}
-									/>
-								)}
+							{filters && activeFilters && (
+								<ProductFilters
+									filters={filters}
+									activeFilters={activeFilters}
+									handleFilterCheckboxClick={handleFilterCheckboxClick}
+								/>
+							)}
 
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>

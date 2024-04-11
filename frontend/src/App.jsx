@@ -43,8 +43,9 @@ import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { setUserData } from './redux/userRedux';
 import ScrollToTop from './components/ScrollToTop';
+import { getQueryClient } from './shared/queryClient';
 
-const queryClient = new QueryClient();
+const queryClient = getQueryClient;
 
 const App = () => {
 	const [cookies, setCookie] = useCookies();

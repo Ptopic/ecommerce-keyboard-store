@@ -17,7 +17,8 @@ import '../Checkout/Checkout.css';
 
 // Utils
 import { debounce } from '../../utils/debounce';
-import { generateFilters, regenerateFilters } from '../../utils/filters';
+import { generateFilters } from '../../api/http/filters';
+import { regenerateFilters } from '../../utils/filters';
 
 import ProductFilters from '../../components/ProductFilters/ProductFilters';
 import { useGetProductPrices } from '../../hooks/useGetProductPrices';
@@ -28,9 +29,12 @@ import {
 } from '../../api/http/products';
 import { useGetCategories } from '../../hooks/useGetCategories';
 import { useGetInitialProducts } from '../../hooks/useGetInitialProducts';
+import { getQueryClient } from '../../shared/queryClient';
 
 const ProductList = () => {
 	let PAGE_SIZE = 12;
+
+	const queryClient = getQueryClient;
 
 	const [searchParams] = useSearchParams();
 	const location = useLocation();
@@ -59,7 +63,6 @@ const ProductList = () => {
 	const loadMoreBtnRef = useRef(null);
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
-	const [isProductsLoading, setIsProductsLoading] = useState(false);
 
 	const getMinMaxPrices = async () => {
 		try {
@@ -78,8 +81,8 @@ const ProductList = () => {
 				pricesData.minPrice.length > 0 &&
 				pricesData.maxPrice.length > 0
 			) {
-				minPrice = pricesData.minPrice[0].price;
-				maxPrice = pricesData.maxPrice[0].price;
+				minPrice = Math.ceil(pricesData.minPrice[0].price);
+				maxPrice = Math.ceil(pricesData.maxPrice[0].price);
 			} else {
 				minPrice = 0;
 				maxPrice = 0;
@@ -125,7 +128,6 @@ const ProductList = () => {
 		setPage(0);
 
 		try {
-			setIsProductsLoading(true);
 			const res = await request.get(`/products/category/` + category, {
 				params: {
 					page: 0,
@@ -143,7 +145,6 @@ const ProductList = () => {
 			setProducts(data.data);
 			setPage(1);
 			setTotalPages(data.totalPages);
-			setIsProductsLoading(false);
 		} catch (error) {
 			console.log(error);
 			toast.error('Failed to load products...');
@@ -228,16 +229,35 @@ const ProductList = () => {
 		setActiveFilters(initialFiltersArray);
 	};
 
-	const cacheFilters = () => {
-		generateFilters(
+	const cacheFilters = async () => {
+		const filters = queryClient.getQueryData(['products', 'filters', name]);
+
+		const activeFields = queryClient.getQueryData([
+			'products',
+			'activeFilters',
 			name,
-			activeFilters,
-			categories?.data,
-			setFilters,
-			setActiveFilters
-		)
-			.then((res) => {})
-			.catch((err) => console.log(err));
+		]);
+
+		if (!filters && !activeFields) {
+			console.log('Generate filters');
+			const generatedFiltersRes = await generateFilters(name);
+			const generatedFilters = generatedFiltersRes.data;
+
+			// Set query data
+			queryClient.setQueryData(
+				['products', 'filters', name],
+				generatedFilters.filters
+			);
+			queryClient.setQueryData(
+				['products', 'activeFilters', name],
+				generatedFilters.activeFields
+			);
+			setFilters(generatedFilters?.filters);
+			setActiveFilters(generatedFilters?.activeFields);
+		} else {
+			setFilters(filters);
+			setActiveFilters(activeFields);
+		}
 	};
 
 	// Initial page load and redux state load
@@ -285,7 +305,7 @@ const ProductList = () => {
 			<Navbar />
 			<Toaster />
 
-			{isLoading == true ? (
+			{isLoading ? (
 				<div className="product-list-spinner-container">
 					<Spinner />
 				</div>
@@ -393,41 +413,34 @@ const ProductList = () => {
 										Izbriši Filtere
 									</button>
 								</div>
-								{isProductsLoading ? (
-									<div className="spinner-container">
-										<Spinner />
-									</div>
-								) : (
-									<>
-										{products.length > 0 ? (
-											<Products
-												products={products}
-												title={name}
-												setMobileFiltersOpen={setMobileFiltersOpen}
-												sort={sort}
-												setSort={setSort}
-												direction={direction}
-												setDirection={setDirection}
-											/>
-										) : (
-											<h2>No products to show...</h2>
-										)}
 
-										<div className="has-more-container" ref={loadMoreBtnRef}>
-											{totalPages != page && products.length > 0 ? (
-												<button
-													className="load-more-btn"
-													onClick={(e) => loadMoreData(e)}
-												>
-													Prikaži više
-													<span>
-														(str. {page}/{totalPages})
-													</span>
-												</button>
-											) : null}
-										</div>
-									</>
+								{products.length > 0 ? (
+									<Products
+										products={products}
+										title={name}
+										setMobileFiltersOpen={setMobileFiltersOpen}
+										sort={sort}
+										setSort={setSort}
+										direction={direction}
+										setDirection={setDirection}
+									/>
+								) : (
+									<h2>No products to show...</h2>
 								)}
+
+								<div className="has-more-container" ref={loadMoreBtnRef}>
+									{totalPages != page && products.length > 0 ? (
+										<button
+											className="load-more-btn"
+											onClick={(e) => loadMoreData(e)}
+										>
+											Prikaži više
+											<span>
+												(str. {page}/{totalPages})
+											</span>
+										</button>
+									) : null}
+								</div>
 							</div>
 						</div>
 					</div>

@@ -44,8 +44,8 @@ const AllProductList = () => {
 				pricesData.minPrice.length > 0 &&
 				pricesData.maxPrice.length > 0
 			) {
-				minPrice = pricesData.minPrice[0].price;
-				maxPrice = pricesData.maxPrice[0].price;
+				minPrice = Math.ceil(pricesData.minPrice[0].price);
+				maxPrice = Math.ceil(pricesData.maxPrice[0].price);
 			} else {
 				minPrice = 0;
 				maxPrice = 0;
