@@ -3,13 +3,25 @@ const { getCategoryByName } = require('../services/category');
 
 exports.generateFilters = async (req, res) => {
 	const { categoryName } = req.params;
+	const { activeFilters } = req.query;
+
+	console.log(req.query);
 
 	let query = { category: categoryName };
 
+	if (activeFilters != null && activeFilters.length > 0) {
+		for (let activeFilter of activeFilters) {
+			if (Object.values(activeFilter)[0] != '') {
+				query['details.' + Object.keys(activeFilter)] =
+					Object.values(activeFilter)[0];
+			}
+		}
+	}
+
+	console.log(query);
+
 	try {
 		let products = await Product.find(query);
-
-		// console.log(products);
 
 		const category = await getCategoryByName(categoryName);
 

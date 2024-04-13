@@ -229,7 +229,7 @@ const ProductList = () => {
 		setActiveFilters(initialFiltersArray);
 	};
 
-	const cacheFilters = async () => {
+	const cacheFilters = async (activeFiltersData) => {
 		const filters = queryClient.getQueryData(['products', 'filters', name]);
 
 		const activeFields = queryClient.getQueryData([
@@ -240,7 +240,10 @@ const ProductList = () => {
 
 		if (!filters && !activeFields) {
 			console.log('Generate filters');
-			const generatedFiltersRes = await generateFilters(name);
+			const generatedFiltersRes = await generateFilters(
+				name,
+				activeFiltersData
+			);
 			const generatedFilters = generatedFiltersRes.data;
 
 			// Set query data
@@ -258,6 +261,22 @@ const ProductList = () => {
 			setFilters(filters);
 			setActiveFilters(activeFields);
 		}
+	};
+
+	const regenerateNewFilters = async (newActiveFilters) => {
+		const generatedFiltersRes = await generateFilters(name, newActiveFilters);
+		const generatedFilters = generatedFiltersRes.data;
+
+		// Set query data
+		queryClient.setQueryData(
+			['products', 'filters', name],
+			generatedFilters.filters
+		);
+		queryClient.setQueryData(
+			['products', 'activeFilters', name],
+			generatedFilters.activeFields
+		);
+		setFilters(generatedFilters?.filters);
 	};
 
 	// Initial page load and redux state load
@@ -286,17 +305,11 @@ const ProductList = () => {
 
 	useEffect(() => {
 		if (activeFilters && activeFilters.length > 0) {
-			getMinMaxPrices();
-
-			getProducts();
-
-			regenerateFilters(
-				name,
-				activeFilters,
-				categories?.data,
-				setFilters,
-				setActiveFilters
-			);
+			Promise.all([
+				getMinMaxPrices(),
+				getProducts(),
+				regenerateNewFilters(activeFilters),
+			]);
 		}
 	}, [activeFilters]);
 

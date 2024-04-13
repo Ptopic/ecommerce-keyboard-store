@@ -77,15 +77,22 @@
     width: 25%;
     height: 90dvh;
     background-color: var(--white600);
-    padding: 4rem 3rem;
+    padding: 4rem 2rem;
     overflow: auto;
+    gap: 1rem;
 }
 
 .navbar-content-text a {
     font-size: 1.8rem;
     color: var(--black);
     text-decoration: none;
-    padding-bottom: 3rem;
+    padding: 2rem;
+    width: 100%;
+}
+
+.navbar-content-text a:hover {
+    background: var(--bg900);
+    border-radius: 1.2rem;
 }
 
 .navbar-user-data {

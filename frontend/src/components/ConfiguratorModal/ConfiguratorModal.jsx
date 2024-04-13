@@ -157,6 +157,25 @@ const ConfiguratorModal = ({
 		}
 	};
 
+	const regenerateNewFilters = async (newActiveFilters) => {
+		const generatedFiltersRes = await generateFilters(
+			categoryName,
+			newActiveFilters
+		);
+		const generatedFilters = generatedFiltersRes.data;
+
+		// Set query data
+		queryClient.setQueryData(
+			['products', 'filters', categoryName],
+			generatedFilters.filters
+		);
+		queryClient.setQueryData(
+			['products', 'activeFilters', categoryName],
+			generatedFilters.activeFields
+		);
+		setFilters(generatedFilters?.filters);
+	};
+
 	const getProducts = async (initial) => {
 		// Reset page
 		if (initial) {
@@ -198,10 +217,10 @@ const ConfiguratorModal = ({
 		curFilterValue,
 		newFilterValue
 	) => {
-		setLoading(true);
-
 		// If new filter value is equal to current filter value then remove current value
-		let updatedFilters = structuredClone(activeFilters);
+		let updatedFilters = activeFilters.map((filter) => {
+			return { ...filter };
+		});
 
 		if (newFilterValue == curFilterValue) {
 			// Reset filter value
@@ -215,14 +234,6 @@ const ConfiguratorModal = ({
 
 		// Trigger filters re render
 		setFilters([...filters]);
-
-		// Get new products
-		getProducts();
-
-		// Recalculate prices
-		getMinMaxPrices();
-
-		setLoading(false);
 	};
 
 	const clearFilters = () => {
@@ -251,107 +262,51 @@ const ConfiguratorModal = ({
 		setLoading(true);
 		getMinMaxPrices();
 		getProducts();
+		getInitialFilters(categoryName);
 
 		setLoading(false);
 	}, []);
 
 	useEffect(() => {
-		getInitialFilters(products[0]?.category);
-	}, [products]);
+		let constraints = configuratorModalValues['Constraints'];
+		let constraintsArray = Array.of(Object.keys(constraints))[0];
 
-	// useEffect(() => {
-	// 	let constraints = configuratorModalValues['Constraints'];
-	// 	let constraintsArray = Array.of(Object.keys(constraints))[0];
+		let doFilterRefresh = false;
 
-	// 	let doFilterRefresh = false;
+		// If there is any constraints map them to active fields
+		if (constraintsArray) {
+			for (let i = 0; i < constraintsArray.length; i++) {
+				for (let j = 0; j < activeFilters.length; j++) {
+					if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
+						activeFilters[j][constraintsArray[i]] =
+							constraints[constraintsArray[i]];
 
-	// 	// If there is any constraints map them to active fields
-	// 	if (constraintsArray) {
-	// 		for (let i = 0; i < constraintsArray.length; i++) {
-	// 			for (let j = 0; j < activeFilters.length; j++) {
-	// 				if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
-	// 					activeFilters[j][constraintsArray[i]] =
-	// 						constraints[constraintsArray[i]];
+						// If constraints array contains categoryName values then regenerate filters
+						doFilterRefresh = true;
+					}
+				}
+			}
+		}
 
-	// 					// If constraints array contains categoryName values then regenerate filters
-	// 					doFilterRefresh = true;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
+		getMinMaxPrices();
 
-	// 	getMinMaxPrices();
-
-	// 	if (doFilterRefresh) {
-	// 		regenerateFilters(
-	// 			categoryName,
-	// 			activeFilters,
-	// 			categories,
-	// 			setFilters,
-	// 			setActiveFilters
-	// 		);
-	// 	} else {
-	// 		// Check if any value in active filters is != null
-	// 		let isActiveFiltersEmpty = true;
-	// 		for (let activeFilter of activeFilters) {
-	// 			if (Object.values(activeFilter) != '') {
-	// 				console.log(activeFilter);
-	// 				isActiveFiltersEmpty = false;
-	// 			}
-	// 		}
-	// 		// If it is regenerate filters
-	// 		if (!isActiveFiltersEmpty) {
-	// 			regenerateFilters(
-	// 				categoryName,
-	// 				activeFilters,
-	// 				categories,
-	// 				setFilters,
-	// 				setActiveFilters
-	// 			);
-	// 		} else {
-	// 			// Set filters as default filters (reset them)
-	// 			let isCategoryFiltersCached;
-	// 			let isCategoryActiveFiltersCached;
-
-	// 			if (reduxFilters.filters && reduxFilters.filters.length > 0) {
-	// 				for (let reduxFilter of reduxFilters?.filters) {
-	// 					if (Object.keys(reduxFilter) == categoryName) {
-	// 						isCategoryFiltersCached = structuredClone(reduxFilter);
-	// 					}
-	// 				}
-	// 			}
-
-	// 			if (
-	// 				reduxFilters?.activeFilters &&
-	// 				reduxFilters.activeFilters.length > 0
-	// 			) {
-	// 				for (let reduxActiveFilter of reduxFilters?.activeFilters) {
-	// 					if (Object.keys(reduxActiveFilter) == categoryName) {
-	// 						isCategoryActiveFiltersCached =
-	// 							structuredClone(reduxActiveFilter);
-	// 					}
-	// 				}
-	// 			}
-
-	// 			if (!isCategoryFiltersCached && !isCategoryActiveFiltersCached) {
-	// 				generateFilters(categoryName, categories, setFilters)
-	// 					.then((res) => {
-	// 						dispatch(
-	// 							addFilter({
-	// 								categoryName: categoryName,
-	// 								filters: res?.filters,
-	// 								activeFilters: res?.activeFilters,
-	// 							})
-	// 						);
-	// 					})
-	// 					.catch((err) => console.log(err));
-	// 			} else {
-	// 				console.log('Cached filters');
-	// 				setFilters(structuredClone(isCategoryFiltersCached[categoryName]));
-	// 			}
-	// 		}
-	// 	}
-	// }, [activeFilters]);
+		if (doFilterRefresh) {
+			regenerateNewFilters(activeFilters);
+		} else {
+			// Check if any value in active filters is != null
+			let isActiveFiltersEmpty = true;
+			for (let activeFilter of activeFilters) {
+				if (Object.values(activeFilter) != '') {
+					console.log(activeFilter);
+					isActiveFiltersEmpty = false;
+				}
+			}
+			// If it is regenerate filters
+			if (!isActiveFiltersEmpty) {
+				regenerateNewFilters(activeFilters);
+			}
+		}
+	}, [activeFilters]);
 
 	useEffect(() => {
 		getProducts();

@@ -10,12 +10,13 @@ function Button({
 	textColor,
 	onClickFunction,
 	isLoading,
+	variant,
 	...props
 }) {
 	return (
 		<button
 			type={props.type ? props.type : 'button'}
-			className="btn"
+			className={variant === 'secondary' ? 'btn-secondary' : 'btn'}
 			style={{
 				width: width,
 				border: borderColor ? `2px solid ${borderColor}` : 'none',

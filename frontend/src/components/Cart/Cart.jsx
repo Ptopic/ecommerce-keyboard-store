@@ -11,6 +11,7 @@ import {
 	removeProduct,
 	incrementProductQuantity,
 	decrementProductQuantity,
+	resetCart,
 } from '../../redux/cartRedux';
 import { BsTrash3 } from 'react-icons/bs';
 
@@ -45,6 +46,11 @@ function Cart() {
 		} catch (err) {
 			console.log(err);
 		}
+	};
+
+	const clearCart = () => {
+		dispatch(resetCart());
+		document.body.style.overflow = 'visible';
 	};
 
 	const continueShopping = () => {
@@ -163,6 +169,14 @@ function Cart() {
 									text={'Checkout'}
 									onClickFunction={makePaymentRequest}
 									isLoading={isLoading}
+								/>
+								<Button
+									width={'100%'}
+									text={'Clear Cart'}
+									onClickFunction={clearCart}
+									isLoading={isLoading}
+									variant={'secondary'}
+									borderColor={'#000'}
 								/>
 							</div>
 						</div>
