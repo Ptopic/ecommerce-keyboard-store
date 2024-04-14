@@ -75,6 +75,7 @@ const App = () => {
 
 	useEffect(() => {
 		// check if token cookie is available
+		console.log(cookies);
 		let token = cookies.token;
 
 		if (token) {

@@ -9,6 +9,9 @@ import ConfiguratorSelectBtn from '../ConfiguratorSelectBtn/ConfiguratorSelectBt
 // Utils
 import { formatPriceDisplay } from '../../utils/formatting';
 import QuantityBtn from '../QuantityBtn/QuantityBtn';
+import { useDispatch } from 'react-redux';
+import { removeItemFromConfiguration } from '../../redux/configuratorRedux';
+import { useQueryClient } from 'react-query';
 
 const ConfiguratorRow = ({
 	configuratorModalValues,
@@ -18,82 +21,13 @@ const ConfiguratorRow = ({
 	categoryName,
 	singular,
 }) => {
+	const queryClient = useQueryClient();
+	const dispatch = useDispatch();
+
 	const removeProductFromConfigurator = (id) => {
-		let newConfiguratorValues = configuratorModalValues;
+		queryClient.removeQueries((query) => query.queryKey.includes(categoryName));
 
-		// Remove product constraints
-		let rowItems = null;
-
-		if (newConfiguratorValues['configuration'][categoryName] != null) {
-			rowItems = Array.from(
-				configuratorModalValues['configuration'][categoryName]
-			);
-		}
-
-		let product = rowItems[id];
-
-		const filteredConfiguratorValues = Array.from(
-			configuratorModalValues['configuration'][categoryName]
-		).filter((_, index) => index != id);
-
-		newConfiguratorValues['configuration'][categoryName] =
-			filteredConfiguratorValues;
-		newConfiguratorValues.displayType = '';
-		newConfiguratorValues.categoryName = '';
-		newConfiguratorValues.open = false;
-
-		newConfiguratorValues.total -= product.price * product.quantity;
-
-		// Remove all constraints then remap them from remaining products (cpu, ram, motherboard or case)
-		newConfiguratorValues['Constraints'] = {};
-
-		// Get all products with constraints
-		for (let category of Object.keys(newConfiguratorValues['configuration'])) {
-			if (
-				category == 'Procesori' ||
-				category == 'Matične ploče' ||
-				category == 'Radna memorija (RAM)' ||
-				category == 'Kućišta'
-			) {
-				let productsFromCategory =
-					newConfiguratorValues['configuration'][category];
-
-				// Loop thru products
-				for (let product of productsFromCategory) {
-					let productDetails = Array.from(Object.keys(product.details));
-
-					if (
-						productDetails.includes('Podnožje') &&
-						productDetails.includes('Vrsta Memorije') &&
-						productDetails.includes('Veličina')
-					) {
-						newConfiguratorValues['Constraints']['Podnožje'] =
-							product.details['Podnožje'];
-						newConfiguratorValues['Constraints']['Vrsta Memorije'] =
-							product.details['Vrsta Memorije'];
-						newConfiguratorValues['Constraints']['Veličina'] =
-							product.details['Veličina'];
-					} else if (
-						productDetails.includes('Podnožje') ||
-						productDetails.includes('Vrsta Memorije') ||
-						productDetails.includes('Veličina')
-					) {
-						if (product.details['Podnožje']) {
-							newConfiguratorValues['Constraints']['Podnožje'] =
-								product.details['Podnožje'];
-						} else if (product.details['Vrsta Memorije']) {
-							newConfiguratorValues['Constraints']['Vrsta Memorije'] =
-								product.details['Vrsta Memorije'];
-						} else {
-							newConfiguratorValues['Constraints']['Veličina'] =
-								product.details['Veličina'];
-						}
-					}
-				}
-			}
-		}
-
-		setConfiguratorModalValues({ ...newConfiguratorValues });
+		dispatch(removeItemFromConfiguration({ categoryName, id }));
 	};
 
 	const renderRowData = () => {

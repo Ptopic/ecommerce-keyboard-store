@@ -33,11 +33,13 @@ import { formatPriceDisplay } from '../../utils/formatting';
 import { user_request } from '../../../../admin/src/api';
 
 import { useSwipeable } from 'react-swipeable';
+import Spinner from '../../components/Spinner/Spinner';
 
 const Product = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const id = location.pathname.split('/')[2];
+	const [isProductLoading, setIsProductLoading] = useState(false);
 	const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [product, setProduct] = useState({});
@@ -77,9 +79,11 @@ const Product = () => {
 
 	const getProductById = async () => {
 		try {
+			setIsProductLoading(true);
 			const res = await request.get('/products/find/' + id);
 			const data = res.data;
 			setProduct(data.data);
+			setIsProductLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -225,157 +229,165 @@ const Product = () => {
 		<div className="product-page-container">
 			<Toaster />
 			<Navbar />
-			{imageZoomModalOpen && (
-				<div className="image-zoom-modal">
-					<div className="image-zoom-modal-container" {...handlers}>
-						<div className="images-carousel-collection">
-							{product.images.length > 1 && (
-								<AiOutlineLeft
-									size={34}
-									onClick={() => handlePrev()}
-									className="arrow left"
-									fill="#fff"
-								/>
-							)}
-							{product.images.map((image, index) => {
-								return (
-									<img
-										src={image.url}
-										className={
-											activeImageIndex === index ? 'slide' : 'slide hidden'
-										}
-									/>
-								);
-							})}
-							{product.images.length > 1 && (
-								<AiOutlineRight
-									size={34}
-									onClick={() => handleNext()}
-									className="arrow right"
-									fill="#fff"
-								/>
-							)}
-							<AiOutlineClose
-								size={36}
-								className="image-close-icon"
-								onClick={() => setImageZoomModalOpen(false)}
-							/>
-						</div>
-					</div>
+			{isProductLoading ? (
+				<div className="product-spinner-container">
+					<Spinner />
 				</div>
-			)}
-			<div className="product-page-wrapper">
-				<div className="product-page-image-container">
-					<div
-						className="product-image header"
-						onClick={() => zoomInImage(activeHeaderImage)}
-					>
-						<img src={product.images?.[activeHeaderImage].url} />
-						<div className="image-overlay">
-							<BiSearchAlt size={36} />
+			) : (
+				<>
+					{imageZoomModalOpen && (
+						<div className="image-zoom-modal">
+							<div className="image-zoom-modal-container" {...handlers}>
+								<div className="images-carousel-collection">
+									{product.images.length > 1 && (
+										<AiOutlineLeft
+											size={34}
+											onClick={() => handlePrev()}
+											className="arrow left"
+											fill="#fff"
+										/>
+									)}
+									{product.images.map((image, index) => {
+										return (
+											<img
+												src={image.url}
+												className={
+													activeImageIndex === index ? 'slide' : 'slide hidden'
+												}
+											/>
+										);
+									})}
+									{product.images.length > 1 && (
+										<AiOutlineRight
+											size={34}
+											onClick={() => handleNext()}
+											className="arrow right"
+											fill="#fff"
+										/>
+									)}
+									<AiOutlineClose
+										size={36}
+										className="image-close-icon"
+										onClick={() => setImageZoomModalOpen(false)}
+									/>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div className="product-images-previews">
-						{product.images?.map((image, index) => (
+					)}
+					<div className="product-page-wrapper">
+						<div className="product-page-image-container">
 							<div
-								className={
-									activeHeaderImage === index
-										? 'product-image small active'
-										: 'product-image small'
-								}
-								onClick={() => setActiveHeaderImage(index)}
+								className="product-image header"
+								onClick={() => zoomInImage(activeHeaderImage)}
 							>
-								<img src={image.url} />
+								<img src={product.images?.[activeHeaderImage].url} />
 								<div className="image-overlay">
 									<BiSearchAlt size={36} />
 								</div>
 							</div>
-						))}
-					</div>
-				</div>
-				<div className="product-page-info-container">
-					<h1>{product.title}</h1>
-					<div
-						className="product-specifications-display"
-						dangerouslySetInnerHTML={{ __html: product.specifications }}
-					></div>
-					<span>€{formatPriceDisplay(product.price)}</span>
-					{product.stock == 0 ? (
-						<h2 className="out-of-stock">Out of stock</h2>
-					) : null}
-					<p>Stock: {product.stock}</p>
-					<p>Shipping calculated at checkout.</p>
-					<p className="quantity">Quantity:</p>
-					<div className="amount-container">
-						<button onClick={() => handleQuantity('decrease')}>-</button>
-						<p>{quantity}</p>
-						<button onClick={() => handleQuantity('increase')}>+</button>
-					</div>
-					<div className="product-page-add-container">
-						<div className="product-page-filters-container">
-							{product.color && product.color.length > 0 && (
-								<div className="product-page-filter">
-									<span>
-										Color <star>*</star>
-									</span>
+							<div className="product-images-previews">
+								{product.images?.map((image, index) => (
 									<div
-										className="product-page-filter-color-btn"
-										onClick={() => toggleColorOpen()}
+										className={
+											activeHeaderImage === index
+												? 'product-image small active'
+												: 'product-image small'
+										}
+										onClick={() => setActiveHeaderImage(index)}
 									>
-										{color ? color : <p>Please select an option*</p>}
-										<AiOutlineDown />
+										<img src={image.url} />
+										<div className="image-overlay">
+											<BiSearchAlt size={36} />
+										</div>
 									</div>
-									{colorOpen && (
-										<div className="product-page-filter-color-container">
-											{product.color?.map((color) => (
-												<div
-													className="product-page-filter-color-option"
-													onClick={() => {
-														setColor(color);
-														setColorOpen(false);
-													}}
-												>
-													{color}
+								))}
+							</div>
+						</div>
+						<div className="product-page-info-container">
+							<h1>{product.title}</h1>
+							<div
+								className="product-specifications-display"
+								dangerouslySetInnerHTML={{ __html: product.specifications }}
+							></div>
+							<span>€{formatPriceDisplay(product.price)}</span>
+							{product.stock == 0 ? (
+								<h2 className="out-of-stock">Out of stock</h2>
+							) : null}
+							<p>Stock: {product.stock}</p>
+							<p>Shipping calculated at checkout.</p>
+							<p className="quantity">Quantity:</p>
+							<div className="amount-container">
+								<button onClick={() => handleQuantity('decrease')}>-</button>
+								<p>{quantity}</p>
+								<button onClick={() => handleQuantity('increase')}>+</button>
+							</div>
+							<div className="product-page-add-container">
+								<div className="product-page-filters-container">
+									{product.color && product.color.length > 0 && (
+										<div className="product-page-filter">
+											<span>
+												Color <star>*</star>
+											</span>
+											<div
+												className="product-page-filter-color-btn"
+												onClick={() => toggleColorOpen()}
+											>
+												{color ? color : <p>Please select an option*</p>}
+												<AiOutlineDown />
+											</div>
+											{colorOpen && (
+												<div className="product-page-filter-color-container">
+													{product.color?.map((color) => (
+														<div
+															className="product-page-filter-color-option"
+															onClick={() => {
+																setColor(color);
+																setColorOpen(false);
+															}}
+														>
+															{color}
+														</div>
+													))}
 												</div>
-											))}
+											)}
 										</div>
 									)}
 								</div>
-							)}
+								<div className="product-buttons">
+									<Button
+										backgroundColor={'#E81123'}
+										borderColor={'#000000'}
+										textColor={'#fff'}
+										width={'100%'}
+										isLoading={isLoadingWishlist}
+										disabled={product.stock == 0 ? true : false}
+										onClickFunction={
+											isProductInWishlist
+												? handleRemoveFromWishlist
+												: handleAddToWishlist
+										}
+										icon={
+											isProductInWishlist ? <AiFillHeart /> : <AiOutlineHeart />
+										}
+										text={'Add to wishlsit'}
+									/>
+									<Button
+										disabled={product.stock == 0 ? true : false}
+										isLoading={isLoading}
+										onClickFunction={handleAddToCart}
+										text={'Add to Cart'}
+										width={'100%'}
+									/>
+								</div>
+								<div
+									className="product-specifications-display"
+									dangerouslySetInnerHTML={{ __html: product.description }}
+								></div>
+							</div>
 						</div>
-						<div className="product-buttons">
-							<Button
-								backgroundColor={'#E81123'}
-								borderColor={'#000000'}
-								textColor={'#fff'}
-								width={'100%'}
-								isLoading={isLoadingWishlist}
-								disabled={product.stock == 0 ? true : false}
-								onClickFunction={
-									isProductInWishlist
-										? handleRemoveFromWishlist
-										: handleAddToWishlist
-								}
-								icon={
-									isProductInWishlist ? <AiFillHeart /> : <AiOutlineHeart />
-								}
-								text={'Add to wishlsit'}
-							/>
-							<Button
-								disabled={product.stock == 0 ? true : false}
-								isLoading={isLoading}
-								onClickFunction={handleAddToCart}
-								text={'Add to Cart'}
-								width={'100%'}
-							/>
-						</div>
-						<div
-							className="product-specifications-display"
-							dangerouslySetInnerHTML={{ __html: product.description }}
-						></div>
 					</div>
-				</div>
-			</div>
+				</>
+			)}
 			<Footer />
 		</div>
 	);

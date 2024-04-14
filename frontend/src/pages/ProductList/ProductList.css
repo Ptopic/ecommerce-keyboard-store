@@ -27,10 +27,9 @@
 
 .products-sort-container {
     display: grid;
-    grid-template-columns: 200px auto;
+    grid-template-columns: 1fr 4fr;
     gap: 2rem;
     grid-template-rows: 40px 50px auto;
-    max-width: 100%;
 }
 
 .filters-container {

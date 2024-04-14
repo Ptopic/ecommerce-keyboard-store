@@ -1,38 +1,19 @@
 import React, { useState } from 'react';
 import './QuantityBtn.css';
+import { useDispatch } from 'react-redux';
+import {
+	incrementProductQuantity,
+	decrementProductQuantity,
+} from '../../redux/configuratorRedux';
 
-const QuantityBtn = ({
-	product,
-	categoryName,
-	id,
-	configuratorModalValues,
-	setConfiguratorModalValues,
-}) => {
-	const [quantity, setQuantity] = useState(product.quantity);
+const QuantityBtn = ({ product, categoryName }) => {
+	const dispatch = useDispatch();
 	const changeQuantity = (product, type) => {
-		// get current configurator values
-		let newConfiguratorValue = configuratorModalValues;
-
 		if (type === 'increase') {
-			// Increase configuration total
-			newConfiguratorValue.total += product.price;
-			product.quantity += 1;
+			dispatch(incrementProductQuantity({ product, categoryName }));
 		} else {
-			// Decrease configuration total
-			newConfiguratorValue.total =
-				product.quantity > 1
-					? newConfiguratorValue.total - product.price
-					: newConfiguratorValue.total;
-			product.quantity = product.quantity > 1 ? product.quantity - 1 : 1;
+			dispatch(decrementProductQuantity({ product, categoryName }));
 		}
-		setQuantity(product.quantity);
-
-		// Update product quantity in configurator state with new product quantity
-
-		newConfiguratorValue['configuration'][categoryName][id].quantity =
-			product.quantity;
-
-		setConfiguratorModalValues({ ...newConfiguratorValue });
 	};
 	return (
 		<div className="configurator-change-quantity">
@@ -43,7 +24,7 @@ const QuantityBtn = ({
 				>
 					-
 				</button>
-				<p>{quantity}</p>
+				<p>{product.quantity}</p>
 				<button
 					className="configurator-quantity-btn"
 					onClick={() => changeQuantity(product, 'increase')}

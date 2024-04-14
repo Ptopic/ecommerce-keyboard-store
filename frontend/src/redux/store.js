@@ -4,6 +4,7 @@ import userReducer from './userRedux';
 import paymentReducer from './paymentRedux';
 import categorisReducer from './categoriesRedux';
 import filtersRedux from './filtersRedux';
+import configuratorRedux from './configuratorRedux';
 
 import {
 	persistStore,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
 	payment: paymentReducer,
 	categories: categorisReducer,
 	filters: filtersRedux,
+	configuration: configuratorRedux,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -30,6 +30,7 @@ import { formatPriceDisplay } from '../../utils/formatting';
 
 import { getQueryClient } from '../../shared/queryClient';
 import { useGetAllCategories } from '../../../../admin/src/hooks/useGetCategories';
+import { addItemToConfiguration } from '../../redux/configuratorRedux';
 
 /**
  * Mode param will define if data is pushed or set into configurator modal values
@@ -38,13 +39,13 @@ import { useGetAllCategories } from '../../../../admin/src/hooks/useGetCategorie
 
 const ConfiguratorModal = ({
 	configuratorModalValues,
-	setConfiguratorModalValues,
 	toggleOpenConfiugratorModal,
 	displayType,
 	categoryName,
 	subCategory,
 	mode,
 }) => {
+	const dispatch = useDispatch();
 	const queryClient = getQueryClient;
 	let PAGE_SIZE = 40;
 
@@ -142,11 +143,11 @@ const ConfiguratorModal = ({
 				// Set query data
 				queryClient.setQueryData(
 					['products', 'configurator', 'filters', curCategory?.name],
-					generatedFilters.filters
+					generatedFilters?.filters
 				);
 				queryClient.setQueryData(
 					['products', 'configurator', 'activeFields', curCategory?.name],
-					generatedFilters.activeFields
+					generatedFilters?.activeFields
 				);
 				setFilters(generatedFilters?.filters);
 				setActiveFilters(generatedFilters?.activeFields);
@@ -166,12 +167,12 @@ const ConfiguratorModal = ({
 
 		// Set query data
 		queryClient.setQueryData(
-			['products', 'filters', categoryName],
-			generatedFilters.filters
+			['products', 'configurator', 'filters', categoryName],
+			generatedFilters?.filters
 		);
 		queryClient.setQueryData(
-			['products', 'activeFilters', categoryName],
-			generatedFilters.activeFields
+			['products', 'configurator', 'activeFilters', categoryName],
+			generatedFilters?.activeFields
 		);
 		setFilters(generatedFilters?.filters);
 	};
@@ -297,7 +298,6 @@ const ConfiguratorModal = ({
 			let isActiveFiltersEmpty = true;
 			for (let activeFilter of activeFilters) {
 				if (Object.values(activeFilter) != '') {
-					console.log(activeFilter);
 					isActiveFiltersEmpty = false;
 				}
 			}
@@ -333,66 +333,7 @@ const ConfiguratorModal = ({
 	};
 
 	const addProductToConfiguration = (product) => {
-		product['quantity'] = 1;
-		let productDetails = Array.from(Object.keys(product.details));
-		let newConfiguratorValue = configuratorModalValues;
-
-		if (
-			productDetails.includes('Podnožje') &&
-			productDetails.includes('Vrsta Memorije') &&
-			productDetails.includes('Veličina')
-		) {
-			newConfiguratorValue['Constraints']['Podnožje'] =
-				product.details['Podnožje'];
-			newConfiguratorValue['Constraints']['Vrsta Memorije'] =
-				product.details['Vrsta Memorije'];
-			newConfiguratorValue['Constraints']['Veličina'] =
-				product.details['Veličina'];
-		} else if (
-			productDetails.includes('Podnožje') ||
-			productDetails.includes('Vrsta Memorije') ||
-			productDetails.includes('Veličina')
-		) {
-			if (product.details['Podnožje']) {
-				newConfiguratorValue['Constraints']['Podnožje'] =
-					product.details['Podnožje'];
-			} else if (product.details['Vrsta Memorije']) {
-				newConfiguratorValue['Constraints']['Vrsta Memorije'] =
-					product.details['Vrsta Memorije'];
-			} else {
-				newConfiguratorValue['Constraints']['Veličina'] =
-					product.details['Veličina'];
-			}
-		}
-
-		if (subCategory) {
-			if (newConfiguratorValue['configuration'][subCategory] != null) {
-				newConfiguratorValue['configuration'][subCategory] = [
-					...Array.from(newConfiguratorValue['configuration'][subCategory]),
-					product,
-				];
-			} else {
-				newConfiguratorValue['configuration'][subCategory] = [product];
-			}
-		} else {
-			if (newConfiguratorValue['configuration'][categoryName]) {
-				newConfiguratorValue['configuration'][categoryName] = [
-					...Array.from(newConfiguratorValue['configuration'][categoryName]),
-					product,
-				];
-			} else {
-				newConfiguratorValue['configuration'][categoryName] = [product];
-			}
-		}
-		newConfiguratorValue.displayType = '';
-		newConfiguratorValue.categoryName = '';
-		newConfiguratorValue.open = false;
-
-		newConfiguratorValue.total += product.price * product.quantity;
-
-		setConfiguratorModalValues({
-			...newConfiguratorValue,
-		});
+		dispatch(addItemToConfiguration({ product, categoryName, subCategory }));
 
 		clearSearchParams();
 	};
@@ -434,13 +375,16 @@ const ConfiguratorModal = ({
 							</div>
 							<div className="filters-devider"></div>
 
-							{filters && activeFilters && (
-								<ProductFilters
-									filters={filters}
-									activeFilters={activeFilters}
-									handleFilterCheckboxClick={handleFilterCheckboxClick}
-								/>
-							)}
+							{filters.length !== 0 &&
+								filters != null &&
+								activeFilters.length !== 0 &&
+								activeFilters != null && (
+									<ProductFilters
+										filters={filters}
+										activeFilters={activeFilters}
+										handleFilterCheckboxClick={handleFilterCheckboxClick}
+									/>
+								)}
 
 							<div className="price-filters">
 								<span className="filter-name">CIJENA:</span>
@@ -560,6 +504,7 @@ const ConfiguratorModal = ({
 										&pageSize=${PAGE_SIZE}
 										&search=${search}`}
 										className="configurator-products-table-head-cell"
+										reloadDocument
 									>
 										{filterDirectionIcons('title')}
 										Naziv

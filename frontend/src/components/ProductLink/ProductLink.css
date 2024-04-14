@@ -18,7 +18,8 @@
 
 .product-link-container img {
     width: 300px;
-    height: auto;
+    height: 300px;
+    object-fit: cover;
 }
 
 .product-link-info {

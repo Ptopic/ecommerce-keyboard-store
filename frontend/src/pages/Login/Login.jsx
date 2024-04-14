@@ -65,13 +65,15 @@ const Login = () => {
 		if (res.success == true) {
 			// Set token cookie
 			let token = res.token;
-			await setCookie('token', token, {
+			const cookiePromise = setCookie('token', token, {
 				expires: new Date(new Date().getTime() + 1440 * 60000),
 				path: '/',
 			});
 
 			formikActions.resetForm();
-			navigate('/');
+			Promise.all([cookiePromise]).then(() => {
+				window.location.href = '/';
+			});
 		} else {
 			toast.error(res.error);
 

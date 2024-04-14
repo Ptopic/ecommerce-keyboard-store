@@ -14,6 +14,11 @@ import { formatPriceDisplay } from '../../utils/formatting';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
 import {
+	openConfigurator,
+	closeConfigurator,
+	resetConfiguration,
+} from '../../redux/configuratorRedux';
+import {
 	openCart,
 	addProduct,
 	incrementProductQuantity,
@@ -25,52 +30,28 @@ import ConfiguratorModal from '../../components/ConfiguratorModal/ConfiguratorMo
 import ConfiguratorRow from '../../components/ConfiguratorRow/ConfiguratorRow';
 import ConfiguratorSelectBtn from '../../components/ConfiguratorSelectBtn/ConfiguratorSelectBtn';
 import QuantityBtn from '../../components/QuantityBtn/QuantityBtn';
+import Button from '../../components/Button/Button';
+import { useQueryClient } from 'react-query';
 
 const Configurator = () => {
+	const queryClient = useQueryClient();
 	const cartProducts = useSelector((state) => state.cart.products);
+	const configuratorModalValues = useSelector((state) => state.configuration);
+
+	console.log(configuratorModalValues);
+
 	const dispatch = useDispatch();
 
-	const [configuratorModalValues, setConfiguratorModalValues] = useState({
-		open: false,
-		displayType: '',
-		categoryName: '',
-		configuration: [],
-		Constraints: {},
-		total: 0,
-	});
-
 	const openConfiguratorModal = (displayType, categoryName, subCategory) => {
-		setConfiguratorModalValues({
-			...configuratorModalValues,
-			open: true,
-			displayType: displayType,
-			categoryName: categoryName,
-			subCategory: subCategory ? subCategory : null,
-		});
+		dispatch(openConfigurator({ displayType, categoryName, subCategory }));
 	};
 
 	const toggleOpenConfiugratorModal = () => {
-		setConfiguratorModalValues({
-			...configuratorModalValues,
-			open: !configuratorModalValues.open,
-		});
+		dispatch(closeConfigurator());
 	};
 
 	const removeProductFromConfigurator = (id, subCategory) => {
-		const filteredConfiguratorValues = Array.from(
-			configuratorModalValues['configuration'][subCategory]
-		).filter((_, index) => index != id);
-
-		let newConfiguratorValue = configuratorModalValues;
-		newConfiguratorValue.displayType = '';
-		newConfiguratorValue.categoryName = '';
-		newConfiguratorValue.open = false;
-
-		newConfiguratorValue['configuration'][subCategory] =
-			filteredConfiguratorValues;
-		setConfiguratorModalValues({
-			...newConfiguratorValue,
-		});
+		dispatch(removeProductFromConfigurator({ id, subCategory }));
 	};
 
 	const buyConfiguration = () => {
@@ -84,12 +65,6 @@ const Configurator = () => {
 				configurationProductsData
 			]) {
 				let quantity = product.quantity;
-				var productAlreadyInCart = false;
-				for (var i = 0; i < cartProducts.length; i++) {
-					if (cartProducts[i]._id == product._id) {
-						productAlreadyInCart = true;
-					}
-				}
 				// Check if quantity is greater than stock if it is display message
 				if (quantity > product.stock) {
 					toast.error('Quantity cannot be greater than stock');
@@ -104,6 +79,16 @@ const Configurator = () => {
 		}
 	};
 
+	const handleResetConfiguration = async () => {
+		toast.success('Configuration cleared');
+		dispatch(resetConfiguration());
+
+		queryClient.removeQueries('products');
+		queryClient.removeQueries('configurator');
+		queryClient.removeQueries('activeFilters');
+		queryClient.removeQueries('activeFields');
+	};
+
 	return (
 		<div>
 			<Navbar />
@@ -112,7 +97,6 @@ const Configurator = () => {
 			{configuratorModalValues.open == true && (
 				<ConfiguratorModal
 					configuratorModalValues={configuratorModalValues}
-					setConfiguratorModalValues={setConfiguratorModalValues}
 					toggleOpenConfiugratorModal={toggleOpenConfiugratorModal}
 					displayType={configuratorModalValues.displayType}
 					categoryName={configuratorModalValues.categoryName}
@@ -135,7 +119,6 @@ const Configurator = () => {
 					<div className="configurator-table-body">
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Procesor'}
 							categoryName={'Procesori'}
@@ -144,7 +127,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'CPU Hladnjak'}
 							categoryName={'CPU Hladnjaci'}
@@ -152,7 +134,6 @@ const Configurator = () => {
 						/>
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Vodeno hlađenje'}
 							categoryName={'Vodena hlađenja'}
@@ -161,7 +142,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Matičnu ploću'}
 							categoryName={'Matične ploče'}
@@ -169,7 +149,6 @@ const Configurator = () => {
 						/>
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'RAM'}
 							categoryName={'Radna memorija (RAM)'}
@@ -177,7 +156,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Pohranu podataka'}
 							categoryName={'Pohrana podataka'}
@@ -185,7 +163,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Grafičku karticu'}
 							categoryName={'Grafičke kartice'}
@@ -194,7 +171,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Kućište'}
 							categoryName={'Kućišta'}
@@ -203,7 +179,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Napajanje'}
 							categoryName={'Napajanja'}
@@ -211,7 +186,6 @@ const Configurator = () => {
 						/>
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Monitor'}
 							categoryName={'Monitori'}
@@ -219,7 +193,6 @@ const Configurator = () => {
 
 						<ConfiguratorRow
 							configuratorModalValues={configuratorModalValues}
-							setConfiguratorModalValues={setConfiguratorModalValues}
 							openConfiguratorModal={openConfiguratorModal}
 							displayName={'Zvučne kartice i Adaptere'}
 							categoryName={'Zvučne kartice i Adapteri'}
@@ -244,9 +217,6 @@ const Configurator = () => {
 														categoryName={'Periferija'}
 														id={i}
 														configuratorModalValues={configuratorModalValues}
-														setConfiguratorModalValues={
-															setConfiguratorModalValues
-														}
 													/>
 												</div>
 												<div className="configurator-table-body-cell price">
@@ -314,9 +284,6 @@ const Configurator = () => {
 														categoryName={'Ostalo'}
 														id={i}
 														configuratorModalValues={configuratorModalValues}
-														setConfiguratorModalValues={
-															setConfiguratorModalValues
-														}
 													/>
 												</div>
 												<div className="configurator-table-body-cell price">
@@ -356,9 +323,18 @@ const Configurator = () => {
 									<h2>Ukupno:</h2>
 									<p>€{formatPriceDisplay(configuratorModalValues.total)}</p>
 								</div>
-								<button onClick={() => buyConfiguration()}>
-									Kupi Konfiguraciju
-								</button>
+								<div className="configurator-total-content-btns">
+									<button onClick={() => buyConfiguration()}>
+										Kupi Konfiguraciju
+									</button>
+									<Button
+										width={'fit-content'}
+										text={'Clear Configuration'}
+										onClickFunction={handleResetConfiguration}
+										variant={'secondary'}
+										borderColor={'#000'}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
