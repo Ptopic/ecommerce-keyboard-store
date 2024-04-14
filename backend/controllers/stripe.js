@@ -151,6 +151,8 @@ exports.stripeWebHook = async (req, res) => {
 			);
 
 			const invoiceItems = invoice.lines.data;
+
+			console.log(invoiceItems);
 			const name = charge.billing_details.name;
 			const amount = charge.amount / 100;
 			const billingInfo = charge.billing_details;
@@ -158,7 +160,7 @@ exports.stripeWebHook = async (req, res) => {
 			const recieptUrl = charge.receipt_url;
 			// Save products from invoice items
 			const products = [];
-			for (var i = 0; i < invoiceItems.length; i++) {
+			for (var i = invoiceItems.length - 1; i >= 0; i--) {
 				// Get product by productId
 				const productFromDb = await Product.findById(
 					invoiceItems[i].metadata.productId
