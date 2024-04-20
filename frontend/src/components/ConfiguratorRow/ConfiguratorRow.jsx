@@ -25,7 +25,20 @@ const ConfiguratorRow = ({
 	const dispatch = useDispatch();
 
 	const removeProductFromConfigurator = (id) => {
-		queryClient.removeQueries((query) => query.queryKey.includes(categoryName));
+		queryClient.removeQueries({
+			queryKey: ['products', 'configurator', 'filters', categoryName],
+			exact: true,
+		});
+
+		queryClient.removeQueries({
+			queryKey: ['products', 'configurator', 'activeFilters', categoryName],
+			exact: true,
+		});
+
+		queryClient.removeQueries({
+			queryKey: ['products', 'configurator', 'activeFields', categoryName],
+			exact: true,
+		});
 
 		dispatch(removeItemFromConfiguration({ categoryName, id }));
 	};

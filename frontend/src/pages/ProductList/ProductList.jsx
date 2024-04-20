@@ -59,10 +59,27 @@ const ProductList = () => {
 	const [products, setProducts] = useState([]);
 
 	const [isLoading, setIsLoading] = useState(true);
+	const [isProductsLoading, setIsProductsLoading] = useState(false);
 
 	const loadMoreBtnRef = useRef(null);
 	const [page, setPage] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
+
+	const areActiveFiltersEmpty = (activeFilters) => {
+		if (activeFilters == [] || activeFilters == null) return true;
+
+		let isEmpty = true;
+
+		activeFilters.forEach((filter) => {
+			Object.values(filter).forEach((value) => {
+				if (value !== '') {
+					isEmpty = false;
+				}
+			});
+		});
+
+		return isEmpty;
+	};
 
 	const getMinMaxPrices = async () => {
 		try {
@@ -81,8 +98,8 @@ const ProductList = () => {
 				pricesData.minPrice.length > 0 &&
 				pricesData.maxPrice.length > 0
 			) {
-				minPrice = Math.ceil(pricesData.minPrice[0].price);
-				maxPrice = Math.ceil(pricesData.maxPrice[0].price);
+				minPrice = Math.ceil(pricesData.minPrice[0].price - 1);
+				maxPrice = Math.ceil(pricesData.maxPrice[0].price + 1);
 			} else {
 				minPrice = 0;
 				maxPrice = 0;
@@ -109,6 +126,9 @@ const ProductList = () => {
 					maxPrice: priceSliderValues[1] != 0 ? priceSliderValues[1] : null,
 					sort: sort != '' ? sort : null,
 					direction: direction != '' ? direction : null,
+					activeFilters: areActiveFiltersEmpty(activeFilters)
+						? null
+						: activeFilters,
 				},
 			});
 
@@ -117,6 +137,7 @@ const ProductList = () => {
 			setProducts(data.data);
 			setPage(1);
 			setTotalPages(data.totalPages);
+			setIsProductsLoading(false);
 		} catch (error) {
 			console.log(error);
 			toast.error('Failed to load products...');
@@ -145,6 +166,7 @@ const ProductList = () => {
 			setProducts(data.data);
 			setPage(1);
 			setTotalPages(data.totalPages);
+			setIsProductsLoading(false);
 		} catch (error) {
 			console.log(error);
 			toast.error('Failed to load products...');
@@ -190,6 +212,8 @@ const ProductList = () => {
 		curFilterValue,
 		newFilterValue
 	) => {
+		setIsProductsLoading(true);
+
 		// If new filter value is equal to current filter value then remove current value
 		let updatedFilters = activeFilters.map((filter) => {
 			return { ...filter };
@@ -229,17 +253,29 @@ const ProductList = () => {
 		setActiveFilters(initialFiltersArray);
 	};
 
+	const generateDefaultActiveFilters = () => {
+		let categoryFields = categories?.data.find(
+			(category) => category.name === name
+		)?.fields;
+
+		let initialFiltersArray = [];
+
+		if (categoryFields) {
+			for (let filter of categoryFields) {
+				let initialFilter = {};
+				initialFilter[filter.name] = '';
+				initialFiltersArray.push(initialFilter);
+			}
+		}
+
+		setActiveFilters(initialFiltersArray);
+	};
+
 	const cacheFilters = async (activeFiltersData) => {
 		const filters = queryClient.getQueryData(['products', 'filters', name]);
 
-		const activeFields = queryClient.getQueryData([
-			'products',
-			'activeFilters',
-			name,
-		]);
-
-		if (!filters && !activeFields) {
-			console.log('Generate filters');
+		if (!filters) {
+			// console.log('Generate filters');
 			const generatedFiltersRes = await generateFilters(
 				name,
 				activeFiltersData
@@ -251,15 +287,12 @@ const ProductList = () => {
 				['products', 'filters', name],
 				generatedFilters.filters
 			);
-			queryClient.setQueryData(
-				['products', 'activeFilters', name],
-				generatedFilters.activeFields
-			);
+
 			setFilters(generatedFilters?.filters);
 			setActiveFilters(generatedFilters?.activeFields);
 		} else {
 			setFilters(filters);
-			setActiveFilters(activeFields);
+			generateDefaultActiveFilters();
 		}
 	};
 
@@ -267,30 +300,23 @@ const ProductList = () => {
 		const generatedFiltersRes = await generateFilters(name, newActiveFilters);
 		const generatedFilters = generatedFiltersRes.data;
 
-		// Set query data
-		queryClient.setQueryData(
-			['products', 'filters', name],
-			generatedFilters.filters
-		);
-		queryClient.setQueryData(
-			['products', 'activeFilters', name],
-			generatedFilters.activeFields
-		);
 		setFilters(generatedFilters?.filters);
 	};
 
 	// Initial page load and redux state load
 	useEffect(() => {
+		console.log('Categories: ');
 		setIsLoading(true);
-		getMinMaxPrices();
 		getProductsWithoutDebounce();
+		getMinMaxPrices();
 
 		cacheFilters();
 
 		setIsLoading(false);
-	}, [categories]);
+	}, []);
 
 	useEffect(() => {
+		console.log('Location: ');
 		setActiveFilters(null);
 		setFilters(null);
 
@@ -300,17 +326,23 @@ const ProductList = () => {
 	}, [location]);
 
 	useEffect(() => {
-		getProducts();
+		console.log('Price: ');
+		getProductsWithoutDebounce();
 	}, [priceSliderValues, sort, direction]);
 
 	useEffect(() => {
-		if (activeFilters && activeFilters.length > 0) {
-			Promise.all([
-				getMinMaxPrices(),
-				getProducts(),
-				regenerateNewFilters(activeFilters),
-			]);
+		console.log('active filters:');
+		if (areActiveFiltersEmpty(activeFilters) == false) {
+			regenerateNewFilters(activeFilters);
+		} else {
+			// Get filters from cache
+			const filters = queryClient.getQueryData(['products', 'filters', name]);
+			setFilters(filters);
 		}
+
+		getProductsWithoutDebounce();
+		getMinMaxPrices();
+		// setIsProductsLoading(false);
 	}, [activeFilters]);
 
 	return (
@@ -427,7 +459,9 @@ const ProductList = () => {
 									</button>
 								</div>
 
-								{products.length > 0 ? (
+								{isProductsLoading ? (
+									<Spinner />
+								) : (
 									<Products
 										products={products}
 										title={name}
@@ -437,8 +471,6 @@ const ProductList = () => {
 										direction={direction}
 										setDirection={setDirection}
 									/>
-								) : (
-									<h2>No products to show...</h2>
 								)}
 
 								<div className="has-more-container" ref={loadMoreBtnRef}>

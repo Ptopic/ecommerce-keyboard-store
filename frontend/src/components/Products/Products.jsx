@@ -15,7 +15,6 @@ const Products = ({
 	const handleSortChange = (e) => {
 		let splittedSortString = e.target.value.split('-');
 
-		console.log(splittedSortString);
 		setSort(splittedSortString[0]);
 		setDirection(splittedSortString[1]);
 	};
