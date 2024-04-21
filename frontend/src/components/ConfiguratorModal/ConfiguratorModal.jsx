@@ -31,6 +31,7 @@ import { formatPriceDisplay } from '../../utils/formatting';
 import { getQueryClient } from '../../shared/queryClient';
 import { useGetAllCategories } from '../../../../admin/src/hooks/useGetCategories';
 import { addItemToConfiguration } from '../../redux/configuratorRedux';
+import Spinner from '../Spinner/Spinner';
 
 /**
  * Mode param will define if data is pushed or set into configurator modal values
@@ -74,8 +75,24 @@ const ConfiguratorModal = ({
 	const [max, setMax] = useState(0);
 
 	// Other filters
-	const [filters, setFilters] = useState([]);
-	const [activeFilters, setActiveFilters] = useState([]);
+	const [filters, setFilters] = useState(null);
+	const [activeFilters, setActiveFilters] = useState(null);
+
+	const areActiveFiltersEmpty = (activeFilters) => {
+		if (activeFilters == [] || activeFilters == null) return true;
+
+		let isEmpty = true;
+
+		activeFilters.forEach((filter) => {
+			Object.values(filter).forEach((value) => {
+				if (value !== '') {
+					isEmpty = false;
+				}
+			});
+		});
+
+		return isEmpty;
+	};
 
 	const getMinMaxPrices = async () => {
 		try {
@@ -95,8 +112,8 @@ const ConfiguratorModal = ({
 				pricesData.minPrice.length > 0 &&
 				pricesData.maxPrice.length > 0
 			) {
-				minPrice = Math.ceil(pricesData.minPrice[0].price);
-				maxPrice = Math.ceil(pricesData.maxPrice[0].price);
+				minPrice = Math.ceil(pricesData.minPrice[0].price) - 1;
+				maxPrice = Math.ceil(pricesData.maxPrice[0].price) + 1;
 			} else {
 				minPrice = 0;
 				maxPrice = 0;
@@ -110,6 +127,25 @@ const ConfiguratorModal = ({
 		}
 	};
 
+	const generateDefaultActiveFilters = (newCategory) => {
+		console.log(categories);
+		let categoryFields = categories?.find(
+			(category) => category.name === newCategory
+		)?.fields;
+
+		let initialFiltersArray = [];
+
+		if (categoryFields) {
+			for (let filter of categoryFields) {
+				let initialFilter = {};
+				initialFilter[filter.name] = '';
+				initialFiltersArray.push(initialFilter);
+			}
+		}
+
+		setActiveFilters(initialFiltersArray);
+	};
+
 	const getInitialFilters = async (newCategory) => {
 		let curCategory;
 		categories?.forEach((category) => {
@@ -118,43 +154,36 @@ const ConfiguratorModal = ({
 			}
 		});
 
-		// Set fieldDetails to category details
-		if (curCategory != null) {
-			// Check if filters exist in query cache
-			const filters = queryClient.getQueryData([
-				'products',
-				'configurator',
-				'filters',
-				curCategory?.name,
-			]);
+		console.log(curCategory);
 
-			const activeFields = queryClient.getQueryData([
-				'products',
-				'configurator',
-				'activeFields',
-				curCategory?.name,
-			]);
+		// Check if filters exist in query cache
+		const filters = queryClient.getQueryData([
+			'products',
+			'configurator',
+			'filters',
+			curCategory?.name,
+		]);
 
-			if (!filters && !activeFields) {
-				console.log('Generate filters');
-				const generatedFiltersRes = await generateFilters(curCategory?.name);
-				const generatedFilters = generatedFiltersRes.data;
+		if (!filters) {
+			console.log('Generate filters');
+			const generatedFiltersRes = await generateFilters(curCategory?.name);
+			const generatedFilters = generatedFiltersRes.data;
 
-				// Set query data
-				queryClient.setQueryData(
-					['products', 'configurator', 'filters', curCategory?.name],
-					generatedFilters?.filters
-				);
-				queryClient.setQueryData(
-					['products', 'configurator', 'activeFields', curCategory?.name],
-					generatedFilters?.activeFields
-				);
-				setFilters(generatedFilters?.filters);
-				setActiveFilters(generatedFilters?.activeFields);
-			} else {
-				setFilters(filters);
-				setActiveFilters(activeFields);
-			}
+			// Set query data
+			queryClient.setQueryData(
+				['products', 'configurator', 'filters', curCategory?.name],
+				generatedFilters?.filters
+			);
+
+			console.log(generatedFilters);
+
+			console.log(generatedFilters?.activeFields);
+
+			setFilters(generatedFilters?.filters);
+			setActiveFilters(generatedFilters?.activeFields);
+		} else {
+			setFilters(filters);
+			generateDefaultActiveFilters(newCategory);
 		}
 	};
 
@@ -165,15 +194,6 @@ const ConfiguratorModal = ({
 		);
 		const generatedFilters = generatedFiltersRes.data;
 
-		// Set query data
-		queryClient.setQueryData(
-			['products', 'configurator', 'filters', categoryName],
-			generatedFilters?.filters
-		);
-		queryClient.setQueryData(
-			['products', 'configurator', 'activeFilters', categoryName],
-			generatedFilters?.activeFields
-		);
 		setFilters(generatedFilters?.filters);
 	};
 
@@ -258,11 +278,11 @@ const ConfiguratorModal = ({
 	};
 
 	useEffect(() => {
+		setLoading(true);
 		// Scroll to top on modal open
 		window.scrollTo(0, 0);
-		setLoading(true);
-		getMinMaxPrices();
 		getProducts();
+		getMinMaxPrices();
 		getInitialFilters(categoryName);
 
 		setLoading(false);
@@ -277,7 +297,7 @@ const ConfiguratorModal = ({
 		// If there is any constraints map them to active fields
 		if (constraintsArray) {
 			for (let i = 0; i < constraintsArray.length; i++) {
-				for (let j = 0; j < activeFilters.length; j++) {
+				for (let j = 0; j < activeFilters?.length; j++) {
 					if (Object.keys(activeFilters[j])[0] === constraintsArray[i]) {
 						activeFilters[j][constraintsArray[i]] =
 							constraints[constraintsArray[i]];
@@ -291,21 +311,30 @@ const ConfiguratorModal = ({
 
 		getMinMaxPrices();
 
+		console.log(doFilterRefresh);
+
 		if (doFilterRefresh) {
 			regenerateNewFilters(activeFilters);
 		} else {
 			// Check if any value in active filters is != null
-			let isActiveFiltersEmpty = true;
-			for (let activeFilter of activeFilters) {
-				if (Object.values(activeFilter) != '') {
-					isActiveFiltersEmpty = false;
-				}
-			}
-			// If it is regenerate filters
-			if (!isActiveFiltersEmpty) {
+			if (areActiveFiltersEmpty(activeFilters) == false) {
 				regenerateNewFilters(activeFilters);
+			} else {
+				// Get filters from cache
+				const filters = queryClient.getQueryData([
+					'products',
+					'configurator',
+					'filters',
+					categoryName,
+				]);
+
+				console.log(filters);
+				setFilters(filters);
 			}
 		}
+
+		getProducts();
+		getMinMaxPrices();
 	}, [activeFilters]);
 
 	useEffect(() => {
@@ -348,209 +377,150 @@ const ConfiguratorModal = ({
 	return (
 		<div class="modal-overlay">
 			<Toaster />
-			{/* Filters on mobile layout */}
-			<AnimatePresence>
-				{mobileFiltersOpen && (
-					<m.div
-						className="filter-by-container"
-						initial={{ x: -80, opacity: 0 }}
-						animate={{ x: 0, opacity: 1 }}
-						transition={{ ease: 'easeInOut', duration: 0.4 }}
-						exit={{
-							opacity: 0,
-							x: -80,
-							transition: {
-								ease: 'easeInOut',
-								duration: 0.4,
-							},
-						}}
-					>
-						<div className="filters-by-content">
-							<div className="filters-header-container">
-								<p className="filters-header">IZBOR FILTERA</p>
-								<AiOutlineClose
-									size={26}
-									onClick={() => setMobileFiltersOpen(false)}
-								/>
-							</div>
-							<div className="filters-devider"></div>
+			{loading ? (
+				<Spinner />
+			) : (
+				<>
+					{/* Filters on mobile layout */}
+					<AnimatePresence>
+						{mobileFiltersOpen && (
+							<m.div
+								className="filter-by-container"
+								initial={{ x: -80, opacity: 0 }}
+								animate={{ x: 0, opacity: 1 }}
+								transition={{ ease: 'easeInOut', duration: 0.4 }}
+								exit={{
+									opacity: 0,
+									x: -80,
+									transition: {
+										ease: 'easeInOut',
+										duration: 0.4,
+									},
+								}}
+							>
+								<div className="filters-by-content">
+									<div className="filters-header-container">
+										<p className="filters-header">IZBOR FILTERA</p>
+										<AiOutlineClose
+											size={26}
+											onClick={() => setMobileFiltersOpen(false)}
+										/>
+									</div>
+									<div className="filters-devider"></div>
 
-							{filters.length !== 0 &&
-								filters != null &&
-								activeFilters.length !== 0 &&
-								activeFilters != null && (
+									{filters && activeFilters && (
+										<ProductFilters
+											filters={filters}
+											activeFilters={activeFilters}
+											handleFilterCheckboxClick={handleFilterCheckboxClick}
+										/>
+									)}
+
+									<div className="price-filters">
+										<span className="filter-name">CIJENA:</span>
+										<div className="price-ranges current">
+											<p>€{priceSliderValues[0]}</p>
+											<p>€{priceSliderValues[1]}</p>
+										</div>
+										<ReactSlider
+											className="slider"
+											value={priceSliderValues}
+											onChange={(e) => handlePriceFiltersChange(e)}
+											min={min}
+											max={max}
+										/>
+										<div className="price-ranges">
+											<p>€{min}</p>
+											<p>€{max}</p>
+										</div>
+									</div>
+									<button
+										className="clear-filters"
+										onClick={() => clearFilters()}
+									>
+										Izbriši Filtere
+									</button>
+								</div>
+							</m.div>
+						)}
+					</AnimatePresence>
+
+					<div class="configurator-modal">
+						<div className="configurator-modal-header">
+							<p>
+								Odaberi {displayType} {subCategory && `- ${subCategory}`}
+							</p>
+							<button
+								className="filters-btn-mobile"
+								onClick={() => setMobileFiltersOpen(true)}
+							>
+								Izbor Filtera
+							</button>
+							<InputField
+								type={'text'}
+								name={'search'}
+								placeholder={'Search products'}
+								value={searchTermValue}
+								onChange={(e) => setSearchTermValue(e.target.value)}
+								className="search-field"
+								icon={
+									<button
+										onClick={(e) => setSearch(searchInputRef.current.value)}
+									>
+										<AiOutlineSearch size={32} />
+									</button>
+								}
+								refValue={searchInputRef}
+							/>
+							<button
+								type="button"
+								className="close-btn"
+								onClick={() => closeConfiguratorModal()}
+							>
+								<IoClose size={32} />
+							</button>
+						</div>
+						<div className="configurator-modal-body">
+							<div className="configurator-filters-container">
+								{filters && activeFilters && (
 									<ProductFilters
 										filters={filters}
 										activeFilters={activeFilters}
 										handleFilterCheckboxClick={handleFilterCheckboxClick}
 									/>
 								)}
-
-							<div className="price-filters">
-								<span className="filter-name">CIJENA:</span>
-								<div className="price-ranges current">
-									<p>€{priceSliderValues[0]}</p>
-									<p>€{priceSliderValues[1]}</p>
+								<div className="price-filters">
+									<span className="filter-name">CIJENA:</span>
+									<div className="price-ranges current">
+										<p>€{priceSliderValues[0]}</p>
+										<p>€{priceSliderValues[1]}</p>
+									</div>
+									<ReactSlider
+										className="slider"
+										value={priceSliderValues}
+										onChange={(e) => handlePriceFiltersChange(e)}
+										min={min}
+										max={max}
+									/>
+									<div className="price-ranges">
+										<p>€{min}</p>
+										<p>€{max}</p>
+									</div>
 								</div>
-								<ReactSlider
-									className="slider"
-									value={priceSliderValues}
-									onChange={(e) => handlePriceFiltersChange(e)}
-									min={min}
-									max={max}
-								/>
-								<div className="price-ranges">
-									<p>€{min}</p>
-									<p>€{max}</p>
-								</div>
-							</div>
-							<button className="clear-filters" onClick={() => clearFilters()}>
-								Izbriši Filtere
-							</button>
-						</div>
-					</m.div>
-				)}
-			</AnimatePresence>
-
-			<div class="configurator-modal">
-				<div className="configurator-modal-header">
-					<p>
-						Odaberi {displayType} {subCategory && `- ${subCategory}`}
-					</p>
-					<button
-						className="filters-btn-mobile"
-						onClick={() => setMobileFiltersOpen(true)}
-					>
-						Izbor Filtera
-					</button>
-					<InputField
-						type={'text'}
-						name={'search'}
-						placeholder={'Search products'}
-						value={searchTermValue}
-						onChange={(e) => setSearchTermValue(e.target.value)}
-						className="search-field"
-						icon={
-							<button onClick={(e) => setSearch(searchInputRef.current.value)}>
-								<AiOutlineSearch size={32} />
-							</button>
-						}
-						refValue={searchInputRef}
-					/>
-					<button
-						type="button"
-						className="close-btn"
-						onClick={() => closeConfiguratorModal()}
-					>
-						<IoClose size={32} />
-					</button>
-				</div>
-				<div className="configurator-modal-body">
-					<div className="configurator-filters-container">
-						{filters.length !== 0 &&
-							filters != null &&
-							activeFilters.length !== 0 &&
-							activeFilters != null && (
-								<ProductFilters
-									filters={filters}
-									activeFilters={activeFilters}
-									handleFilterCheckboxClick={handleFilterCheckboxClick}
-								/>
-							)}
-						<div className="price-filters">
-							<span className="filter-name">CIJENA:</span>
-							<div className="price-ranges current">
-								<p>€{priceSliderValues[0]}</p>
-								<p>€{priceSliderValues[1]}</p>
-							</div>
-							<ReactSlider
-								className="slider"
-								value={priceSliderValues}
-								onChange={(e) => handlePriceFiltersChange(e)}
-								min={min}
-								max={max}
-							/>
-							<div className="price-ranges">
-								<p>€{min}</p>
-								<p>€{max}</p>
-							</div>
-						</div>
-						<button className="clear-filters" onClick={(e) => clearFilters(e)}>
-							Izbriši Filtere
-						</button>
-					</div>
-					{products.length > 0 ? (
-						<div className="configurator-products-container">
-							<div className="configurator-products-table">
-								<div
-									className="configurator-products-table-head"
-									style={{
-										/* Set header grid columns as number of keys in details object */
-										gridTemplateColumns:
-											products.length > 0
-												? '4fr ' +
-												  `repeat(${
-														Object.keys(products[0].details).length
-												  }, 1fr)` +
-												  ' 1.5fr'
-												: null,
-									}}
+								<button
+									className="clear-filters"
+									onClick={(e) => clearFilters(e)}
 								>
-									<Link
-										to={`/configurator
-										?sort=title
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}
-										&page=${page}
-										&pageSize=${PAGE_SIZE}
-										&search=${search}`}
-										className="configurator-products-table-head-cell"
-										reloadDocument
-									>
-										{filterDirectionIcons('title')}
-										Naziv
-									</Link>
-									{/* Display product details keys - for table head */}
-									{products &&
-										products.length > 0 &&
-										Object.keys(products[0].details).map((detail, i) => {
-											return (
-												<Link
-													to={`/configurator
-												?sort=${'details.' + detail}
-												&direction=${direction == 'asc' ? 'desc' : 'asc'}
-												&page=${page}
-												&pageSize=${PAGE_SIZE}
-												&search=${search}`}
-													className="configurator-products-table-head-cell"
-													key={i}
-												>
-													{filterDirectionIcons('details.' + detail)}
-													{detail}
-												</Link>
-											);
-										})}
-									<Link
-										to={`/configurator
-										?sort=price
-										&direction=${direction == 'asc' ? 'desc' : 'asc'}
-										&page=${page}
-										&pageSize=${PAGE_SIZE}
-										&search=${search}`}
-										className="configurator-products-table-head-cell"
-									>
-										{filterDirectionIcons('price')}
-										Cijena
-									</Link>
-								</div>
+									Izbriši Filtere
+								</button>
 							</div>
-
-							<div className="configurator-products-table-body">
-								{/* Loop thru products and display them as table rows */}
-								{products.map((product, i) => {
-									return (
+							{products.length > 0 ? (
+								<div className="configurator-products-container">
+									<div className="configurator-products-table">
 										<div
-											className="configurator-products-table-body-row"
+											className="configurator-products-table-head"
 											style={{
+												/* Set header grid columns as number of keys in details object */
 												gridTemplateColumns:
 													products.length > 0
 														? '4fr ' +
@@ -560,87 +530,160 @@ const ConfiguratorModal = ({
 														  ' 1.5fr'
 														: null,
 											}}
-											key={product._id}
 										>
-											<div className="configurator-products-table-body-row-cell naziv">
-												<img src={product.images[0].url} alt="" />
-												<Link to={`/product/${product._id}`}>
-													{product.title}
-												</Link>
-											</div>
-											{Object.keys(product.details).map((productDetail, i) => {
-												return (
-													<div
-														className="configurator-products-table-body-row-cell desktop"
-														key={i}
-													>
-														<div className="product-detail">
-															<p className="detail-name">{productDetail}</p>
-															<p className="detail-value">
-																{product.details[productDetail]}
-															</p>
-														</div>
-													</div>
-												);
-											})}
-											<div className="product-details">
-												{Object.keys(product.details).map(
-													(productDetail, i) => {
-														return (
-															<div
-																className="configurator-products-table-body-row-cell"
-																key={i}
-															>
-																<div className="product-detail">
-																	<p className="detail-name">{productDetail}</p>
-																	<p className="detail-value">
-																		{product.details[productDetail]}
-																	</p>
-																</div>
-															</div>
-														);
-													}
-												)}
-											</div>
-
-											<div className="configurator-products-table-body-row-cell price">
-												<p>€{formatPriceDisplay(product.price)}</p>
-												<button
-													onClick={() => addProductToConfiguration(product)}
-												>
-													Add
-												</button>
-											</div>
+											<Link
+												to={`/configurator
+										?sort=title
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${PAGE_SIZE}
+										&search=${search}`}
+												className="configurator-products-table-head-cell"
+												reloadDocument
+											>
+												{filterDirectionIcons('title')}
+												Naziv
+											</Link>
+											{/* Display product details keys - for table head */}
+											{products &&
+												products.length > 0 &&
+												Object.keys(products[0].details).map((detail, i) => {
+													return (
+														<Link
+															to={`/configurator
+												?sort=${'details.' + detail}
+												&direction=${direction == 'asc' ? 'desc' : 'asc'}
+												&page=${page}
+												&pageSize=${PAGE_SIZE}
+												&search=${search}`}
+															className="configurator-products-table-head-cell"
+															key={i}
+														>
+															{filterDirectionIcons('details.' + detail)}
+															{detail}
+														</Link>
+													);
+												})}
+											<Link
+												to={`/configurator
+										?sort=price
+										&direction=${direction == 'asc' ? 'desc' : 'asc'}
+										&page=${page}
+										&pageSize=${PAGE_SIZE}
+										&search=${search}`}
+												className="configurator-products-table-head-cell"
+											>
+												{filterDirectionIcons('price')}
+												Cijena
+											</Link>
 										</div>
-									);
-								})}
-							</div>
+									</div>
 
-							<div className="pagination-controls">
-								{page != 0 && totalPages > 0 && (
-									<button
-										onClick={() => setPage((prevPage) => prevPage - 1)}
-										className="prev-btn"
-									>
-										<FaChevronLeft />
-									</button>
-								)}
-								<p className="current-page">{pageDisplay}</p>
-								{page != totalPages - 1 && totalPages > 0 && (
-									<button
-										onClick={() => setPage((prevPage) => prevPage + 1)}
-										className="next-btn"
-									>
-										<FaChevronRight />
-									</button>
-								)}
-							</div>
+									<div className="configurator-products-table-body">
+										{/* Loop thru products and display them as table rows */}
+										{products.map((product, i) => {
+											return (
+												<div
+													className="configurator-products-table-body-row"
+													style={{
+														gridTemplateColumns:
+															products.length > 0
+																? '4fr ' +
+																  `repeat(${
+																		Object.keys(products[0].details).length
+																  }, 1fr)` +
+																  ' 1.5fr'
+																: null,
+													}}
+													key={product._id}
+												>
+													<div className="configurator-products-table-body-row-cell naziv">
+														<img src={product.images[0].url} alt="" />
+														<Link to={`/product/${product._id}`}>
+															{product.title}
+														</Link>
+													</div>
+													{Object.keys(product.details).map(
+														(productDetail, i) => {
+															return (
+																<div
+																	className="configurator-products-table-body-row-cell desktop"
+																	key={i}
+																>
+																	<div className="product-detail">
+																		<p className="detail-name">
+																			{productDetail}
+																		</p>
+																		<p className="detail-value">
+																			{product.details[productDetail]}
+																		</p>
+																	</div>
+																</div>
+															);
+														}
+													)}
+													<div className="product-details">
+														{Object.keys(product.details).map(
+															(productDetail, i) => {
+																return (
+																	<div
+																		className="configurator-products-table-body-row-cell"
+																		key={i}
+																	>
+																		<div className="product-detail">
+																			<p className="detail-name">
+																				{productDetail}
+																			</p>
+																			<p className="detail-value">
+																				{product.details[productDetail]}
+																			</p>
+																		</div>
+																	</div>
+																);
+															}
+														)}
+													</div>
+
+													<div className="configurator-products-table-body-row-cell price">
+														<p>€{formatPriceDisplay(product.price)}</p>
+														<button
+															onClick={() => addProductToConfiguration(product)}
+														>
+															Add
+														</button>
+													</div>
+												</div>
+											);
+										})}
+									</div>
+
+									<div className="pagination-controls">
+										{page != 0 && totalPages > 0 && (
+											<button
+												onClick={() => setPage((prevPage) => prevPage - 1)}
+												className="prev-btn"
+											>
+												<FaChevronLeft />
+											</button>
+										)}
+										<p className="current-page">{pageDisplay}</p>
+										{page != totalPages - 1 && totalPages > 0 && (
+											<button
+												onClick={() => setPage((prevPage) => prevPage + 1)}
+												className="next-btn"
+											>
+												<FaChevronRight />
+											</button>
+										)}
+									</div>
+								</div>
+							) : (
+								<div>No products to show</div>
+							)}
 						</div>
-					) : (
-						<div>No products to show</div>
-					)}
-				</div>
-			</div>
+					</div>
+				</>
+			)}
 		</div>
 	);
 };

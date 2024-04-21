@@ -15,13 +15,13 @@ import { userRequest } from '../../api';
 // Icons
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 
 // Utils
 import { formatPriceDisplay } from '../../../../frontend/src/utils/formatting';
 
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import PaginationControls from '../../components/PaginationControls/PaginationControls';
 import { useGetOrders } from '../../hooks/useGetOrders';
 import Spinner from '../../components/Spinner/Spinner';
 
@@ -266,16 +266,37 @@ const Orders = () => {
 								})}
 							</tbody>
 						</table>
-						<PaginationControls
-							state={false}
-							categoryName={'orders'}
-							page={page}
-							totalPages={totalPages}
-							pageSize={pageSize}
-							sort={sort}
-							direction={direction}
-							searchTermValue={searchTermValue}
-						/>
+						<div className="pagination-controls">
+							{page != 0 && totalPages > 0 && (
+								<Link
+									className="prev-btn"
+									to={`/orders
+								?page=${Number(page) - 1}
+								&pageSize=${pageSize}
+								${sort != null ? '&sort=' + sort : ''}
+								${direction != null ? '&direction=' + direction : ''}
+								${searchTermValue != null ? '&search=' + searchTermValue : ''}
+								`}
+								>
+									<FaChevronLeft />
+								</Link>
+							)}
+							<p className="current-page">{pageDisplay}</p>
+							{page != totalPages && totalPages > 0 && (
+								<Link
+									className="next-btn"
+									to={`/orders
+								?page=${Number(page) + 1}
+								&pageSize=${pageSize}
+								${sort != null ? '&sort=' + sort : ''}
+								${direction != null ? '&direction=' + direction : ''}
+								${searchTermValue != null ? '&search=' + searchTermValue : ''}
+								`}
+								>
+									<FaChevronRight />
+								</Link>
+							)}
+						</div>
 					</>
 				)}
 			</div>

@@ -38,7 +38,7 @@ const Configurator = () => {
 	const cartProducts = useSelector((state) => state.cart.products);
 	const configuratorModalValues = useSelector((state) => state.configuration);
 
-	console.log(configuratorModalValues);
+	// console.log(configuratorModalValues);
 
 	const dispatch = useDispatch();
 

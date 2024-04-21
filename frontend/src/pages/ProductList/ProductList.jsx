@@ -275,7 +275,7 @@ const ProductList = () => {
 		const filters = queryClient.getQueryData(['products', 'filters', name]);
 
 		if (!filters) {
-			// console.log('Generate filters');
+			console.log('Generate filters');
 			const generatedFiltersRes = await generateFilters(
 				name,
 				activeFiltersData
@@ -305,7 +305,6 @@ const ProductList = () => {
 
 	// Initial page load and redux state load
 	useEffect(() => {
-		console.log('Categories: ');
 		setIsLoading(true);
 		getProductsWithoutDebounce();
 		getMinMaxPrices();
@@ -316,7 +315,6 @@ const ProductList = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log('Location: ');
 		setActiveFilters(null);
 		setFilters(null);
 
@@ -326,12 +324,10 @@ const ProductList = () => {
 	}, [location]);
 
 	useEffect(() => {
-		console.log('Price: ');
 		getProductsWithoutDebounce();
 	}, [priceSliderValues, sort, direction]);
 
 	useEffect(() => {
-		console.log('active filters:');
 		if (areActiveFiltersEmpty(activeFilters) == false) {
 			regenerateNewFilters(activeFilters);
 		} else {
@@ -342,7 +338,6 @@ const ProductList = () => {
 
 		getProductsWithoutDebounce();
 		getMinMaxPrices();
-		// setIsProductsLoading(false);
 	}, [activeFilters]);
 
 	return (

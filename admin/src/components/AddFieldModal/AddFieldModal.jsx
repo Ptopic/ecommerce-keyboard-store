@@ -9,6 +9,7 @@ import InputField from '../../../../frontend/src/components/InputField/InputFiel
 
 // Data
 import { fields } from '../../utils/fields.json';
+import CloseBtn from '../CloseBtn/CloseBtn';
 
 const AddFieldModal = ({
 	closeModal,
@@ -78,13 +79,7 @@ const AddFieldModal = ({
 				<div className="field-modal-header">
 					<h1>Select Field</h1>
 
-					<button
-						type="button"
-						className="close-btn"
-						onClick={() => closeModal()}
-					>
-						<IoClose />
-					</button>
+					<CloseBtn handleClose={closeModal} />
 				</div>
 				<div className="field-modal-body">
 					<div className="add-new-field-container">
