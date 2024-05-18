@@ -5,6 +5,7 @@ const { createRandomBytes } = require('../utils/helper');
 const {
 	mailTransport,
 	generatePasswordResetTemplate,
+	generateRegistrationTemplate,
 } = require('../utils/mail');
 
 const {
@@ -60,6 +61,7 @@ exports.forgotPassword = async (req, res) => {
 			process.env.CLIENT_URL + `reset-password?token=${token}&id=${user._id}`
 		),
 	};
+
 	mailTransport().sendMail(mailOptions, function (err, info) {
 		if (err) {
 			console.log(err);
@@ -137,6 +139,22 @@ exports.register = async (req, res) => {
 		});
 
 	const accessToken = await generateJwt(newUser._id); // Generate jwt token
+
+	// Send password reset email
+	const mailOptions = {
+		from: 'email@email.com',
+		to: email,
+		subject: 'Registration',
+		html: generateRegistrationTemplate(username),
+	};
+
+	mailTransport().sendMail(mailOptions, function (err, info) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json({ success: true, message: 'Email sent!' });
+		}
+	});
 
 	try {
 		const savedUser = await newUser.save();

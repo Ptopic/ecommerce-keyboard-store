@@ -37,7 +37,7 @@ const cartSlice = createSlice({
 
 				// New toFixed(2) state total price
 				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-				state.totalPrice += priceToAdd;
+				state.totalPrice = newCartTotal;
 			} else {
 				state.quantity += action.payload.quantity;
 				state.products.push(action.payload);
@@ -47,7 +47,7 @@ const cartSlice = createSlice({
 
 				// New toFixed(2) state total price
 				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-				state.totalPrice += priceToAdd;
+				state.totalPrice = newCartTotal;
 			}
 		},
 		removeProduct: (state, action) => {
@@ -66,7 +66,7 @@ const cartSlice = createSlice({
 
 			// New toFixed(2) state total price
 			let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-			state.totalPrice -= priceToRemove;
+			state.totalPrice = newCartTotal;
 		},
 		incrementProductQuantity: (state, action) => {
 			state.products = state.products.map((product) => {
@@ -80,7 +80,7 @@ const cartSlice = createSlice({
 
 					// New toFixed(2) state total price
 					let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-					state.totalPrice += priceChange;
+					state.totalPrice = newCartTotal;
 				}
 				return product;
 			});
@@ -99,7 +99,7 @@ const cartSlice = createSlice({
 
 					// New toFixed(2) state total price
 					let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-					state.totalPrice -= priceChange;
+					state.totalPrice = newCartTotal;
 				}
 				return product;
 			});

@@ -12,6 +12,43 @@ const mailTransport = () =>
 		},
 	});
 
+const generateRegistrationTemplate = (userName) => {
+	return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Reciept</title>
+        <style type="text/css" rel="stylesheet">
+          h1 {
+            color: #e81123;
+          }
+          
+          .container {
+            padding: 30px 0;
+          }
+          
+          a {
+            text-decoration: none;
+            color: white;
+            background-color: #e81123;
+            padding: 10px;
+            margin-top: 25px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Hi, ${userName}.</h1>
+        <div class="container">
+          <h2>Thank you for registration</h2>
+        </div>
+      </body>
+    </html>
+         
+          `;
+};
+
 const generatePasswordResetTemplate = (user, url) => {
 	return `
   <!DOCTYPE html>
@@ -751,4 +788,5 @@ module.exports = {
 	generateReceipt,
 	generateReceiptAdmin,
 	generateOrderStatusUpdate,
+	generateRegistrationTemplate,
 };
