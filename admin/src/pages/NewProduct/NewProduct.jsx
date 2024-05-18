@@ -22,7 +22,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import { toast, Toaster } from 'react-hot-toast';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { request, userRequest } from '../../api';
 import DragAndDrop from '../../components/DragAndDrop/DragAndDrop';
 
@@ -35,6 +35,7 @@ import { useGenerateFilters } from '../../hooks/useGenerateFilters';
 import { generateFilters } from '../../api/http/filters';
 
 const NewProduct = () => {
+	const navigate = useNavigate();
 	const queryClient = getQueryClient;
 
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -107,6 +108,7 @@ const NewProduct = () => {
 				});
 
 				toast.success('Product added successfully');
+				navigate('/products');
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
@@ -117,6 +119,7 @@ const NewProduct = () => {
 						: 'Something went wrong'
 				);
 				formikActions.resetForm();
+				navigate('/products');
 				setIsLoading(false);
 				resetAllFormData();
 			}
