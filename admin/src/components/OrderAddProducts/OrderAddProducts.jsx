@@ -15,6 +15,8 @@ import {
 	decrementProductQuantity,
 } from '../../redux/orderProductsRedux';
 
+import { CLIENT_URL } from '../../shared/config';
+
 const OrderAddProducts = () => {
 	const dispatch = useDispatch();
 	// Get redux order products state
@@ -75,10 +77,18 @@ const OrderAddProducts = () => {
 							>
 								<IoClose />
 							</button>
-							<img
-								src={orderProduct.originalProduct.images[0].url}
-								alt="Product image"
-							/>
+							<div className="order-product-info">
+								<img
+									src={orderProduct.originalProduct.images[0].url}
+									alt="Product image"
+								/>
+								<a
+									className="order-product-title"
+									href={`${CLIENT_URL}product/${orderProduct.originalProduct._id}`}
+								>
+									{orderProduct.originalProduct.title}
+								</a>
+							</div>
 							<div className="order-product-quantity">
 								<button
 									type="button"

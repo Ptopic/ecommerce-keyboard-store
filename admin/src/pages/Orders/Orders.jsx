@@ -131,7 +131,7 @@ const Orders = () => {
 				<InputField
 					type={'text'}
 					name={'search'}
-					placeholder={'Search orders by order number or date'}
+					placeholder={'Search orders by order number'}
 					value={searchTermValue}
 					onChange={(e) => setSearchTermValue(e.target.value)}
 					width={'50%'}
