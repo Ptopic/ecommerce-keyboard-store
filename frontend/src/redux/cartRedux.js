@@ -36,8 +36,8 @@ const cartSlice = createSlice({
 					Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
 
 				// New toFixed(2) state total price
-				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-				state.totalPrice = newCartTotal;
+				// let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+				state.totalPrice = tempCartTotal;
 			} else {
 				state.quantity += action.payload.quantity;
 				state.products.push(action.payload);
@@ -46,8 +46,15 @@ const cartSlice = createSlice({
 					Number.parseFloat(state.totalPrice) + Number.parseFloat(priceToAdd);
 
 				// New toFixed(2) state total price
-				let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-				state.totalPrice = newCartTotal;
+				// let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+
+				console.table(
+					'Price to add: ',
+					priceToAdd,
+					'Temp cart total: ',
+					tempCartTotal
+				);
+				state.totalPrice = tempCartTotal;
 			}
 		},
 		removeProduct: (state, action) => {
@@ -65,8 +72,8 @@ const cartSlice = createSlice({
 				Number.parseFloat(state.totalPrice) - Number.parseFloat(priceToRemove);
 
 			// New toFixed(2) state total price
-			let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-			state.totalPrice = newCartTotal;
+			// let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+			state.totalPrice = tempCartTotal;
 		},
 		incrementProductQuantity: (state, action) => {
 			state.products = state.products.map((product) => {
@@ -79,8 +86,8 @@ const cartSlice = createSlice({
 						Number.parseFloat(product.price);
 
 					// New toFixed(2) state total price
-					let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-					state.totalPrice = newCartTotal;
+					// let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+					state.totalPrice = tempCartTotal;
 				}
 				return product;
 			});
@@ -98,8 +105,8 @@ const cartSlice = createSlice({
 							: product.price;
 
 					// New toFixed(2) state total price
-					let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
-					state.totalPrice = newCartTotal;
+					// let newCartTotal = Math.trunc(tempCartTotal * 100) / 100;
+					state.totalPrice = tempCartTotal;
 				}
 				return product;
 			});
