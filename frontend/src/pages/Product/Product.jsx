@@ -30,7 +30,6 @@ import Button from '../../components/Button/Button';
 
 // Utils
 import { formatPriceDisplay } from '../../utils/formatting';
-import { user_request } from '../../../../admin/src/api';
 
 import { useSwipeable } from 'react-swipeable';
 import Spinner from '../../components/Spinner/Spinner';

@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-import { Cookies } from 'react-cookie';
+import { Cookies as ReactCookie } from 'react-cookie';
+
+import Cookies from 'js-cookie';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
 
 // Get token from cookie
-const cookies = new Cookies();
+const cookies = new ReactCookie();
 let TOKEN = cookies.cookies.token;
 console.log(TOKEN);
 
@@ -24,6 +26,17 @@ export const userRequest = axios.create({
 	headers: { Authorization: `Bearer ${TOKEN}` },
 });
 
+userRequest.interceptors.response.use(
+	(response) => {
+		if (response.status === 401 || response.status === 403) {
+			Cookies.remove('token');
+			window.location.reload();
+		}
+		return response;
+	},
+	(error) => error
+);
+
 export const user_request = (tokenVal) => {
 	return axios.create({
 		baseURL: BASE_URL,
@@ -37,6 +50,17 @@ export const admin_request = (tokenVal) => {
 		headers: { Authorization: `Bearer ${tokenVal}` },
 	});
 };
+
+// admin_request.interceptors.response.use(
+// 	(response) => {
+// 		if (response.status === 401 || response.status === 403) {
+// 			Cookies.remove('token');
+// 			window.location.href = '/';
+// 		}
+// 		return response;
+// 	},
+// 	(error) => error
+// );
 
 // user_request.defaults.headers.token = TOKEN;
 

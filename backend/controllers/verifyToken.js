@@ -21,6 +21,7 @@ const verifyToken = (req, res, next) => {
 exports.verifyTokenAuthenticity = (req, res, next) => {
 	const tokenHeader = req.headers.authorization.split(' ')[1];
 	// console.log(req.headers.authorization.split(' ')[1]);
+	console.log(req.headers.authorization);
 	if (tokenHeader) {
 		jwt.verify(tokenHeader, process.env.JWT_SECRET, (err, data) => {
 			if (err) {

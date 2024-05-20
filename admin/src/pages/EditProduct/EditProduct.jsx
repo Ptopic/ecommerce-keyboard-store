@@ -99,13 +99,6 @@ const EditProduct = () => {
 		'image',
 	];
 
-	const resetAllFormData = () => {
-		setSpecifications('');
-		setDescription('');
-		setFiles([]);
-		setActiveFields([]);
-	};
-
 	const getActiveFieldsValidationSchema = () => {
 		let schema = {};
 		activeFields?.forEach((field) => {
@@ -157,10 +150,8 @@ const EditProduct = () => {
 					activeFields: activeFields,
 				});
 
-				toast.success('Product added successfully');
-				formikActions.resetForm();
+				toast.success('Product updated successfully');
 				setIsLoading(false);
-				resetAllFormData();
 			} catch (error) {
 				toast.error(
 					error.response.data.error
@@ -169,9 +160,7 @@ const EditProduct = () => {
 				);
 
 				console.log(error);
-				formikActions.resetForm();
 				setIsLoading(false);
-				resetAllFormData();
 			}
 		} else {
 			setIsLoading(true);
@@ -182,8 +171,7 @@ const EditProduct = () => {
 					activeFields: activeFields,
 				});
 
-				toast.success('Product added successfully');
-				formikActions.resetForm();
+				toast.success('Product updaated successfully');
 				setIsLoading(false);
 			} catch (error) {
 				toast.error(
@@ -193,9 +181,7 @@ const EditProduct = () => {
 				);
 
 				console.log(error);
-				formikActions.resetForm();
 				setIsLoading(false);
-				resetAllFormData();
 			}
 		}
 	};

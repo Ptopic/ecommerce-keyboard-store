@@ -108,7 +108,7 @@ const NewProduct = () => {
 				});
 
 				toast.success('Product added successfully');
-				navigate('/products');
+				navigate(0);
 				formikActions.resetForm();
 				setIsLoading(false);
 				resetAllFormData();
@@ -119,7 +119,7 @@ const NewProduct = () => {
 						: 'Something went wrong'
 				);
 				formikActions.resetForm();
-				navigate('/products');
+				navigate(0);
 				setIsLoading(false);
 				resetAllFormData();
 			}
