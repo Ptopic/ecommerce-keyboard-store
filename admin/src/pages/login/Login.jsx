@@ -63,7 +63,7 @@ const Login = () => {
 		if (res.success == true && res.data.isAdmin == true) {
 			// Set token cookie
 			let token = res.token;
-			setCookie('token', token, {
+			setCookie('tokenAdmin', token, {
 				expires: new Date(new Date().getTime() + 1440 * 60000),
 				path: '/',
 			});

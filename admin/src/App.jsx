@@ -44,7 +44,7 @@ function App() {
 
 	useEffect(() => {
 		// check if token cookie is available
-		let token = cookies.token;
+		let token = cookies.tokenAdmin;
 
 		if (token) {
 			admin = user?.isAdmin;

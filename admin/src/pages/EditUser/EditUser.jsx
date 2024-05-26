@@ -104,6 +104,7 @@ function EditUser() {
 			formikActions.resetForm();
 			setIsLoading(false);
 			toast.success('User updated successfully');
+			navigate(0);
 		} catch (error) {
 			toast.error(
 				error.response.data.error

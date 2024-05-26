@@ -196,6 +196,7 @@ const EditOrder = () => {
 			});
 
 			toast.success('Order updated succesfully');
+			navigate(0);
 		} catch (error) {
 			console.log(error);
 			toast.error(

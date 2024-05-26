@@ -152,6 +152,7 @@ const EditProduct = () => {
 
 				toast.success('Product updated successfully');
 				setIsLoading(false);
+				navigate(0);
 			} catch (error) {
 				toast.error(
 					error.response.data.error
@@ -173,6 +174,7 @@ const EditProduct = () => {
 
 				toast.success('Product updaated successfully');
 				setIsLoading(false);
+				navigate(0);
 			} catch (error) {
 				toast.error(
 					error.response.data.error

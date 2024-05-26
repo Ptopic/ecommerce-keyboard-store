@@ -9,7 +9,7 @@ console.log(BASE_URL);
 
 // Get token from cookie
 const cookies = new ReactCookie();
-let TOKEN = cookies.cookies.token;
+let TOKEN = cookies.cookies.tokenAdmin;
 console.log(TOKEN);
 
 export const request = axios.create({
@@ -26,16 +26,17 @@ export const userRequest = axios.create({
 	headers: { Authorization: `Bearer ${TOKEN}` },
 });
 
-userRequest.interceptors.response.use(
-	(response) => {
-		if (response.status === 401 || response.status === 403) {
-			Cookies.remove('token');
-			window.location.reload();
-		}
-		return response;
-	},
-	(error) => error
-);
+// userRequest.interceptors.response.use(
+// 	(response) => {
+// 		console.log(response.status);
+// 		if (response.status === 401 || response.status === 403) {
+// 			Cookies.remove('token');
+// 			window.location.reload();
+// 		}
+// 		return response;
+// 	},
+// 	(error) => error
+// );
 
 export const user_request = (tokenVal) => {
 	return axios.create({

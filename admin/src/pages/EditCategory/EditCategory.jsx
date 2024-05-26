@@ -112,6 +112,7 @@ function EditCategory() {
 			formikActions.resetForm();
 			setIsLoading(false);
 			toast.success('Category updated successfully');
+			navigate(0);
 		} catch (error) {
 			console.log(error);
 			toast.error(

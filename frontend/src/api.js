@@ -19,16 +19,16 @@ export const userRequest = axios.create({
 	headers: { Authorization: `Bearer ${TOKEN}` },
 });
 
-userRequest.interceptors.response.use(
-	(response) => {
-		if (response.status === 401 || response.status === 403) {
-			Cookies.remove('token');
-			window.location.reload();
-		}
-		return response;
-	},
-	(error) => error
-);
+// userRequest.interceptors.response.use(
+// 	(response) => {
+// 		if (response.status === 401 || response.status === 403) {
+// 			Cookies.remove('token');
+// 			window.location.reload();
+// 		}
+// 		return response;
+// 	},
+// 	(error) => error
+// );
 
 export const user_request = (tokenVal) => {
 	if (tokenVal) {
