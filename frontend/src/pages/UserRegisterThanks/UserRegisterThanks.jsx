@@ -29,12 +29,12 @@ function UserRegisterThanks() {
 					<h1>Thank you for registering</h1>
 
 					<div className="registration-success-container-btns">
-						<Link to="/user/details" className="btn left">
+						<Link to="/user/details" className="btn left" reloadDocument>
 							<FaChevronLeft />
 							Edit your profile
 						</Link>
 
-						<Link to="/" className="btn right">
+						<Link to="/" className="btn right" reloadDocument>
 							<FaChevronRight />
 							Continue shopping
 						</Link>

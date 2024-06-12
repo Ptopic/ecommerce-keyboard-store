@@ -11,6 +11,8 @@ import InputField from '../../../../frontend/src/components/InputField/InputFiel
 import { fields } from '../../utils/fields.json';
 import CloseBtn from '../CloseBtn/CloseBtn';
 
+import { toast, Toaster } from 'react-hot-toast';
+
 const AddFieldModal = ({
 	closeModal,
 	selectedFields,
@@ -37,6 +39,7 @@ const AddFieldModal = ({
 
 	// Handle add
 	const handleAddField = () => {
+		toast.success('Field added to category');
 		setSelectedFields([
 			...selectedFields,
 			{ id: latestIndex, name: fieldName },
@@ -48,6 +51,7 @@ const AddFieldModal = ({
 
 	// Handle field click
 	const handleFieldClick = (name) => {
+		toast.success('Field added to category');
 		setSelectedFields([...selectedFields, { id: latestIndex, name: name }]);
 
 		// Remove used filters from list
@@ -75,6 +79,7 @@ const AddFieldModal = ({
 
 	return (
 		<div className="modal-overlay" id="addFieldModal">
+			<Toaster />
 			<div className="add-field-modal">
 				<div className="field-modal-header">
 					<h1>Select Field</h1>

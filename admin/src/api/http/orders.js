@@ -15,7 +15,7 @@ export const getOrders = (sort, direction, page, pageSize, searchTermValue) => {
 			direction: direction,
 			page: page,
 			pageSize: pageSize,
-			search: searchTermValue,
+			search: searchTermValue.toString(),
 		},
 	});
 };
