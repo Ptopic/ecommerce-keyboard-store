@@ -66,7 +66,7 @@ npm run start
 
 <div align='left'>
 
-<img src="https://github.com/user-attachments/assets/21bba6f1-8b0c-4a82-9585-d49612737e0b" width="500" height="500"/>
+<img src="https://github.com/user-attachments/assets/21bba6f1-8b0c-4a82-9585-d49612737e0b" width="500" height="auto"/>
 
 </div>
 
@@ -74,7 +74,7 @@ npm run start
 
 <div align='left'>
 
-<img src="https://github.com/user-attachments/assets/ad5f753e-6768-400b-92df-610942530b51" width="500" height="500"/>
+<img src="https://github.com/user-attachments/assets/ad5f753e-6768-400b-92df-610942530b51" width="500" height="auto"/>
 
 </div>
 
@@ -82,7 +82,7 @@ npm run start
 
 <div align='left'>
 
-<img src="https://github.com/user-attachments/assets/49f5a9cf-e166-4336-b1fd-06346ca5dcdc" width="500" height="500"/>
+<img src="https://github.com/user-attachments/assets/49f5a9cf-e166-4336-b1fd-06346ca5dcdc" width="500" height="auto"/>
 
 </div>
 
@@ -90,7 +90,7 @@ npm run start
 
 <div align='left'>
 
-<img src="https://github.com/user-attachments/assets/ccdf8ff5-43d7-4fcc-9723-7ba98071af4d" width="500" height="500"/>
+<img src="https://github.com/user-attachments/assets/ccdf8ff5-43d7-4fcc-9723-7ba98071af4d" width="500" height="auto"/>
 
 </div>
 
@@ -98,7 +98,7 @@ npm run start
 
 <div align='left'>
 
-<img src="https://github.com/user-attachments/assets/44166dac-0f37-4565-8593-9a081dabc7bf" width="500" height="500"/>
+<img src="https://github.com/user-attachments/assets/44166dac-0f37-4565-8593-9a081dabc7bf" width="500" height="auto"/>
 
 </div>
 
@@ -178,7 +178,7 @@ npm run start
 
 ## Cart
 
-<img src="https://github.com/user-attachments/assets/c10c4604-6249-4319-a2de-10579f83d1d8" width="100%" height="100%"/>
+<img src="https://github.com/user-attachments/assets/c10c4604-6249-4319-a2de-10579f83d1d8" width="500" height="auto"/>
 
 <br>
 
@@ -186,7 +186,7 @@ npm run start
 
 <img src="https://github.com/user-attachments/assets/a7b54277-5693-4590-90b8-447de3fb7bd8" width="100%" height="100%"/>
 <img src="https://github.com/user-attachments/assets/f1fdd0ca-db19-4393-8a04-9278fffa5726" width="100%" height="100%"/>
-<img src="https://github.com/user-attachments/assets/d7429e12-892f-47dc-a9e3-b247ee899547" width="100%" height="100%"/>
+<img src="https://github.com/user-attachments/assets/d7429e12-892f-47dc-a9e3-b247ee899547" width="500" height="auto"/>
 
 <br>
 
