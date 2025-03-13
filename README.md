@@ -56,7 +56,7 @@ npm run start
 
 <div align='center'>
 
-<img src="![image](https://github.com/user-attachments/assets/02affdd3-8338-4cb8-8181-5f55cdd3ceeb)">
+<img src="https://github.com/user-attachments/assets/02affdd3-8338-4cb8-8181-5f55cdd3ceeb">
 
 </div>
 
@@ -64,41 +64,41 @@ npm run start
 
 ## Auth
 
-<div align='center'>
+<div align='left'>
 
-<img src="![image](https://github.com/user-attachments/assets/a5ae62b4-b67b-4558-b04c-2ee0e64b5887)">
-
-</div>
-
-<br>
-
-<div align='center'>
-
-<img src="![image](https://github.com/user-attachments/assets/3cc9a906-684a-496d-83f4-5b7362be7e83)">
+<img src="https://github.com/user-attachments/assets/21bba6f1-8b0c-4a82-9585-d49612737e0b" width="500" height="500"/>
 
 </div>
 
 <br>
 
-<div align='center'>
+<div align='left'>
 
-<img src="![image](https://github.com/user-attachments/assets/da730a5a-1b6e-4298-bf59-f4e577e930d0)">
-
-</div>
-
-<br>
-
-<div align='center'>
-
-<img src="![image](https://github.com/user-attachments/assets/87a3099d-cbef-4e9b-a325-b17ac74357ea)">
+<img src="https://github.com/user-attachments/assets/ad5f753e-6768-400b-92df-610942530b51" width="500" height="500"/>
 
 </div>
 
 <br>
 
-<div align='center'>
+<div align='left'>
 
-<img src="![image](https://github.com/user-attachments/assets/4b6dc4f4-e910-4e79-a7cb-5655842ebbe1)">
+<img src="https://github.com/user-attachments/assets/49f5a9cf-e166-4336-b1fd-06346ca5dcdc" width="500" height="500"/>
+
+</div>
+
+<br>
+
+<div align='left'>
+
+<img src="https://github.com/user-attachments/assets/ccdf8ff5-43d7-4fcc-9723-7ba98071af4d" width="500" height="500"/>
+
+</div>
+
+<br>
+
+<div align='left'>
+
+<img src="https://github.com/user-attachments/assets/44166dac-0f37-4565-8593-9a081dabc7bf" width="500" height="500"/>
 
 </div>
 
